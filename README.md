@@ -1,15 +1,9 @@
 <h1 align="center"><img src="./todo-image" width="64" align="center" /> TODO-TITRE: TODO-SOUSTITRE</h1>
 <p align="center">
-  <a href="https://www.python.org/downloads/">
-    <img alt="Python 3.10" src="https://img.shields.io/badge/Python-3.10-blue" />
-  </a>
-  <a href="https://pypi.org/project/Flask/">
-    <img alt="Flask" src="https://img.shields.io/badge/Flask-2.2.2-orange" />
-  </a>
-  <a href="https://github.com/dept-info-iut-dijon/2022-S3.01-Scorbut-by-CodeTeam/blob/master/LICENSE">
+  <a href="https://github.com/dept-info-iut-dijon/BUT3-S5-TeamErable-TMP/blob/master/LICENSE">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green" target="_blank" />
   </a>
-  <img alt="Platforms: Web" src="https://img.shields.io/badge/Platforms-Web-yellow" />
+  <img alt="Platforms: Web" src="https://img.shields.io/badge/Platforms-TODO-yellow" />
 </p>
 
 ----------------------------------------------------------------------
