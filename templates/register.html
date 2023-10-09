@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGoGo</title>
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login">
+            <form onsubmit="return validateForm()">
+                {% csrf_token %}
+                <a href="/login" class="button gray">🔙 Retour</a>
+                <div class="separator"></div>
+                <h2>S'inscrire</h2>
+                <div class="form-control">
+                    <label for="mail">Adresse Mail</label>
+                    <input type="mail" name="mail" id="mail" required>
+                </div>
+                <div class="form-control">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" name="password" id="password" required onkeyup='check();' maxlength="18" minlength="8">
+                </div>
+                <div class="form-control">
+                    <label>Votre mot de passe doit contenir :</label>
+                    <ul>
+                        <li><span id="password-length-check"></span> Au moins <strong>8 caractères</strong></li>
+                    </ul>
+                </div>
+                <div class="form-control">
+                    <label for="confirm-password">Confirmer le mot de passe <span id="password-same-check"></span></label>
+                    <input type="password" name="confirm-password" id="confirm-password" required onkeyup='check();' maxlength="18" minlength="8">
+                </div>
+                <div class="separator"></div>
+                <div class="form-control">
+                    <input type="submit" value="S'inscrire">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/pwd.js"></script>
+</body>
+</html>

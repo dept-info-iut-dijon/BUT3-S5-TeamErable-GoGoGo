@@ -43,17 +43,21 @@ a.button.gray:hover {
     background-color: var(--gray-color-hover);
 }
 
-.form-control {
-    margin: 0 auto;
-    margin-bottom: 1rem;
-}
-
 form {
     width: 100%;
     max-width: 400px;
     padding: 1rem;
     border: 1px solid var(--gray-color);
     border-radius: 1rem;
+}
+
+.form-control {
+    margin: 0 auto;
+    margin-bottom: 1rem;
+}
+
+.form-control ul {
+    margin: 0;
 }
 
 .form-control label {
