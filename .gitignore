@@ -156,4 +156,4 @@ useless/
 *.pdn
 temp/
 output/
-*.bat
+# *.bat
