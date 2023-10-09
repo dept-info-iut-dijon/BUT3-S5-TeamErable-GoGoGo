@@ -1,6 +1,7 @@
 :root {
     --main-color: #cc7f4e;
     --main-color-hover: #b36e42;
+    --main-color-light: #f5b38b;
     --gray-color: #ccc;
     --gray-color-hover: #bcbcbc;
     --font: 'Roboto', sans-serif;
@@ -8,6 +9,11 @@
     --font-color: #000;
     --font-color-light: #fff;
     --border-radius: 0.5rem;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
 }
 
 * {
