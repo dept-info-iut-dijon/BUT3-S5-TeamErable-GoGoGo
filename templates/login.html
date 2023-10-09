@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="static/css/global.css">
+    <link rel="stylesheet" href="static/css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login">
+            <form action="/login" method="post">
+                <h2>Authentification</h2>
+                <div class="form-control">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
+                <div class="form-control">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <div class="separator"></div>
+                <div class="form-control">
+                    <div class="row">
+                        <a href="/register" class="button gray">S'inscrire</a>
+                        <div class="separator"></div>
+                        <input type="submit" value="Se connecter">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
