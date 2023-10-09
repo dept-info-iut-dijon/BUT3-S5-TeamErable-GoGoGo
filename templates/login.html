@@ -10,15 +10,20 @@
 <body>
     <div class="container">
         <div class="login">
+            {% if error %}
+            <div class="error">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
             <form action="/login" method="post">
                 {% csrf_token %}
                 <h2>Authentification</h2>
                 <div class="form-control">
-                    <label for="mail">Adresse Mail</label>
-                    <input type="mail" name="mail" id="mail" required>
+                    <label for="username">Nom d'Utilisateur</label>
+                    <input type="text" name="username" id="username" required>
                 </div>
                 <div class="form-control">
-                    <label for="password">Mot de passe</label>
+                    <label for="password">Mot de Passe</label>
                     <input type="password" name="password" id="password" required>
                 </div>
                 <div class="separator"></div>

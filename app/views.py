@@ -1,22 +1,10 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+# from .views.index import index
+# from .views.login import login_
+# from .views.register import register
+from .views import *
 
+# import os
 
-def index(request: HttpRequest) -> HttpResponse:
-    return render(request, 'index.html')
-
-def login(request: HttpRequest) -> HttpResponse:
-    if request.method == 'GET':
-        return render(request, 'login.html')
-    
-    if request.method == 'POST':
-        print(f'connect: {request.POST}')
-        return HttpResponseRedirect('/login')
-
-def register(request: HttpRequest) -> HttpResponse:
-    if request.method == 'GET':
-        return render(request, 'register.html')
-    
-    if request.method == 'POST':
-        print(f'register: {request.POST}')
-        return HttpResponseRedirect('/register')
+# for file in os.listdir(os.path.dirname(os.path.abspath(__file__)) + '/views/'):
+#     if file.endswith(".py"):
+#         __import__("app.views." + file[:-3], locals(), globals())
