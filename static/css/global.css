@@ -1,3 +1,110 @@
-p {
-    color: red;
+:root {
+    --main-color: #cc7f4e;
+    --main-color-hover: #b36e42;
+    --gray-color: #ccc;
+    --gray-color-hover: #bcbcbc;
+    --font: 'Roboto', sans-serif;
+    --font-size: 1.2rem;
+    --font-color: #000;
+    --font-color-light: #fff;
+    --border-radius: 0.5rem;
+}
+
+* {
+    font-family: var(--font);
+}
+
+.container {
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+a.button {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: var(--main-color);
+    color: var(--font-color-light);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+a.button:hover {
+    background-color: var(--main-color-hover);
+}
+
+a.button.gray {
+    background-color: var(--gray-color);
+    color: var(--font-color);
+}
+
+a.button.gray:hover {
+    background-color: var(--gray-color-hover);
+}
+
+.form-control {
+    margin: 0 auto;
+    margin-bottom: 1rem;
+}
+
+form {
+    width: 100%;
+    max-width: 400px;
+    padding: 1rem;
+    border: 1px solid var(--gray-color);
+    border-radius: 1rem;
+}
+
+.form-control label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-control input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid var(--gray-color);
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease-in-out;
+}
+
+.form-control input:focus {
+    outline: none;
+    border-color: var(--main-color);
+}
+
+.form-control input:hover {
+    border-color: var(--main-color);
+}
+
+input[type="submit"], input[type="button"] {
+    cursor: pointer;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: var(--main-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    border: none;
+}
+
+input[type="submit"]:hover, input[type="button"]:hover {
+    background-color: var(--main-color-hover);
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.separator {
+    height: 1rem;
+}
+
+.row > .separator {
+    margin: 0 0.5rem;
 }
