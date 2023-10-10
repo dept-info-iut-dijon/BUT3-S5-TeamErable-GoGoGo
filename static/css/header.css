@@ -13,10 +13,9 @@ header .navbar {
 }
 
 header .navbar > img {
-    height: 16px;
-    width: auto;
+    height: 2rem;
     justify-self: start;
-    margin-left: 20px;
+    margin-left: 1rem;
 }
 
 header .navbar ul {
