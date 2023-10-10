@@ -3,4 +3,4 @@ from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 
 def addfriends(request: HttpRequest) -> HttpResponse:
     
-    return render(request, 'delfriends.html')
+    return render(request, 'addfriends.html')

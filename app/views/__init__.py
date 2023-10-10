@@ -6,3 +6,4 @@ from .friends import friends
 from .settings import settings
 from .delfriends import delfriends
 from .addfriends import addfriends
+from .profil import profil
