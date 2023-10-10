@@ -82,18 +82,6 @@ form {
     transition: all 0.2s ease-in-out;
 }
 
-#password_input input {
-    width: 85%;
-    box-sizing: border-box;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid var(--gray-color);
-    border-radius: var(--border-radius);
-    transition: all 0.2s ease-in-out;
-    position: relative;
-    bottom: 20px;
-}
-
 .form-control input:focus {
     outline: none;
     border-color: var(--main-color);
@@ -158,42 +146,4 @@ input[type="submit"]:hover, input[type="button"]:hover {
     background-color: rgba(0, 255, 0, 0.2);
     border-radius: var(--border-radius);
     margin-bottom: 1rem;
-}
-
-
-.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
-    height:100%;
-    width: 1%;
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-    /* Position the tooltip text - see examples below! */
-    position: absolute;
-    z-index: 1;
-}
-
-    /* Show the tooltip text when you mouse over the tooltip container */
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-    }
-
-.tooltip_icon{
-    height: 50px;
-    width: 50px;
-    
-}
-
-.text-danger{
-    color: red;
 }
