@@ -22,7 +22,12 @@
             <a href="/friends" class="button gray">🔙 Retour</a>
             <div class="separator"></div>
             <label>
-                <input type="text" placeholder="Nom de l'ami">
+                <form method="post" action="{% url 'pseudo' %}">
+                    {% csrf_token %}
+                    <label for="pseudo">Pseudo :</label>
+                    <input type="text" name="nom" id="nom">
+                    <input type="submit" value="Rechercher">
+                </form>
                 <div class="separator"></div>
                 <a href="/addfriends" class="button">➕ Ajouter un ami</a>
             </label>
