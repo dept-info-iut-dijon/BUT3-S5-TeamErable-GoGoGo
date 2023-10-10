@@ -15,9 +15,36 @@
                 <a href="/login" class="button gray">🔙 Retour</a>
                 <div class="separator"></div>
                 <h2>S'inscrire</h2>
-                {{ form.as_p }}
-                <input type="submit"></input>
+                <div class="form-control">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="form-control">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                </div>
+                <div class="form-control" id="password_input">
+                    {{ form.password1.label_tag }}
+                    {{ form.password1 }}
+                    <div class="tooltip">
+                        <img src="static/images/tooltip.png" class="tooltip_icon">
+                        <span class="tooltiptext">{{form.password1.help_text}}</span>
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    {{ form.password2.label_tag }}
+                    {{ form.password2 }}
+                </div>
+
+                <div class="form-control">
+                    <input type="submit"></input>
+                </div>
+
             </form>
+            {% if password2_error %}
+                <p class="text-danger">{{ password2_error }}</p>
+            {% endif %}
         </div>
     </div>
 </body>
