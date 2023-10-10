@@ -21,12 +21,12 @@
                 {% csrf_token %}
                 <h2>Se Connecter</h2>
                 <div class="form-control">
-                    <label for="username">Nom d'Utilisateur</label>
-                    <input type="text" name="username" id="username" required>
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
                 </div>
                 <div class="form-control">
-                    <label for="password">Mot de Passe</label>
-                    <input type="password" name="password" id="password" required>
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
                 </div>
                 <div class="separator"></div>
                 <div class="form-control">
