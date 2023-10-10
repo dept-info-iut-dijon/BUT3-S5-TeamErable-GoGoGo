@@ -250,7 +250,8 @@ header #mobile-menu.is-active .bar:nth-child(3) {
 }
 
 .pfp-menu ul li a img {
-    max-width: 2rem;
+    width: 1rem;
+    height: 1rem;
     margin-right: 1rem;
     opacity: 0.5;
     transition: 0.2s;
