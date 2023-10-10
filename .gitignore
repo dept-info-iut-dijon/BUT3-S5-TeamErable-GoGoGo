@@ -157,3 +157,4 @@ useless/
 temp/
 output/
 # *.bat
+.vs/*
