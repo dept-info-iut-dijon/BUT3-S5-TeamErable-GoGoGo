@@ -15,7 +15,7 @@ def login_(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         form = ConnectForm(request.POST)
         if form.is_valid():
-            user = authenticate(request, username = form.cleaned_data['username'], password = form.cleaned_data['password'])
+            user = authenticate(request, username = request.POST['username'], password = request.POST['password'])
             if user:
                 login(request, user)
                 return HttpResponseRedirect('/')

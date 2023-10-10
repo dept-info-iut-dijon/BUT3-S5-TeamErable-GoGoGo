@@ -8,10 +8,17 @@
     <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
     <link rel="stylesheet" href="static/css/global.css">
     <link rel="stylesheet" href="static/css/login.css">
+    <link rel="stylesheet" href="static/css/signup.css">
 </head>
 <body>
     <div class="container">
         <div class="login">
+            {% if password2_error %}
+            <div class="error">
+                <p>{{ password2_error }}</p>
+            </div>
+            {% endif %}
+
             <form method="post">
                 {% csrf_token %}
                 <a href="/login" class="button gray">🔙 Retour</a>
@@ -26,8 +33,10 @@
                     {{ form.email }}
                 </div>
                 <div class="form-control" id="password_input">
-                    {{ form.password1.label_tag }}
-                    {{ form.password1 }}
+                    <div>
+                        {{ form.password1.label_tag }}
+                        {{ form.password1 }}
+                    </div>
                     <div class="tooltip">
                         <img src="static/images/tooltip.png" class="tooltip_icon">
                         <span class="tooltiptext">{{form.password1.help_text}}</span>
@@ -40,13 +49,9 @@
                 </div>
 
                 <div class="form-control">
-                    <input type="submit"></input>
+                    <input type="submit"/>
                 </div>
-
             </form>
-            {% if password2_error %}
-                <p class="text-danger">{{ password2_error }}</p>
-            {% endif %}
         </div>
     </div>
 </body>

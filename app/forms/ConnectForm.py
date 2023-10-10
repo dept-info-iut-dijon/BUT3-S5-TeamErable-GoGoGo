@@ -1,11 +1,11 @@
 from django import forms
-from django.contrib.auth.forms import UserChangeForm
-from ..models_dir.person import CustomUser
+from django.contrib.auth.forms import forms
+from ..models.person import CustomUser
 
-class ConnectForm(UserChangeForm):
+class ConnectForm(forms.Form):
 	class Meta:
 		model = CustomUser
-		fields = ['username', 'email', 'password'] 
+		fields = ['username', 'password'] 
 
 	username = forms.CharField(
         label = ('Nom d\'utilisateur:')
