@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+
+
 
 def login_(request: HttpRequest) -> HttpResponse:
     if request.user.is_authenticated: return HttpResponseRedirect('/')
@@ -14,4 +16,10 @@ def login_(request: HttpRequest) -> HttpResponse:
             login(request, user)
             return HttpResponseRedirect('/')
         
-    return render(request, 'login.html', {'error': 'Invalid username or password'})
+    return render(request, 'login.html', {'error': 'Le mot de passe ou le nom d\'utilisateur est incorrect.'})
+
+
+
+def logout_(request: HttpRequest) -> HttpResponse:
+    logout(request)
+    return HttpResponseRedirect('/login')
