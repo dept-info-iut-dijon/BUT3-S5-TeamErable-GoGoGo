@@ -1,0 +1,43 @@
+
+
+.profil{
+    width: 90%;
+    margin: auto;
+}
+
+.aled{
+    display: grid;
+    grid-template-columns: 40% 60%;
+    max-width: 100%;  
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.left{
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.right{
+    margin-left: 20%;
+    margin-right: 10%;
+}
+
+.profilImage{
+    border: 1px solid gray;
+    width: 360px;
+    height: 360px;
+    overflow: hidden;
+    margin-left: 5%;
+}
+
+img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Rogner l'image pour la remplir complètement */
+    object-position: center center; /* Position de l'image centrée */
+}
+
+h2{
+    margin-left: 44%;
+}

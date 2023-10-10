@@ -10,5 +10,6 @@ urlpatterns = [
     path("friends", views.friends, name="friends"),
     path("settings", views.settings, name="settings"),
     path("delfriends", views.delfriends, name="delfriends"),
-    path("addfriends", views.addfriends, name="addfriends")
+    path("addfriends", views.addfriends, name="addfriends"),
+    path("profil", views.profil, name="profil"),
 ]
