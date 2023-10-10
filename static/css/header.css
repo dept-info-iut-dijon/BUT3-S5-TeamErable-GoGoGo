@@ -61,10 +61,10 @@ header .nav-item a:hover {
 
 header .mobile-ul {
     transform: translate(0);
-    transition: transform 0.5s ease-in-out;
+    transition: transform 0.2s ease-in-out;
 }
 
-header .menu-toggle .bar{
+header .menu-toggle .bar {
     width: 2rem;
     height: 0.25rem;
     background-color: #3f3f3f;
@@ -84,18 +84,18 @@ header .menu-toggle:hover{
     cursor: pointer;
 }
 
-header #mobile-menu.is-active .bar:nth-child(2){
+header #mobile-menu.is-active .bar:nth-child(2) {
     opacity: 0;
 }
 
-header #mobile-menu.is-active .bar:nth-child(1){
+header #mobile-menu.is-active .bar:nth-child(1) {
     -webkit-transform: translateY(12px) rotate(45deg);
     -ms-transform: translateY(12px) rotate(45deg);
     -o-transform: translateY(12px) rotate(45deg);
     transform: translateY(12px) rotate(45deg);
 }
 
-header #mobile-menu.is-active .bar:nth-child(3){
+header #mobile-menu.is-active .bar:nth-child(3) {
     -webkit-transform: translateY(-12px) rotate(-45deg);
     -ms-transform: translateY(-12px) rotate(-45deg);
     -o-transform: translateY(-12px) rotate(-45deg);
@@ -197,5 +197,89 @@ header #mobile-menu.is-active .bar:nth-child(3){
 
     header .mobile-nav {
         transform: translate(0%)!important;
+    }
+}
+
+
+
+/* Profil */
+
+.pfp-menu {
+    position: absolute;
+    top: 2rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--main-color);
+    width: 200px;
+    box-sizing: 0 5px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    transition: 0.2s;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.pfp-menu.active {
+    top: 4rem;
+    visibility: visible;
+    opacity: 1;
+}
+
+.pfp-menu h3 {
+    width: 100%;
+    text-align: center;
+    padding: 0 0;
+    color: var(--font-color);
+    line-height: 1.5em;
+}
+
+.pfp-menu h3 span {
+    font-size: 0.75rem;
+    color: var(--font-color);
+}
+
+.pfp-menu ul {
+    padding: 0 0;
+}
+
+.pfp-menu ul li {
+    list-style: none;
+    padding: 0;
+    padding-left: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+}
+
+.pfp-menu ul li a img {
+    max-width: 2rem;
+    margin-right: 1rem;
+    opacity: 0.5;
+    transition: 0.2s;
+}
+
+.pfp-menu ul li a:hover img {
+    opacity: 1;
+}
+
+.pfp-menu ul li a {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--font-color-alt);
+    transition: 0.2s;
+    padding: 1rem 0;
+    font-weight: 600;
+}
+
+.pfp-menu ul li a:hover {
+    color: var(--font-color);
+}
+
+@media only screen and (max-width: 720px) {
+    .pfp-menu {
+        top: 8rem;
+    }
+
+    .pfp-menu.active {
+        top: 10rem;
     }
 }

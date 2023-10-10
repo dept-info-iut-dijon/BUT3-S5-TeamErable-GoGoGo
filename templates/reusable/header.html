@@ -1,23 +1,39 @@
 <header>
     <link rel="stylesheet" href="/static/css/header.css">
-    <div class="page-wrapper">
-        <div class="nav-wrapper">
-            <div class="grad-bar"></div>
-            <nav class="navbar">
-                <img src="" alt="Logo de GoGoGo">
-                <div class="menu-toggle" id="mobile-menu">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </div>
-                <ul class="nav mobile-ul">
-                    <li class="nav-item"><a href="#">Acceuil</a></li>
-                    <li class="nav-item"><a href="#">Créer une partie</a></li>
-                    <li class="nav-item"><a href="#">Rejoindre une partie</a></li>
-                    <li class="nav-item"><a href="#" class="pfp"><img src="" alt="Icône de profil"></a></li>
-                </ul>
-            </nav>
+    <div class="grad-bar"></div>
+    <nav class="navbar">
+        <img src="" alt="Logo de GoGoGo">
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <ul class="nav mobile-ul">
+            <li class="nav-item"><a href="/">Acceuil</a></li>
+            <li class="nav-item"><a href="#">Créer une partie</a></li>
+            <li class="nav-item"><a href="#">Rejoindre une partie</a></li>
+            <li class="nav-item"><a href="#" onclick="pfpMenuToggle();" class="pfp"><img src="" alt="Icône de profil"></a></li>
+        </ul>
+    </nav>
+
+    <div class="pfp-menu">
+        <h3>Username<br/><span>Utilisateur</span></h3>
+        <ul>
+            <li>
+                <a href="#"><img src="/static/icons/user.png"/>Mon profil</a>
+            </li>
+            <li>
+                <a href="/settings"><img src="/static/icons/settings.png"/>Paramètres</a>
+            </li>
+            <li>
+                <a href="#"><img src="/static/icons/help.png"/>Aide</a>
+            </li>
+            <li>
+                <a href="/logout"><img src="/static/icons/logout.png"/>Se Déconnecter</a>
+            </li>
+            </ul>
         </div>
     </div>
+
     <script src="/static/js/header.js"></script>
 </header>
