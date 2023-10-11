@@ -28,46 +28,42 @@
 
                 <h2>Page de profil</h2>
 
-                <form method="post" class="aled">
+                <form method="post">
 
                     {% csrf_token %}
 
                     <div class="left">
-
-                        <div class="profilImage">
-
-                            <img id="kon" src="../static/images/k-on-christmas.png" alt="Image de profile" width="250" height="250"/>
-
+                        <div class="profile-image">
+                            <img id="pfp" src="/header-pfp" alt="Image de profile"/>
                         </div>
-
                     </div>
 
                     <div class="right">
 
                         <div class="form-control">
-                            {{ form.username.label_tag }}
-                            {{ form.username }}
+                            <label for="username">Nom d'utilisateur</label>
+                            <input type="text" name="username" id="username" value="{{ user.username }}" required>
                         </div>
     
                         <div class="form-control">
-                            {{ form.email.label_tag }}
-                            {{ form.email }}
+                            <label for="email">Adresse email</label>
+                            <input type="email" name="email" id="email" value="{{ user.email }}" required>
                         </div>
     
                         <div class="form-control" id="password_input">
                             <div>
-                                {{ form.password1.label_tag }}
-                                {{ form.password1 }}
+                                <label for="password1">Mot de passe</label>
+                                <input type="password" name="password1" id="password1" required>
                             </div>
                             <div class="tooltip">
-                                <img src="static/images/tooltip.png" class="tooltip_icon">
-                                <span class="tooltiptext">{{form.password1.help_text}}</span>
+                                <img src="static/icons/tooltip.png" class="tooltip_icon">
+                                <span class="tooltiptext">Le mot de passe doit contenir au moins 8 caractères.</span>
                             </div>
                         </div>
 
                         <div class="form-control">
-                            {{ form.password2.label_tag }}
-                            {{ form.password2 }}
+                            <label for="password2">Confirmer le mot de passe</label>
+                            <input type="password" name="password2" id="password2" required>
                         </div>
     
                         <div class="form-control">
