@@ -159,4 +159,4 @@ output/
 # *.bat
 .vs/*
 migrations/
-
+profile_pictures/
