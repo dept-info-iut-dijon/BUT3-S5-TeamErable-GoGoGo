@@ -11,4 +11,4 @@ def header_pfp(request: HttpRequest) -> FileResponse:
 def header_profile_name(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return ''
 
-    return HttpResponse(f'{request.user.username}<br/><span>Utilisateur</span>')
+    return HttpResponse(f'{request.user.username}')
