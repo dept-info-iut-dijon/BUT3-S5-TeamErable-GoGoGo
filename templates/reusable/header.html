@@ -17,7 +17,10 @@
     </nav>
 
     <div class="pfp-menu">
-        <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username<br/><span>Utilisateur</span></h3>
+        <div class="username-info">
+            <img src="/header-pfp" alt="Photo de profil">
+            <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username</h3>
+        </div>
         <ul>
             <li>
                 <a href="/profil"><img src="/static/icons/profile.png"/>Mon profil</a>
