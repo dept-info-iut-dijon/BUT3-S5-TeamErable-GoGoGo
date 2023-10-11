@@ -7,3 +7,8 @@ from .settings import settings
 from .delfriends import delfriends
 from .addfriends import addfriends
 from .profil import profil
+from .termsofuse import termsofuse
+from .privacypolicy import privacypolicy
+from .legalmention import legalmention
+from .history import history
+from .team import team
