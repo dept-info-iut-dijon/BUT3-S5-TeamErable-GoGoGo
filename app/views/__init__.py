@@ -12,3 +12,4 @@ from .privacypolicy import privacypolicy
 from .legalmention import legalmention
 from .history import history
 from .team import team
+from .aide import aide
