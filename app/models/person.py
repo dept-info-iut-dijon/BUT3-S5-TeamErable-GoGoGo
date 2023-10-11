@@ -3,9 +3,9 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
 class CustomUser(AbstractUser):
-    blob = models.ImageField(max_length=5000, null=True)
+    profile_picture = models.ImageField(max_length=5000, null=True,upload_to='profile_pictures', blank=True)
     friends = models.ManyToManyField('self', blank=True)
-     # Add related_name to avoid clashes
+    # Add related_name to avoid clashes
     groups = models.ManyToManyField(
         Group,
         verbose_name=_('groups'),
