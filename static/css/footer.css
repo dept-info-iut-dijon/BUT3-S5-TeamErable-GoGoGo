@@ -1,6 +1,4 @@
 footer {
-    position: sticky;
-    bottom: 0;
     padding: 50px 0;
     background-color: var(--main-color);
     color: var(--font-color-light);
