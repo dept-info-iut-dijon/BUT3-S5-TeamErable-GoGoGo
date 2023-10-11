@@ -19,5 +19,6 @@ urlpatterns = [
     path("legalmention", views.legalmention, name="legalmention"),
     path("history", views.history, name="history"),
     path("team", views.team, name="team"),
+    path("aide", views.aide, name="aide"),
 
 ]

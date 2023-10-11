@@ -5,7 +5,7 @@
     margin: auto;
 }
 
-.aled{
+.formProfil{
     display: grid;
     grid-template-columns: 30% 70%;
     max-width: 100%;  
