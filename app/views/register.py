@@ -14,6 +14,10 @@ def register(request: HttpRequest) -> HttpResponse:
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
+
+            with open('./static/icons/default-pfp.png', 'rb') as f:
+                user.profile_picture.save('default-pfp.png', f, save=True)
+
             return HttpResponseRedirect('/')
 
         else:

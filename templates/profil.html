@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        {% load static %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GoGoGo</title>
+        <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+        <link rel="stylesheet" href="/static/css/global.css">
+        <link rel="stylesheet" href="/static/css/profil.css">
+    </head>
+
+<body>
+    {% include 'reusable/header.html' %}
+
+    <main>
+
+        <div class="container">
+
+            <div class="profil">
+
+                <h2>Page de profil</h2>
+
+                <form action="/modifProfil" method="post" class="aled">
+
+                    {% csrf_token %}
+
+                    <div class="left">
+
+                        <div class="profilImage">
+
+                            <img src="../static/images/k-on-christmas.png" alt="Image de profile" width="250" height="250"/>
+
+                        </div>
+
+                    </div>
+
+                    <div class="right">
+
+                        <div class="form-control">
+                            <label for="username">Nom d'Utilisateur :</label>
+                            <input type="text" name="username" id="username" required>
+                        </div>
+    
+                        <div class="form-control">
+                            <label for="email">Email :</label>
+                            <input type="text" name="email" id="email" required>
+                        </div>
+    
+                        <div class="form-control">
+                            <label for="password">Mot de Passe :</label>
+                            <input type="password" name="password" id="password" required>
+                        </div>
+
+                        <div class="form-control">
+                            <label for="confpsw">Confirmation de mot de Passe :</label>
+                            <input type="confpsw" name="confpsw" id="confpsw" required>
+                        </div>
+    
+                        <div class="form-control">
+                            <input type="submit" value="Valider">
+                        </div>
+
+                    </div>
+
+
+                </form>
+                
+            </div>
+
+        </div>
+
+    </main>
+
+
+
+
+</body>
+
+</html>

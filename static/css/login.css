@@ -1,3 +1,7 @@
+body {
+    display: block;
+}
+
 .login {
     display: flex;
     flex-direction: column;
