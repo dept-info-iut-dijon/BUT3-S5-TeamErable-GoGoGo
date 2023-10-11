@@ -8,6 +8,7 @@
         <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
         <link rel="stylesheet" href="/static/css/global.css">
         <link rel="stylesheet" href="/static/css/profil.css">
+        <link rel="stylesheet" href="/static/css/signup.css">
     </head>
 
 <body>
@@ -19,9 +20,15 @@
 
             <div class="profil">
 
+                {% if password2_error %}
+                <div class="error">
+                    <p>{{ password2_error }}</p>
+                </div>
+                {% endif %}
+
                 <h2>Page de profil</h2>
 
-                <form action="/modifProfil" method="post" class="aled">
+                <form method="post" class="aled">
 
                     {% csrf_token %}
 
@@ -29,7 +36,7 @@
 
                         <div class="profilImage">
 
-                            <img src="../static/images/k-on-christmas.png" alt="Image de profile" width="250" height="250"/>
+                            <img id="kon" src="../static/images/k-on-christmas.png" alt="Image de profile" width="250" height="250"/>
 
                         </div>
 
@@ -38,23 +45,29 @@
                     <div class="right">
 
                         <div class="form-control">
-                            <label for="username">Nom d'Utilisateur :</label>
-                            <input type="text" name="username" id="username" required>
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
                         </div>
     
                         <div class="form-control">
-                            <label for="email">Email :</label>
-                            <input type="text" name="email" id="email" required>
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
                         </div>
     
-                        <div class="form-control">
-                            <label for="password">Mot de Passe :</label>
-                            <input type="password" name="password" id="password" required>
+                        <div class="form-control" id="password_input">
+                            <div>
+                                {{ form.password1.label_tag }}
+                                {{ form.password1 }}
+                            </div>
+                            <div class="tooltip">
+                                <img src="static/images/tooltip.png" class="tooltip_icon">
+                                <span class="tooltiptext">{{form.password1.help_text}}</span>
+                            </div>
                         </div>
 
                         <div class="form-control">
-                            <label for="confpsw">Confirmation de mot de Passe :</label>
-                            <input type="confpsw" name="confpsw" id="confpsw" required>
+                            {{ form.password2.label_tag }}
+                            {{ form.password2 }}
                         </div>
     
                         <div class="form-control">
