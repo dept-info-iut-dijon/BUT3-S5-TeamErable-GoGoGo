@@ -2,11 +2,12 @@ from django import forms
 from django.contrib.auth.forms import forms
 from ..models.person import CustomUser
 
-class Profil(forms.Form):
+class Profil(forms.ModelForm):
 	class Meta:
 		model = CustomUser
-		fields = ['username', 'email','password1', 'password2'] 
+		fields = ['profile_picture','username', 'email','password1', 'password2'] 
 
+	profile_picture = forms.ImageField()
 	#traduction des champs en francais
 	username = forms.CharField(
         label=('Nom d\'utilisateur:')

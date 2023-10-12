@@ -28,15 +28,17 @@
 
                 <h2>Page de profil</h2>
 
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
 
                     {% csrf_token %}
 
                     <div class="left">
                         <div class="profile-image">
                             <img id="pfp" src="/header-pfp" alt="Image de profile"/>
+                            <input type="file" name="profile_picture" id="profile_picture" value="{{ user.profile_picture }}" required>
                         </div>
                     </div>
+                    </br>
 
                     <div class="right">
 
