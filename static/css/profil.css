@@ -73,6 +73,7 @@ form {
     box-shadow: 1px 1px 15px -5px black;
     transition: all 0.2s ease;
     margin-left: 4rem;
+    z-index: 100;
 }
 
 @media screen and (max-width: 720px) {
