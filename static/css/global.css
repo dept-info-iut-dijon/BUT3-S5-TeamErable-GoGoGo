@@ -129,6 +129,25 @@ input[type="submit"]:hover, input[type="button"]:hover {
     justify-content: space-evenly;
 }
 
+@media screen and (max-width: 720px) {
+    .row.dynamic-row {
+        flex-direction: column;
+    }
+
+    .row.dynamic-row-reverse {
+        flex-direction: column-reverse;
+    }
+}
+
+.no-spacing {
+    justify-content: left;
+}
+
+.center {
+    display: flex;
+    align-items: center;
+}
+
 .separator {
     height: 1rem;
 }
