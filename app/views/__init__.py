@@ -13,3 +13,5 @@ from .legalmention import legalmention
 from .history import history
 from .team import team
 from .aide import aide
+from .forgottenpassword import forgotten_password
+from .passwordresetconfirm import password_reset_confirm
