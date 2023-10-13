@@ -118,8 +118,16 @@ document.querySelector("#search-input").addEventListener('keyup', function(event
 
 
 
-document.body.addEventListener("htmx:configRequest", function(event) {
+document.body.addEventListener("htmx:afterRequest", function(event) {
     setTimeout(function() {
+        if (
+            !(
+                (event.detail.xhr.responseURL.startsWith(window.location.origin + "/add-friend")) ||
+                (event.detail.xhr.responseURL.startsWith(window.location.origin + "/delete-friend"))
+            )
+        ) return;
+        document.querySelector(".notify").innerHTML = event.detail.xhr.responseText;
+
         document.querySelector("#search-input").dispatchEvent(new KeyboardEvent('keyup', {key: 'a'}));
 
         var formData = new FormData();
