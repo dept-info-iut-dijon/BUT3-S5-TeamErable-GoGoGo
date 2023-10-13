@@ -10,6 +10,7 @@ header .navbar {
     align-items: center;
     height: 3rem;
     overflow: hidden;
+    z-index: 1000;
 }
 
 header .navbar > img {
@@ -58,6 +59,10 @@ header .nav-item a:hover {
 }
 
 /* Movile Menu */
+
+.mobile-nav {
+    z-index: 1000;
+}
 
 header .mobile-ul {
     transform: translate(0);
