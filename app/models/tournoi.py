@@ -9,6 +9,7 @@ class Tournoi(models.Model):
     Organisateur = models.CharField(max_length=255)
     Code = models.IntegerField(max_length=25)
     Gagnant = models.CharField(max_length=255)
+    Createur = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -16,4 +17,3 @@ class Tournoi(models.Model):
 class Participer(models.Model):
     personne = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     tournoi = models.ForeignKey(Tournoi, on_delete=models.CASCADE)
-    
