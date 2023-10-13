@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.password_validation import validate_password
+from ..models import CustomUser
 
 def profil(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
@@ -79,3 +80,14 @@ def delete_friend(request: HttpRequest, friend_id: int) -> HttpResponse:
     friend = request.user.friends.get(id=friend_id)
     request.user.friends.remove(friend)
     return HttpResponse('')
+
+def search_user(request: HttpRequest) -> HttpResponse:
+    if request.method == 'POST':
+        query = request.POST.get('username')
+        if query:
+            users = CustomUser.objects.filter(username__icontains = query).order_by('username')[:6]
+            return render(request, 'reusable/search_user.html', {'users': users})
+        
+        return render(request, 'reusable/search_user.html', {'users': []})
+
+    return HttpResponseBadRequest('')

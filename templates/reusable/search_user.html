@@ -1,0 +1,16 @@
+{% if users %}
+<ul>
+    {% for user in users %}
+    <li class="row">
+        <div class="row">
+            <img src="{{user.profile_picture}}" alt="profile picture" class="pfp">
+            <p>{{user.username}}</p>
+        </div>
+        <button data-id="{{user.id}}" class="row add-friend" hx-get="/add-friend?id={{user.id}}" hx-trigger="click" hx-target="#friends-list" hx-swap="innerHTML">
+            <img src="/static/icons/add-user.png" />
+            <p>Ajouter</p>
+        </button>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
