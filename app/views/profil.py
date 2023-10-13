@@ -108,7 +108,7 @@ def add_friend(request: HttpRequest) -> HttpResponse:
 
         if friend:
             request.user.friends.add(friend)
-            return HttpResponse(f'{friend.username} a été ajouté à vos amis.')
+            return HttpResponse(f'<p class="success">{friend.username} a été ajouté à vos amis.</p>')
 
     return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
 
@@ -124,7 +124,7 @@ def delete_friend(request: HttpRequest) -> HttpResponse:
 
         if friend:
             request.user.friends.remove(friend)
-            return HttpResponse(f'{friend.username} a été supprimé de vos amis.')
+            return HttpResponse(f'<p class="success">{friend.username} a été supprimé de vos amis.</p>')
 
     return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
 

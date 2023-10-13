@@ -168,17 +168,3 @@ input[type="submit"]:hover, input[type="button"]:hover, button:hover {
     border-radius: var(--border-radius);
     margin-bottom: 1rem;
 }
-
-.error {
-    padding: 0.5rem 2rem;
-    background-color: rgba(255, 0, 0, 0.2);
-    border-radius: var(--border-radius);
-    margin-bottom: 1rem;
-}
-
-.success {
-    padding: 0.5rem 2rem;
-    background-color: rgba(0, 255, 0, 0.2);
-    border-radius: var(--border-radius);
-    margin-bottom: 1rem;
-}

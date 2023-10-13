@@ -8,10 +8,10 @@ class ConnectForm(forms.Form):
 		fields = ['username', 'password'] 
 
 	username = forms.CharField(
-        label = ('Nom d\'utilisateur:')
+        label = ('Nom d\'utilisateur')
     )
 
 	password = forms.CharField(
-		label = ('Mot de passe:'),
+		label = ('Mot de passe'),
 		widget = forms.PasswordInput(attrs = {'placeholder': 'Entrez votre mot de passe'})
 	)
