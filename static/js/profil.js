@@ -67,3 +67,29 @@ document.querySelectorAll(".sidebar-link").forEach(function(element) {
         document.querySelector(event.target.getAttribute("activate")).classList.toggle("active");
     });
 });
+
+
+
+document.querySelector("#change-pwd").addEventListener('submit', function(event) {
+    event.preventDefault();
+    var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    var formData = new FormData();
+    formData.append('old-pwd', document.querySelector('input[name="old-pwd"]').value);
+    formData.append('new-pwd', document.querySelector('input[name="new-pwd"]').value);
+    formData.append('new-pwd-confirm', document.querySelector('input[name="new-pwd-confirm"]').value);
+    var request = new XMLHttpRequest();
+    request.open('POST', '/change-pwd');
+    request.setRequestHeader('X-CSRFToken', csrf_token);
+    request.onload = function() {
+        console.log(request);
+        if (request.status == 400) {
+            document.querySelector(".notify").innerHTML = request.responseText;
+        } else if (request.status == 200) {
+            document.querySelector(".notify").innerHTML = request.responseText;
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        }
+    }
+    request.send(formData);
+});

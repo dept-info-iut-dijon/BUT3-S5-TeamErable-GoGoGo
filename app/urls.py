@@ -16,6 +16,7 @@ urlpatterns = [
     path("profil", views.profil, name="profil"),
     path("change-pfp", views.change_pfp, name="change_pfp"),
     path("change-user-info", views.change_user_info, name="change_user_info"),
+    path("change-pwd", views.change_pwd, name="change_pwd"),
     path("termsofuse", views.termsofuse, name="termsofuse"),
     path("privacypolicy", views.privacypolicy, name="privacypolicy"),
     path("legalmention", views.legalmention, name="legalmention"),

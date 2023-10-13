@@ -136,13 +136,13 @@ form {
 }
 
 section {
+    transition: all 0.2s ease;
     opacity: 0;
     height: 0;
-    transition: none;
+    overflow: hidden;
 }
 
 section.active {
     opacity: 1;
     height: auto;
-    transition: all 0.2s ease;
 }
