@@ -1,11 +1,5 @@
 function readURL(input) {
     if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            document.querySelector('.profile-pic').setAttribute('src', e.target.result);
-        }
-        reader.readAsDataURL(input.files[0]);
-
         var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
         var formData = new FormData();
@@ -15,6 +9,14 @@ function readURL(input) {
         request.setRequestHeader('X-CSRFToken', csrf_token);
         request.onload = function() {
             document.querySelector(".notify").innerHTML = request.responseText;
+
+            if (request.status == 200) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.querySelector('.profile-pic').setAttribute('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
         }
         request.send(formData);
     }
