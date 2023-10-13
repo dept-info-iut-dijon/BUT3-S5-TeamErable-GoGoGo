@@ -1,5 +1,5 @@
 from django.db import models
-from .person import Person
+from .person import CustomUser
 
 class Tournoi(models.Model):
     Nom = models.CharField(max_length=255)
@@ -14,5 +14,6 @@ class Tournoi(models.Model):
         return self.name
 
 class Participer(models.Model):
-    personne = models.ForeignKey(Person, on_delete=models.CASCADE)
+    personne = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     tournoi = models.ForeignKey(Tournoi, on_delete=models.CASCADE)
+    
