@@ -6,7 +6,7 @@
             <img src="{{user.profile_picture}}" alt="profile picture" class="pfp">
             <p>{{user.username}}</p>
         </div>
-        <button data-id="{{user.id}}" class="row add-friend" hx-get="/add-friend?id={{user.id}}" hx-trigger="click" hx-target="#friends-list" hx-swap="innerHTML">
+        <button data-id="{{user.id}}" class="row add-friend" hx-get="/add-friend?id={{user.id}}" hx-trigger="click" hx-trigger="add-friend-response from:body">
             <img src="/static/icons/add-user.png" />
             <p>Ajouter</p>
         </button>
