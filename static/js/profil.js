@@ -115,3 +115,9 @@ document.querySelector("#search-input").addEventListener('keyup', function(event
     }
     request.send(formData);
 });
+
+
+
+document.body.addEventListener("add-friend-response", function(event) {
+    document.querySelector("#search-input").dispatchEvent(new KeyboardEvent('keyup', {key: 'a'}));
+});
