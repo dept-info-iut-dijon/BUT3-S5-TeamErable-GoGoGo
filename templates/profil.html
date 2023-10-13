@@ -96,19 +96,7 @@
                         <input type="text" id="search-input" placeholder="Rechercher un ami">
                         <div id="user-datalist"></div>
                     </div>
-                    <div id="friends-list">
-                        <ul class="friends-list">
-                            {% for friend in friends %}
-                            <li>
-                                <div class="row">
-                                    {{ friend.username }}
-                                    <button class="button" hx-get="/delete-friend/{{ friend.id }}" hx-trigger="click"><img src="/static/icons/delete.png" />Supprimer</button>
-                                </div>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
+                    <div id="friends-list" hx-get="/friend-list" hx-swap="innerHTML" hx-trigger="load"></div>
                 </section>
 
                 <section id="stats">

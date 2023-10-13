@@ -1,0 +1,10 @@
+<ul class="friends-list">
+    {% for friend in friends %}
+    <li>
+        <div class="row">
+            {{ friend.username }}
+            <button class="button" hx-get="/delete-friend?id={{ friend.id }}" hx-trigger="click"><img src="/static/icons/delete.png" />Supprimer</button>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
