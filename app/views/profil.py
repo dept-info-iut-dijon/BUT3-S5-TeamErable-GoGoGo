@@ -91,3 +91,12 @@ def search_notfriend_user(request: HttpRequest) -> HttpResponse:
         return render(request, 'reusable/search_user.html', {'users': []})
 
     return HttpResponseBadRequest('')
+
+def friend_list(request: HttpRequest) -> HttpResponse:
+    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
+
+    if request.method == 'POST':
+        listfriends = request.user.friends.all()
+        return render(request, 'reusable/friend_list.html', {'friends': listfriends})
+    
+    return HttpResponseBadRequest()
