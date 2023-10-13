@@ -13,19 +13,19 @@ from django.conf import settings
 def send_password_reset_email(user, token):
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     subject = "Recuperation de votre mot de passe"
-    message = f"Bonjour, {user.username}!\n\n"
-    message += "Vous avez fait une demande de recuperation de mot de passe. Pour reinitialiser votre mot de passe, cliquez sur le lien ci dessous:\n\n"
-    # Generate a URL for the password reset confirmation view
+    message = f"<h2>Bonjour, {user.username}!</h2>"
+    message += "<p>Vous avez fait une demande de recuperation de mot de passe.</p> <p>Pour reinitialiser votre mot de passe, cliquez sur le lien ci dessous:</p>"
+    # Generattion de l'url
     reset_url = reverse('password_reset_confirm', kwargs={'uidb64': uidb64, 'token': token})
-    reset_url = "http://localhost:8080" + reset_url  # Adjust the protocol and domain as needed in production
+    reset_url = "<a href='http://localhost:8080" + reset_url + "'>Cliquez ici pour reinitialiser votre mot de passe</a>"  # Adjust the protocol and domain as needed in production
 
     message += reset_url + "\n\n"
-    message += "Si vous n'etes pas a l'origine de cette demande, ignorez cet email.\n\n"
-    message += "L'equipe Go-Go-Go"
+    message += "<p>Si vous n'etes pas a l'origine de cette demande, ignorez cet email.</p>"
+    message += "<p>L'equipe Go-Go-Go</p>"
     # Send the email
     from_email = settings.DEFAULT_FROM_EMAIL  # Use the default from_email from settings
     recipient_list = [user.email]
-    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+    send_mail(subject, message,from_email, recipient_list, html_message=message, fail_silently=False)
     
 
 def forgotten_password(request: HttpRequest) -> HttpResponse:
