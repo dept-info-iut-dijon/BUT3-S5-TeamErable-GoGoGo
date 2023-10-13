@@ -21,8 +21,16 @@ section h2 {
     padding-left: 2rem;
 }
 
-.container.no-margin {
+.container.no-padding {
     padding-left: 0;
+    padding-right: 0;
+}
+
+@media screen and (max-width: 720px) {
+    .content {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
 
 .sidebar-item {
