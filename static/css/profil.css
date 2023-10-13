@@ -73,6 +73,7 @@ form {
     box-shadow: 1px 1px 15px -5px black;
     transition: all 0.2s ease;
     margin-left: 4rem;
+    z-index: 100;
 }
 
 @media screen and (max-width: 720px) {
@@ -135,13 +136,13 @@ form {
 }
 
 section {
+    transition: all 0.2s ease;
     opacity: 0;
     height: 0;
-    transition: none;
+    overflow: hidden;
 }
 
 section.active {
     opacity: 1;
     height: auto;
-    transition: all 0.2s ease;
 }
