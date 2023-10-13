@@ -92,18 +92,22 @@
 
                 <section id="friends">
                     <h2>Amis</h2>
-                    <input type="text" id="search" placeholder="Rechercher un ami" />
-                    <a class="button" hx-get="/friends" hx-trigger="click" hx-target="#search">✅Valider</a>
-                    <ul class="friends-list">
-                        {% for friend in friends %}
-                        <li>
-                            <div class="row">
-                                {{ friend.username }}
-                                <button class="button" hx-get="/delete-friend/{{ friend.id }}" hx-trigger="click"><img src="/static/icons/delete.png" />Supprimer</button>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                    <div class="form-control">
+                        <input type="text" id="search-input" placeholder="Rechercher un ami">
+                        <div id="user-datalist"></div>
+                    </div>
+                    <div id="friends-list">
+                        <ul class="friends-list">
+                            {% for friend in friends %}
+                            <li>
+                                <div class="row">
+                                    {{ friend.username }}
+                                    <button class="button" hx-get="/delete-friend/{{ friend.id }}" hx-trigger="click"><img src="/static/icons/delete.png" />Supprimer</button>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
 
                 </section>
 
