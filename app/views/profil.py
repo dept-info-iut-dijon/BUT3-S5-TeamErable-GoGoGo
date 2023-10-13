@@ -32,6 +32,9 @@ def change_pfp(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         pfp = request.FILES.get('pfp')
         if pfp:
+            if pfp.size > 2 * 1024 * 1024:
+                return HttpResponseBadRequest('<p class="error">La photo de profil est trop volumineuse.</p>')
+
             request.user.profile_picture = pfp
             request.user.save()
             return HttpResponse('<p class="success">La photo de profil a bien été modifiée.</p>')
