@@ -2,7 +2,10 @@
     {% for friend in friends %}
     <li>
         <div class="row">
-            {{ friend.username }}
+            <div class="row">
+                <img src="{{friend.profile_picture}}" alt="profile picture" class="pfp">
+                <p>{{ friend.username }}</p>
+            </div>
             <button class="button" hx-get="/delete-friend?id={{ friend.id }}" hx-trigger="click" hx-trigger="delete-friend-response from:body" hx-swap="none"><img src="/static/icons/delete.png" />Supprimer</button>
         </div>
     </li>
