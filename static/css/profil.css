@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: row;
     height: 100%;
+    box-sizing: border-box;
 }
 
 section h2 {
@@ -37,7 +38,7 @@ section h2 {
     background-color: #b36e4220;
 }
 
-.sidebar-item a::after {
+.sidebar-item a::before {
     position: absolute;
     left: 4px;
     vertical-align: top;
@@ -50,8 +51,34 @@ section h2 {
     transition: all 0.2s ease;
 }
 
-.sidebar-item a.active::after {
+.sidebar-item a.active::before {
     background-color: var(--main-color);
+}
+
+@media screen and (max-width: 720px) {
+    .align-row {
+        flex-direction: column;
+        height: auto;
+        width: 100%;
+    }
+
+    .sidebar {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        align-items: center;
+        box-shadow: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-item a {
+        padding: 0.75rem 1rem;
+    }
+
+    .sidebar-item a::before {
+        left: auto;
+        transform: translate(-1rem, -0.25rem);
+    }
 }
 
 .content {
@@ -140,6 +167,7 @@ section {
     opacity: 0;
     height: 0;
     overflow: hidden;
+    width: 100%;
 }
 
 section.active {
@@ -233,7 +261,6 @@ button.add-friend > img {
     width: 100%;
     padding: 0.25rem 0;
     list-style: none;
-    align-items: center;
 }
 
 #friends-list ul li > div {
@@ -263,6 +290,8 @@ button.add-friend > img {
     margin-right: 0.5rem;
 }
 
-
-
-
+@media screen and (max-width: 720px) {
+    .content {
+        margin: 0;
+    }
+}
