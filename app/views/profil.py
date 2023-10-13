@@ -6,9 +6,9 @@ from ..models import CustomUser
 
 def profil(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
-
+    
     if request.method == 'GET':
-        return render(request, 'profil.html', {'user': request.user})
+        return render(request, 'profil.html', {'user': request.user, 'friends': request.user.friends.all()})
 
 def change_user_info(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
@@ -76,11 +76,6 @@ def friends(request: HttpRequest) -> HttpResponse:
     listfriends = request.user.friends.all()
     return render(request, 'friends.html', {'friends': listfriends})
 
-def delete_friend(request: HttpRequest, friend_id: int) -> HttpResponse:
-    friend = request.user.friends.get(id=friend_id)
-    request.user.friends.remove(friend)
-    return HttpResponse('')
-
 def search_notfriend_user(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         query = request.POST.get('username')
@@ -100,3 +95,28 @@ def friend_list(request: HttpRequest) -> HttpResponse:
         return render(request, 'reusable/friend_list.html', {'friends': listfriends})
     
     return HttpResponseBadRequest()
+
+def add_friend(request: HttpRequest) -> HttpResponse:
+    if not request.user.is_authenticated: return HttpResponseBadRequest()
+    if request.method == 'GET':
+        friend_id = request.GET.get('id')
+        if friend_id is not None:
+            friend = CustomUser.objects.get(id=friend_id)
+            if not request.user.friends.filter( id=friend_id).exists():
+                if friend:
+                    request.user.friends.add(friend)
+                    return HttpResponse('Ajouté')
+    return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+
+def delete_friend (request: HttpRequest) -> HttpResponse:
+    if not request.user.is_authenticated: return HttpResponseBadRequest()
+    if request.method == 'GET':
+        friend_id = request.GET.get('id')
+        if friend_id is not None:
+            friend = CustomUser.objects.get(id=friend_id)
+            if request.user.friends.filter( id=friend_id).exists():
+                if friend:
+                    request.user.friends.remove(friend)
+                    return HttpResponse('Supprimé')
+    return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+
