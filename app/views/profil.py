@@ -81,11 +81,11 @@ def delete_friend(request: HttpRequest, friend_id: int) -> HttpResponse:
     request.user.friends.remove(friend)
     return HttpResponse('')
 
-def search_user(request: HttpRequest) -> HttpResponse:
+def search_notfriend_user(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         query = request.POST.get('username')
         if query:
-            users = CustomUser.objects.filter(username__icontains = query).order_by('username')[:6]
+            users = CustomUser.objects.filter(username__icontains = query).exclude(id = request.user.id).exclude(friends = request.user).order_by('username')[:6]
             return render(request, 'reusable/search_user.html', {'users': users})
         
         return render(request, 'reusable/search_user.html', {'users': []})
