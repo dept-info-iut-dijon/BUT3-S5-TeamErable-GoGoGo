@@ -81,7 +81,6 @@ document.querySelector("#change-pwd").addEventListener('submit', function(event)
     request.open('POST', '/change-pwd');
     request.setRequestHeader('X-CSRFToken', csrf_token);
     request.onload = function() {
-        console.log(request);
         if (request.status == 400) {
             document.querySelector(".notify").innerHTML = request.responseText;
         } else if (request.status == 200) {
