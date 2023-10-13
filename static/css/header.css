@@ -13,10 +13,14 @@ header .navbar {
     z-index: 1000;
 }
 
-header .navbar > img {
+header .navbar > a {
     height: 2rem;
     justify-self: start;
     margin-left: 1rem;
+}
+
+header .navbar > a > img {
+    height: 2rem;
 }
 
 header .navbar ul {

@@ -10,21 +10,21 @@ class SignUpForm(UserCreationForm):
 
 	#traduction des champs en francais
 	username = forms.CharField(
-        label=('Nom d\'utilisateur:')
+        label=('Nom d\'utilisateur')
     )
 
 	password1 = forms.CharField(
-		label=('Mot de passe:'),
+		label=('Mot de passe'),
 		widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password'}),
-		help_text=('Votre mot de passe doit contenir au moins 8 caracteres')
+		help_text=('Votre mot de passe doit contenir au moins 8 caractères')
 	)
 	password2 = forms.CharField(
-		label=('Confirmer le mot de passe:'),
+		label=('Confirmer le mot de passe'),
 		widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password'}),
 		help_text=('Re-entrez votre mot de passe pour confirmer')
 	)
 	email = forms.EmailField(
-		label=('Adresse Mail:'),
+		label=('Adresse Mail'),
 		help_text=('')
 	)
 
