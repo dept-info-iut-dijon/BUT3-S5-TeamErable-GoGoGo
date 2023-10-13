@@ -118,6 +118,8 @@ document.querySelector("#search-input").addEventListener('keyup', function(event
 
 
 
-document.body.addEventListener("add-friend-response", function(event) {
-    document.querySelector("#search-input").dispatchEvent(new KeyboardEvent('keyup', {key: 'a'}));
+document.body.addEventListener("htmx:configRequest", function(event) {
+    setTimeout(function() {
+        document.querySelector("#search-input").dispatchEvent(new KeyboardEvent('keyup', {key: 'a'}));
+    }, 100);
 });
