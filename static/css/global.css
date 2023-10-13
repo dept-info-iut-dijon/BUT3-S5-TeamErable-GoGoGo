@@ -108,7 +108,7 @@ form {
     border-color: var(--main-color);
 }
 
-input[type="submit"], input[type="button"] {
+input[type="submit"], input[type="button"], button {
     cursor: pointer;
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -117,9 +117,10 @@ input[type="submit"], input[type="button"] {
     text-decoration: none;
     border-radius: var(--border-radius);
     border: none;
+    transition: all 0.2s ease-in-out;
 }
 
-input[type="submit"]:hover, input[type="button"]:hover {
+input[type="submit"]:hover, input[type="button"]:hover, button:hover {
     background-color: var(--main-color-hover);
 }
 

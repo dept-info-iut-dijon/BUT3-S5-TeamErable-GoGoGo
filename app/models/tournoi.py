@@ -7,9 +7,9 @@ class Tournoi(models.Model):
     DateDebut = models.DateField()
     DateFin = models.DateField()
     Organisateur = models.CharField(max_length=255)
-    Code = models.IntegerField(max_length=25)
+    Code = models.IntegerField()
     Gagnant = models.CharField(max_length=255)
-    Createur = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    Createur = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.name
