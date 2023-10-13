@@ -3,7 +3,7 @@
     <li>
         <div class="row">
             {{ friend.username }}
-            <button class="button" hx-get="/delete-friend?id={{ friend.id }}" hx-trigger="click"><img src="/static/icons/delete.png" />Supprimer</button>
+            <button class="button" hx-get="/delete-friend?id={{ friend.id }}" hx-trigger="click" hx-trigger="add-friend-response from:body" hx-swap="none"><img src="/static/icons/delete.png" />Supprimer</button>
         </div>
     </li>
     {% endfor %}
