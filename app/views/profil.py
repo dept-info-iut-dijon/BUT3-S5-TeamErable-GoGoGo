@@ -98,25 +98,33 @@ def friend_list(request: HttpRequest) -> HttpResponse:
 
 def add_friend(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseBadRequest()
+
     if request.method == 'GET':
         friend_id = request.GET.get('id')
-        if friend_id is not None:
-            friend = CustomUser.objects.get(id=friend_id)
-            if not request.user.friends.filter( id=friend_id).exists():
-                if friend:
-                    request.user.friends.add(friend)
-                    return HttpResponse('Ajouté')
+        if friend_id is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+
+        friend = CustomUser.objects.get(id=friend_id)
+        if request.user.friends.filter( id=friend_id).exists(): return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+
+        if friend:
+            request.user.friends.add(friend)
+            return HttpResponse(f'{friend.username} a été ajouté à vos amis.')
+
     return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
 
-def delete_friend (request: HttpRequest) -> HttpResponse:
+def delete_friend(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseBadRequest()
+
     if request.method == 'GET':
         friend_id = request.GET.get('id')
-        if friend_id is not None:
-            friend = CustomUser.objects.get(id=friend_id)
-            if request.user.friends.filter( id=friend_id).exists():
-                if friend:
-                    request.user.friends.remove(friend)
-                    return HttpResponse('Supprimé')
+        if friend_id is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+    
+        friend = CustomUser.objects.get(id=friend_id)
+        if not request.user.friends.filter( id=friend_id).exists(): return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+
+        if friend:
+            request.user.friends.remove(friend)
+            return HttpResponse(f'{friend.username} a été supprimé de vos amis.')
+
     return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
 
