@@ -121,5 +121,19 @@ document.querySelector("#search-input").addEventListener('keyup', function(event
 document.body.addEventListener("htmx:configRequest", function(event) {
     setTimeout(function() {
         document.querySelector("#search-input").dispatchEvent(new KeyboardEvent('keyup', {key: 'a'}));
+
+        var formData = new FormData();
+        var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+        var request = new XMLHttpRequest();
+        request.open('GET', '/friend-list');
+        request.setRequestHeader('X-CSRFToken', csrf_token);
+        request.onload = function() {
+            if (request.status == 200) {
+                document.querySelector("#friends-list").innerHTML = request.responseText;
+                htmx.process(document.querySelector("#friends-list"));
+            }
+        }
+        request.send(formData);
     }, 100);
 });

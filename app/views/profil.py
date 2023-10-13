@@ -90,7 +90,7 @@ def search_notfriend_user(request: HttpRequest) -> HttpResponse:
 def friend_list(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
 
-    if request.method == 'POST':
+    if request.method == 'GET':
         listfriends = request.user.friends.all()
         return render(request, 'reusable/friend_list.html', {'friends': listfriends})
     
