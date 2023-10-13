@@ -70,3 +70,12 @@ def change_pwd(request: HttpRequest) -> HttpResponse:
             return HttpResponseBadRequest('<p class="error">Les mots de passe ne correspondent pas.</p>')
 
     return HttpResponseBadRequest('<p class="error">Une erreur est survenue. Vérifiez que vous avez bien rempli tous les champs.</p>')
+
+def friends(request: HttpRequest) -> HttpResponse:
+    listfriends = request.user.friends.all()
+    return render(request, 'friends.html', {'friends': listfriends})
+
+def delete_friend(request: HttpRequest, friend_id: int) -> HttpResponse:
+    friend = request.user.friends.get(id=friend_id)
+    request.user.friends.remove(friend)
+    return HttpResponse('')
