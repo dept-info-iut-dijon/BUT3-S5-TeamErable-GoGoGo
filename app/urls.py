@@ -26,4 +26,5 @@ urlpatterns = [
     path("password_reset_confirm/<uidb64>/<token>/", views.password_reset_confirm, name="password_reset_confirm"),
     path("add-friend", views.add_friend, name="add_friend"),
     path("delete-friend", views.delete_friend, name="delete_friend"),
+    path("create-game", views.create_game, name="create_game"),
 ]
