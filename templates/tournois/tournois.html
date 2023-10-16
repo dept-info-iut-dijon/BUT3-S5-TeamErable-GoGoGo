@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournois</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}">
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css/tournois.css">
+</head>
+<body>
+    {% include 'reusable/header.html' %}
+    <section class="upper-section">
+        <div class="tournois-header-section">
+            <div class="tournois-container">
+                <img src="/header-pfp" alt="Icone de profil" />
+                <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username</h3>
+            </div>
+            <div class="tournois-container">
+                <p>999 Defaites</p>
+                <p>0 Victoires</p>
+                <p>3 Tournois</p>
+            </div>
+            <div class="tournois-container">
+                <p>100%</p>
+                <p>0%</p>
+                <p>3 Tournois</p>
+            </div>
+        </div>
+         <div class="button-section">
+                <a>Consulter mon profil</a>
+                <a>Creer un tournois</a>
+          </div>
+</section>
+    <div class="container">
+        <h1>Liste des tournois en cours</h1>
+        <table>
+            <thead>
+                <tr>
+                    <td>Nom du Tournois</td>
+                    <td>Etat</td>
+                    <td>Nombre de Joueurs</td>
+                    <td>Niveau</td>
+                    <td>Organisateur</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                </tr>
+                <tr>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</body>
+</html>
