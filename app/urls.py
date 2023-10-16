@@ -29,4 +29,8 @@ urlpatterns = [
     path("password_reset_confirm/<uidb64>/<token>/", views.password_reset_confirm ,name="password_reset_confirm"),
     path("add-friend", views.add_friend, name="add_friend"),
     path("delete-friend", views.delete_friend, name="delete_friend"),
+    #Tournois
+    path("tournois", views.tournois, name="tournois"),
+    path("tournois/<id>/", views.tournoisid, name="tournois-gestion"),
+    path("newtournois", views.new_tournois, name="new-tournois"),
 ]

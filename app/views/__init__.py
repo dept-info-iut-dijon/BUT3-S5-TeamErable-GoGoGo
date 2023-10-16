@@ -15,3 +15,6 @@ from .team import team
 from .aide import aide
 from .forgottenpassword import forgotten_password
 from .passwordresetconfirm import password_reset_confirm
+from .tournois.tournois import tournois
+from .tournois.tournoisid import tournoisid
+from .tournois.newtournois import new_tournois
