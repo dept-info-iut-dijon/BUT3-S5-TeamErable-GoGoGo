@@ -1,0 +1,14 @@
+<ul class="game-list">
+    {% for game in games %}
+    <li>
+        <div class="row">
+            <div class="row">
+                <!-- <img src="{{current_user.profile_picture}}" alt="profile picture" class="pfp"> -->
+                <p>{{ game.nom }}</p>
+                <p class="description">{{ game.description }}</p>
+            </div>
+            <a class="join-game button" href="/game?id={{ game.idPartie }}"><img src="/static/icons/joingame.png" />Rejoindre</a>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
