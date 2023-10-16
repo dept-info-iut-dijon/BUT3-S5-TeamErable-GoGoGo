@@ -6,11 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
             (attributes.onclick ? ' onclick="' + attributes.onclick.value + '"' : '') +
             (attributes.id ? ' id="' + attributes.id.value + '"' : '') +
             (attributes.class ? ' class="' + attributes.class.value + '"' : '') +
-            (attributes.name ? ' name="' + attributes.name.value + '"' : '') +
             '>' +
             '<input type="checkbox"' +
             (attributes.checked ? ' checked' : '') +
             (attributes.disabled ? ' disabled' : '') +
+            (attributes.name ? ' name="' + attributes.name.value + '"' : '') +
             '>' +
             '<span class="slider"></span>' +
             '</label>';
