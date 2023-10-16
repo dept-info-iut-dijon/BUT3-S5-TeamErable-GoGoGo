@@ -2,16 +2,18 @@
     <link rel="stylesheet" href="/static/css/header.css">
     <div class="grad-bar"></div>
     <nav class="navbar">
-        <img src="/static/icons/favicon.svg" alt="Logo de GoGoGo">
+        <a href="/">
+            <img src="/static/icons/favicon.svg" alt="Logo de GoGoGo">
+        </a>
         <div class="menu-toggle" id="mobile-menu">
             <span class="bar"></span>
             <span class="bar"></span>
             <span class="bar"></span>
         </div>
         <ul class="nav mobile-ul">
-            <li class="nav-item"><a href="/">Acceuil</a></li>
-            <li class="nav-item"><a href="#">Créer une partie</a></li>
-            <li class="nav-item"><a href="#">Rejoindre une partie</a></li>
+            <li class="nav-item"><a href="/">Accueil</a></li>
+            <li class="nav-item"><a href="/create-game">Créer une partie</a></li>
+            <li class="nav-item"><a href="/join-game">Rejoindre une partie</a></li>
             <li class="nav-item"><a href="#" onclick="pfpMenuToggle();" class="pfp"><img src="/header-pfp" alt="Icône de profil"></a></li>
         </ul>
     </nav>
@@ -23,11 +25,11 @@
         </div>
         <ul>
             <li>
-                <a href="/profil"><img src="/static/icons/profile.png"/>Mon profil</a>
+                <a href="/profile"><img src="/static/icons/profile.png"/>Mon profil</a>
             </li>
-            <li>
+            {% comment %} <li>
                 <a href="/settings"><img src="/static/icons/settings.png"/>Paramètres</a>
-            </li>
+            </li> {% endcomment %}
             <li>
                 <a href="/help"><img src="/static/icons/help.png"/>Aide</a>
             </li>

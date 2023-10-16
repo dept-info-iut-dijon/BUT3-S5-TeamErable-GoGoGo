@@ -9,11 +9,8 @@ urlpatterns = [
     path("login", views.login_, name="login"),
     path("logout", views.logout_, name="logout"),
     path("register", views.register, name="register"),
-    path("friends", views.friends, name="friends"),
     path("settings", views.settings, name="settings"),
-    path("delfriends", views.delfriends, name="delfriends"),
-    path("addfriends", views.addfriends, name="addfriends"),
-    path("profil", views.profil, name="profil"),
+    path("profile", views.profile, name="profil"),
     path("change-pfp", views.change_pfp, name="change_pfp"),
     path("change-user-info", views.change_user_info, name="change_user_info"),
     path("change-pwd", views.change_pwd, name="change_pwd"),
@@ -24,13 +21,19 @@ urlpatterns = [
     path("legalmention", views.legalmention, name="legalmention"),
     path("history", views.history, name="history"),
     path("team", views.team, name="team"),
-    path("aide", views.aide, name="aide"),
+    path("help", views.help, name="help"),
     path("forgotten-password", views.forgotten_password, name="forgotten-password"),
-    path("password_reset_confirm/<uidb64>/<token>/", views.password_reset_confirm ,name="password_reset_confirm"),
+    path("password_reset_confirm/<uidb64>/<token>/", views.password_reset_confirm, name="password_reset_confirm"),
     path("add-friend", views.add_friend, name="add_friend"),
     path("delete-friend", views.delete_friend, name="delete_friend"),
+
     #Tournois
     path("tournois", views.tournois, name="tournois"),
     path("tournois/<id>/", views.tournoisid, name="tournois-gestion"),
     path("newtournois", views.new_tournois, name="new-tournois"),
+    #Parties
+    path("create-game", views.create_game, name="create_game"),
+    path("join-game", views.join_game, name="join_game"),
+    path("search-game", views.search_game, name="search_game"),
+
 ]

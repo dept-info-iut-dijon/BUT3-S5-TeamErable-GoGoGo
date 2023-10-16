@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGoGo • Acceuil</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+    <link rel="stylesheet" href="/static/css/global.css">
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% include 'reusable/header.html' %}
+    <main>
+        {% csrf_token %}
+        <div class="container">
+            <div class="center flex-column margin-top">
+                <h2>Créer une partie</h2>
+                <form id="create-game" class="no-border max-width" hx-post="/create-game" hx-trigger="submit" hx-swap="none">
+                    <div class="center flex-wrap">
+                        <div class="form-control">
+                            <label for="game-name">Nom de la partie</label>
+                            <input type="text" name="game-name" id="game-name" placeholder="Nom de la partie" required>
+                        </div>
+                        <div class="form-control">
+                            <label for="game-desc">Description</label>
+                            <textarea name="game-desc" id="game-desc" placeholder="Description de la partie"></textarea>
+                        </div>
+                        <div class="form-control">
+                            <label for="game-private">Privée ?</label>
+                            <switchbutton name="game-private" id="game-private"></switchbutton>
+                        </div>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="form-control">
+                        <input type="submit" value="Créer la partie">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="notify" id="notify"></div>
+    </main>
+    {% include 'reusable/footer.html' %}
+    <script src="/static/js/global.js"></script>
+    <script src="/static/js/notify.js"></script>
+    <script src="/static/js/create_game.js"></script>
+</body>
+</html>

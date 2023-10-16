@@ -41,6 +41,10 @@ footer {
     padding: 0 1rem;
 }
 
+.margin-top {
+    margin-top: 2rem;
+}
+
 a.button {
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -73,9 +77,18 @@ form {
     border-radius: 1rem;
 }
 
+form.max-width {
+    max-width: 800px;
+}
+
+form.no-border {
+    border: none;
+}
+
 .form-control {
     margin: 0 auto;
     margin-bottom: 1rem;
+    width: 100%;
 }
 
 .form-control ul {
@@ -87,7 +100,7 @@ form {
     margin-bottom: 0.5rem;
 }
 
-.form-control input {
+.form-control input, .form-control textarea {
     width: 100%;
     box-sizing: border-box;
     padding: 0.5rem;
@@ -97,12 +110,16 @@ form {
     transition: all 0.2s ease-in-out;
 }
 
-.form-control input:focus {
+.form-control textarea {
+    resize: none;
+}
+
+.form-control input:focus, .form-control textarea:focus {
     outline: none;
     border-color: var(--main-color);
 }
 
-.form-control input:hover {
+.form-control input:hover, .form-control textarea:hover {
     border-color: var(--main-color);
 }
 
@@ -147,6 +164,18 @@ input[type="submit"]:hover, input[type="button"]:hover, button:hover {
     align-items: center;
 }
 
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
 .separator {
     height: 1rem;
 }
@@ -169,16 +198,84 @@ input[type="submit"]:hover, input[type="button"]:hover, button:hover {
     margin-bottom: 1rem;
 }
 
-.error {
-    padding: 0.5rem 2rem;
-    background-color: rgba(255, 0, 0, 0.2);
-    border-radius: var(--border-radius);
-    margin-bottom: 1rem;
+
+/* Toggle Button */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
 }
 
-.success {
-    padding: 0.5rem 2rem;
-    background-color: rgba(0, 255, 0, 0.2);
-    border-radius: var(--border-radius);
-    margin-bottom: 1rem;
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.2s;
+    transition: 0.2s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: 0.2s;
+    transition: 0.2s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--main-color);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--main-color);
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+
+
+/* Notifications */
+.notify {  
+    position: absolute;
+    top: 3rem;
+    left: 15%;
+    width: 70%;
+    height: 0;
+    box-sizing: border-box;
+    text-align: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+@media screen and (max-width: 720px) {
+    .notify {
+        top: auto;
+        bottom: 3rem;
+    }
+}
+
+.notify.active {  
+    height: 50px;
 }

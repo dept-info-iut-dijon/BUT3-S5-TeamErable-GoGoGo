@@ -17,6 +17,20 @@ section h2 {
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
     min-width: 10rem;
     height: 100%;
+    background-color: #cc7f4e15;
+    padding-left: 2rem;
+}
+
+.container.no-padding {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+@media screen and (max-width: 720px) {
+    .content {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
 
 .sidebar-item {
@@ -40,11 +54,11 @@ section h2 {
 
 .sidebar-item a::before {
     position: absolute;
-    left: 4px;
+    /* left: 4px; */
     vertical-align: top;
     width: 4px;
     height: 1.5rem;
-    transform: translate(0, -0.25rem);
+    transform: translate(-2rem, -0.25rem);
     content: "";
     background-color: transparent;
     border-radius: 6px;
@@ -85,6 +99,7 @@ section h2 {
     width: 100%;
     box-sizing: border-box;
     margin: 2rem;
+    align-items: center;
 }
 
 form {
@@ -145,29 +160,15 @@ form {
     width: 100%;
 }
 
-.notify {  
-    position: absolute;
-    top: 3rem;
-    left: 15%;
-    width: 70%;
-    height: 0;
-    box-sizing: border-box;
-    text-align: center;
-    overflow: hidden;
-    box-sizing: border-box;
-    transition: all 0.2s;
-}
-
-.notify.active {  
-    height: 50px;
-}
-
 section {
     transition: all 0.2s ease;
     opacity: 0;
     height: 0;
     overflow: hidden;
     width: 100%;
+    /* display: flex;
+    flex-direction: column;
+    align-items: stretch; */
 }
 
 section.active {

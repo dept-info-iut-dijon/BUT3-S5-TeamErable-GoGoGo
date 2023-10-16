@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rejoindre une partie</title>
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css/join_game.css">
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% include 'reusable/header.html' %}
+    <main>
+        {% csrf_token %}
+        <div class="container" id="game">
+            <h2>Rejoindre une partie</h2>
+            <div class="form-control">
+                <input type="text" id="search-input" placeholder="Rechercher de partie">
+                <div id="user-datalist"></div>
+            </div>
+            <div id="game-list" hx-post="/search-game" hx-swap="innerHTML" hx-trigger="load"></div>
+        </div>
+    </main>
+    {% include 'reusable/footer.html' %}
+    <script src="/static/js/join_game.js"></script>
+</body>
+</html>
