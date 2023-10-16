@@ -15,8 +15,12 @@ def create_game(request: HttpRequest) -> HttpResponse:
         try:
             code = None
             if is_private:
-                while code is None or Partie.objects.filter(code=code).filter(termine=False).exists():
+                while code is None or Partie.objects.filter(code = code).filter(termine = False).exists():
                     code = ''.join(random.choice(string.ascii_uppercase + string.octdigits) for _ in range(16))
+
+            current_games = Partie.objects.filter(joueur1 = request.user).filter(termine = False).all()
+            for game in current_games:
+                game.delete()
 
             game = Partie.objects.create(
                 nom = name,
