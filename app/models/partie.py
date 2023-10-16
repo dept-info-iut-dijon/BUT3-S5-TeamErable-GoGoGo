@@ -9,5 +9,7 @@ class Partie(models.Model):
     dateDebut = models.DateField()
     duree = models.IntegerField()
     termine = models.BooleanField(default=False)
+    code = models.CharField(max_length=16)
     joueur1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='joueur1')
     joueur2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='joueur2', null=True)
+    gagnant = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='gagnant', null=True)
