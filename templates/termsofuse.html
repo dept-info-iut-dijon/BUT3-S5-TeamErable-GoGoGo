@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conditions d'Utilisation pour le Jeu de Go en Ligne</title>
     <link rel="stylesheet" href="/static/css/global.css">
     <link rel="stylesheet" href="/static/css/termsofuse.css">
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
     
 </head>
 <body>
@@ -98,11 +100,6 @@
         <p>
             9.1. Ces Conditions d'Utilisation sont régies par les lois en vigueur <u>de la République Française</u> et tout litige sera soumis à la juridiction exclusive des tribunaux de cette juridiction.
         </p>
-
-
-
-        <h2>9. Droit Applicable</h2>
-        <p>9.1. Ces Conditions d'Utilisation sont régies par les lois en vigueur <u> de la République Française</u> et tout litige sera soumis à la juridiction exclusive des tribunaux de cette juridiction.</p>
     </div>
     {% include 'reusable/footer.html' %}
 </body>

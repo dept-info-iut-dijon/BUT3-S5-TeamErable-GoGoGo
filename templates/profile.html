@@ -7,7 +7,7 @@
         <title>GoGoGo</title>
         <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
         <link rel="stylesheet" href="/static/css/global.css">
-        <link rel="stylesheet" href="/static/css/profil.css">
+        <link rel="stylesheet" href="/static/css/profile.css">
         <link rel="stylesheet" href="/static/css/signup.css">
     </head>
 
@@ -15,7 +15,7 @@
     {% include 'reusable/header.html' %}
     <main>
         {% csrf_token %}
-        <div class="container align-row">
+        <div class="container align-row no-padding">
             <div class="sidebar">
                 <div class="sidebar-item">
                     <a href="#" activate="#info" class="sidebar-link active">Profil Publique</a>
@@ -26,9 +26,9 @@
                 <div class="sidebar-item">
                     <a href="#" activate="#friends" class="sidebar-link">Amis</a>
                 </div>
-                <div class="sidebar-item">
+                <!-- <div class="sidebar-item">
                     <a href="#" activate="#stats" class="sidebar-link">Statistiques</a>
-                </div>
+                </div> -->
             </div>
 
             <div class="content">
@@ -99,16 +99,17 @@
                     <div id="friends-list" hx-get="/friend-list" hx-swap="innerHTML" hx-trigger="load"></div>
                 </section>
 
-                <section id="stats">
+                {% comment %} <section id="stats">
                     <h2>Statistiques</h2>
-                </section>
+                </section> {% endcomment %}
             </div>
         </div>
 
         <div class="notify" id="notify"></div>
     </main>
 
-    <script src="/static/js/profil.js"></script>
+    <script src="/static/js/profile.js"></script>
+    <script src="/static/js/notify.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
 </body>
 </html>
