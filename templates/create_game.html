@@ -13,7 +13,7 @@
     <main>
         {% csrf_token %}
         <div class="container">
-            <div class="center flex-column">
+            <div class="center flex-column margin-top">
                 <h2>Créer une partie</h2>
                 <form id="create-game" class="no-border max-width" hx-post="/create-game" hx-trigger="submit" hx-swap="none">
                     <div class="center flex-wrap">

@@ -1,4 +1,9 @@
 <ul class="game-list">
+    {% if not games %}
+    <div class="row">
+        <p>Aucune partie n'est disponible pour le moment ou correspond à vos critères de recherche.</p>
+    </div>
+    {% endif %}
     {% for game in games %}
     <li>
         <div class="row">
