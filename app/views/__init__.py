@@ -12,3 +12,4 @@ from .team import team
 from .help import help
 from .forgottenpassword import forgotten_password
 from .passwordresetconfirm import password_reset_confirm
+from .create_game import create_game

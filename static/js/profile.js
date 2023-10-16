@@ -32,27 +32,6 @@ document.querySelector(".upload-button").addEventListener('click', function() {
 
 
 
-document.querySelector(".notify").addEventListener('DOMSubtreeModified', function() {
-    showNotification();
-});
-
-function showNotification() {
-    var notifyElement = document.querySelector(".notify");
-    if (notifyElement.innerHTML == "") return;
-    notifyElement.classList.toggle("active");
-
-    setTimeout(function(){
-        notifyElement.classList.remove("active");
-        
-        setTimeout(function(){
-            notifyElement.innerHTML = "";
-        }, 200);
-
-    }, 2000);
-};
-
-
-
 document.querySelectorAll(".sidebar-link").forEach(function(element) {
     element.addEventListener('click', function(event) {
         var links = document.querySelectorAll(".sidebar-link");
