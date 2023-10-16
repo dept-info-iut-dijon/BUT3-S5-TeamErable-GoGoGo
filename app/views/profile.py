@@ -4,11 +4,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.password_validation import validate_password
 from ..models import CustomUser
 
-def profil(request: HttpRequest) -> HttpResponse:
+def profile(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
     
     if request.method == 'GET':
-        return render(request, 'profil.html', {'user': request.user, 'friends': request.user.friends.all()})
+        return render(request, 'profile.html', {'user': request.user, 'friends': request.user.friends.all()})
 
 def change_user_info(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
