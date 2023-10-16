@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from ..models.partie import Partie
 from datetime import datetime
+import random, string
 
 def create_game(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
@@ -9,9 +10,14 @@ def create_game(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         name = request.POST.get('game-name')
         description = request.POST.get('game-desc', '')
-        is_private = request.POST.get('game-private', False)
+        is_private = bool(request.POST.get('game-private', False))
 
         try:
+            code = None
+            if is_private:
+                while code is None or Partie.objects.filter(code=code).filter(termine=False).exists():
+                    code = ''.join(random.choice(string.ascii_uppercase + string.octdigits) for _ in range(16))
+
             game = Partie.objects.create(
                 nom = name,
                 description = description,
@@ -19,7 +25,8 @@ def create_game(request: HttpRequest) -> HttpResponse:
                 duree = 0,
                 termine = False,
                 joueur1 = request.user,
-                joueur2 = None
+                joueur2 = None,
+                code = code
             )
             return HttpResponse(f'/game?id={game.idPartie}')
 
