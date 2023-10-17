@@ -22,6 +22,10 @@
                     <input type="text" name="username" id="username" required>
                 </div>
                 <div class="form-control">
+                    <label for="email">Adresse Email</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="form-control">
                     <label for="password">Mot de Passe</label>
                     <input type="password" name="password" id="password" required onkeyup='check();' maxlength="18" minlength="8">
                 </div>
@@ -40,10 +44,12 @@
                     <input type="submit" value="S'inscrire">
                 </div>
             </form>
-
         </div>
+
+        <div class="notify" id="notify"></div>
     </div>
 
-    <script src="/static/js/pwd.js"></script>
+    <script src="/static/js/register.js"></script>
+    <script src="/static/js/notify.js"></script>
 </body>
 </html>

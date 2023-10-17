@@ -139,6 +139,11 @@ input[type="submit"]:hover, input[type="button"]:hover, button:hover {
     background-color: var(--main-color-hover);
 }
 
+input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
+    background-color: var(--gray-color);
+    cursor: not-allowed;
+}
+
 .row {
     display: flex;
     flex-direction: row;
