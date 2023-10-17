@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from ..models.person import CustomUser
+from ..models.custom_user import CustomUser
 
 class SignUpTestCase(TestCase):
 	def setUp(self):

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
-from ..models.partie import Partie
+from ..models.game import Game
 from datetime import datetime
 import random, string
 
@@ -15,21 +15,22 @@ def create_game(request: HttpRequest) -> HttpResponse:
         try:
             code = None
             if is_private:
-                while code is None or Partie.objects.filter(code = code).filter(termine = False).exists():
+                while code is None or Game.objects.filter(code = code).filter(done = False).exists():
                     code = ''.join(random.choice(string.ascii_uppercase + string.octdigits) for _ in range(16))
 
-            current_games = Partie.objects.filter(joueur1 = request.user).filter(termine = False).all()
+            current_games = Game.objects.filter(player1 = request.user).filter(done = False).all()
             for game in current_games:
                 game.delete()
 
-            game = Partie.objects.create(
-                nom = name,
+            game = Game.objects.create(
+                name = name,
                 description = description,
-                dateDebut = datetime.now(),
-                duree = 0,
-                termine = False,
-                joueur1 = request.user,
-                joueur2 = None,
+                start_date = datetime.now(),
+                duration = 0,
+                done = False,
+                tournament = None,
+                player1 = request.user,
+                player2 = None,
                 code = code
             )
             return HttpResponse(f'/game?id={game.idPartie}')

@@ -1,3 +1,3 @@
-from .person import CustomUser
-from .tournoi import Tournoi, Participer
-from .partie import Partie
+from .custom_user import CustomUser
+from .tournament import Tournament, Participate
+from .game import Game
