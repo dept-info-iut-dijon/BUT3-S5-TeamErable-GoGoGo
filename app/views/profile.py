@@ -128,3 +128,16 @@ def delete_friend(request: HttpRequest) -> HttpResponse:
 
     return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
 
+def delete_account(request: HttpRequest) -> HttpResponse:
+    if not request.user.is_authenticated: return HttpResponseBadRequest()
+
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        if password:
+            if request.user.check_password(password):
+                request.user.delete()
+                return HttpResponse('<p class="success">Votre compte a bien été supprimé. Redirection vers la page de connexion...</p>')
+
+            return HttpResponseBadRequest('<p class="error">Le mot de passe est incorrect.</p>')
+
+    return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')

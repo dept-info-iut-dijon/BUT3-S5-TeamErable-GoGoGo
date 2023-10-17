@@ -53,6 +53,7 @@ document.querySelectorAll(".sidebar-link").forEach(function(element) {
 
 document.querySelector("#change-pwd").addEventListener('submit', function(event) {
     event.preventDefault();
+    document.querySelector('form#change-pwd input[type="submit"]').disabled = true;
     var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
     var formData = new FormData();
     formData.append('old-pwd', document.querySelector('input[name="old-pwd"]').value);
@@ -64,6 +65,7 @@ document.querySelector("#change-pwd").addEventListener('submit', function(event)
     request.onload = function() {
         if (request.status == 400) {
             document.querySelector(".notify").innerHTML = request.responseText;
+            document.querySelector('form#change-pwd input[type="submit"]').disabled = false;
         } else if (request.status == 200) {
             document.querySelector(".notify").innerHTML = request.responseText;
             setTimeout(function() {
@@ -123,4 +125,29 @@ document.body.addEventListener("htmx:afterRequest", function(event) {
         }
         request.send(formData);
     }, 100);
+});
+
+
+
+document.querySelector("#delete-account").addEventListener('submit', function(event) {
+    event.preventDefault();
+    document.querySelector('form#delete-account input[type="submit"]').disabled = true;
+    var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    var formData = new FormData();
+    formData.append('password', document.querySelector('input[name="password"]').value);
+    var request = new XMLHttpRequest();
+    request.open('POST', '/delete-account');
+    request.setRequestHeader('X-CSRFToken', csrf_token);
+    request.onload = function() {
+        if (request.status == 400) {
+            document.querySelector(".notify").innerHTML = request.responseText;
+            document.querySelector('form#delete-account input[type="submit"]').disabled = false;
+        } else if (request.status == 200) {
+            document.querySelector(".notify").innerHTML = request.responseText;
+            setTimeout(function() {
+                window.location.href = "/login";
+            }, 1000);
+        }
+    }
+    request.send(formData);
 });
