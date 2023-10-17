@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournois</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}">
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css/tournois.css">
+</head>
+<body>
+    {% include 'reusable/header.html' %}
+    <section class="description-section">
+        <h2>Tournois 1</h2>
+        <a href="/tournois" class="button gray">🔙 Retour</a>
+        <p id="desc">
+            Participez a notre tournoi de go annuel pour mettre vos competences a l'epreuve, rencontrer d'autres passionnes de go et profiter d'une journee
+            de strategie et de divertissement. Que vous soyez un joueur novice ou un expert chevronne, ce tournoi est ouvert a tous les niveaux.
+        </p>
+        <div id="informations">
+            <div class="tournament-dates">
+                <label for="tournament-date-start">Date de debut</label>
+                <input type="date" id="tournament-date-start" name="tournament-date-start">
+                <label for="tournament-date-end">Date de fin</label>
+                <input type="date" id="tournament-date-end" name="tournament-date-end">
+            </div>
+            <div id="organisateur">
+                <h3>Organisateur</h3>
+                <img src="/header-pfp" alt="Icone de profil" />
+                <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username</h3>
+            </div>
+            <div id="code">
+                <label for="code">Code</label>
+                <input type="text" name="code" readonly>
+            </div>
+        </div>
+    </section>
+    <section id="arbre-section">
+        <div class="tournament">
+            <div class="round">
+                <div class="match">
+                    <div class="team winner">Joueur A</div>
+                    <div class="team">Joueur B</div>
+                </div>
+                <div class="match">
+                    <div class="team winner">Joueur C</div>
+                    <div class="team">Joueur D</div>
+                </div>
+                <div class="match">
+                    <div class="team winner">Joueur E</div>
+                    <div class="team">Joueur F</div>
+                </div>
+                <div class="match">
+                    <div class="team winner">Joueur G</div>
+                    <div class="team">Joueur H</div>
+                </div>
+            </div>
+            <div class="round">
+                <div class="match">
+                    <div class="team winner">Team A</div>
+                    <div class="team">Joueur C</div>
+                </div>
+                <div class="match">
+                    <div class="team winner">Joueur E</div>
+                    <div class="team">Joueur G</div>
+                </div>
+            </div>
+            <div class="round">
+                <div class="match">
+                    <div class="team winner">Joueur A</div>
+                    <div class="team">Joueur G</div>
+                </div>
+            </div>
+            <div class="winner">
+                <div class="team winner">Joueur A (Champion)</div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
