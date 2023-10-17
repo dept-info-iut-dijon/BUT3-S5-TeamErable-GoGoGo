@@ -33,7 +33,7 @@ def create_game(request: HttpRequest) -> HttpResponse:
                 player2 = None,
                 code = code
             )
-            return HttpResponse(f'/game?id={game.idPartie}')
+            return HttpResponse(f'/game?id={game.id_game}')
 
         except:
             return HttpResponseBadRequest('<p class="error">Erreur lors de la création de la partie</p>')
