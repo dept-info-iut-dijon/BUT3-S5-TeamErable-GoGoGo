@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from app.models import Game
+from ..logic import Board, Tile
 
 def game(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
@@ -43,4 +44,11 @@ def game_code(request: HttpRequest) -> HttpResponse:
 
 
 def game_logic(request: HttpRequest, game: Game) -> HttpResponse:
-    return render(request, 'game.html')
+    board = Board(6)
+    return render(
+        request,
+        'game.html',
+        {
+            'board': board,
+        }
+    )
