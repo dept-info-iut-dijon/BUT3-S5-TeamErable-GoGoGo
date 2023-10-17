@@ -7,7 +7,7 @@ class Tournament(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     organisator = models.CharField(max_length=255)
-    code = models.IntegerField()
+    code = models.CharField(max_length=16)
     description = models.CharField(max_length=255, null=True)
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
 
@@ -16,5 +16,5 @@ class Tournament(models.Model):
 
 class Participate(models.Model):
     person = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    trounament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     win = models.BooleanField(default=False)
