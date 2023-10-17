@@ -1,15 +1,13 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from ..forms.SignUpForm import SignUpForm
 
 def register(request: HttpRequest) -> HttpResponse:
     if request.user.is_authenticated: return HttpResponseRedirect('/')
 
     if request.method == 'GET':
-        form = SignUpForm(request.POST)
-        return render(request, 'signup.html', {'form':form})
-    
-    password2_error = None
+        return render(request, 'register.html')
+
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -18,9 +16,11 @@ def register(request: HttpRequest) -> HttpResponse:
             with open('./static/icons/default-pfp.png', 'rb') as f:
                 user.profile_picture.save('default-pfp.png', f, save=True)
 
-            return HttpResponseRedirect('/')
-
+            return HttpResponse()
+        
         else:
-            password2_error = form.errors
+            if form.errors.get('username'): return HttpResponseBadRequest('<p class="error">Ce nom d\'utilisateur est déjà pris.</p>')
+            if form.errors.get('email'): return HttpResponseBadRequest('<p class="error">Cette adresse email est déjà utilisée.</p>')
+            if form.errors.get('password2'): return HttpResponseBadRequest('<p class="error">Le mot de passe est trop commun.</p>')
 
-        return render(request, 'signup.html', {'form':form, 'password2_error':password2_error})
+    return HttpResponseBadRequest()
