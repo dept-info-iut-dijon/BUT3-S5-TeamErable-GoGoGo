@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import forms
-from ..models.person import CustomUser
+from ..models.custom_user import CustomUser
 
 class Profil(forms.ModelForm):
 	class Meta:

@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path("favicon.ico", views.favicon, name="favicon"),
     path("header-pfp", views.header_pfp, name="header_pfp"),
     path("header-profile-name", views.header_profile_name, name="header_profile_name"),
     path("", views.index, name="index"),
@@ -35,5 +36,6 @@ urlpatterns = [
     path("create-game", views.create_game, name="create_game"),
     path("join-game", views.join_game, name="join_game"),
     path("search-game", views.search_game, name="search_game"),
+    path("game", views.game, name="game"),
 
 ]
