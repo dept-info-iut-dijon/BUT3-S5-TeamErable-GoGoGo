@@ -8,6 +8,7 @@ class Tournament(models.Model):
     end_date = models.DateField()
     organisator = models.CharField(max_length=255)
     code = models.IntegerField()
+    description = models.CharField(max_length=255, null=True)
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
