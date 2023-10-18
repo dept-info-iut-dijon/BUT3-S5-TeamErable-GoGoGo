@@ -10,7 +10,6 @@ urlpatterns = [
     path("login", views.login_, name="login"),
     path("logout", views.logout_, name="logout"),
     path("register", views.register, name="register"),
-    path("settings", views.settings, name="settings"),
     path("profile", views.profile, name="profil"),
     path("change-pfp", views.change_pfp, name="change_pfp"),
     path("change-user-info", views.change_user_info, name="change_user_info"),
@@ -30,13 +29,13 @@ urlpatterns = [
     path("delete-account", views.delete_account, name="delete_account"),
 
     #Tournois
-    path("tournois", views.tournois, name="tournois"),
-    path("tournois/<id>/", views.tournoisid, name="tournois-gestion"),
-    path("newtournois", views.new_tournois, name="new-tournois"),
+    path("tournament", views.tournament, name="tournament"),
+    path("tournament/<id>/", views.tournament_manager, name="tournament_manager"),
     #Parties
     path("create-game", views.create_game, name="create_game"),
     path("join-game", views.join_game, name="join_game"),
     path("search-game", views.search_game, name="search_game"),
+    path("search-current-game", views.search_current_game, name="search_current_game"),
     path("game", views.game, name="game"),
     path("create-tournament", views.create_tournament, name="create_tournament"),
 
