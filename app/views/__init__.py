@@ -18,3 +18,4 @@ from .create_game import create_game
 from .join_game import join_game, search_game
 from .game import game
 from .tournament.create_tournament import create_tournament
+from .tournament.tournament_game import tournament_game
