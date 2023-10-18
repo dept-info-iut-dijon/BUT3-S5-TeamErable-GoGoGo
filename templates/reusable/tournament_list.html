@@ -7,7 +7,7 @@
         <td><p>{{ tournament.start_date|date:'d/m/Y' }} </p></td>
         <td><p>{{ tournament.end_date|date:'d/m/Y' }}</p></td>
         <td><p>{{ tournament.player_min }}</p></td>
-        <td><a class="join-tournament button" href="/tournament/id={{ tournament.id }}"><img src="/static/icons/voir.png" />Voir</a></td>
+        <td><a class="join-tournament button" href="/tournament/{{ tournament.id }}"><img src="/static/icons/voir.png" />Voir</a></td>
     </div>
 </tr>
 {% endfor %}
