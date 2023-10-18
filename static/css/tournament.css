@@ -187,6 +187,8 @@ tbody tr:nth-child(odd) td {
 .team {
     padding: 10px;
     border: 1px solid #ccc;
+    width: 5rem;
+    height: 1.2rem;
 }
 
 .winner {
