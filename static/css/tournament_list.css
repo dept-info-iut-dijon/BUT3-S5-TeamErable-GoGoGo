@@ -1,0 +1,82 @@
+#tournament {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#tournament-table thead tr th, #tournament-table tbody tr td {
+    text-align: center;
+}
+#tournament-table {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-collapse: separate;
+    border-spacing: 0 0.25rem;
+}
+
+#tournament-table tr {
+    width: 100%;
+    padding: 0.25rem 0;
+    background-color: var(--main-color-light);
+    margin: 0.5rem 0;
+    border: none;
+}
+
+#tournament-table thead tr {
+    background-color: var(--main-color);
+}
+
+#tournament-table thead::after
+{
+    content: "";
+    display: block;
+    height: 0rem;
+    width: 100%;
+}
+
+#tournament-table tr td , #tournament-table tr th {
+    padding: 0.5rem 1rem;
+}
+
+#tournament-table tr td:last-child, #tournament-table tr th:last-child {
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
+#tournament-table tr td:first-child, #tournament-table tr th:first-child {
+    border-top-left-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}
+
+#tournament-table tr img.pfp {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+#tournament-table tr a {
+    display: flex;
+    align-items: center;
+}
+
+#tournament-table tr a img {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+a.join-tournament {
+    justify-content: center;
+    align-items: center;
+    margin-left: 2rem;
+    padding: 0.5rem 1rem;
+    color : black;
+}
+
+a.join-tournament > img {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+}
