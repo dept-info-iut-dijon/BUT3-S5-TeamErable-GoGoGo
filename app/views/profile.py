@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpRes
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.password_validation import validate_password
 from ..models import CustomUser
+import os
 
 def profile(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
@@ -36,6 +37,9 @@ def change_pfp(request: HttpRequest) -> HttpResponse:
             if pfp.size > 2 * 1024 * 1024:
                 return HttpResponseBadRequest('<p class="error">La photo de profil est trop volumineuse.</p>')
 
+            if request.user.profile_picture:
+                try: os.remove(request.user.profile_picture.path)
+                except: pass
             request.user.profile_picture = pfp
             request.user.save()
             return HttpResponse('<p class="success">La photo de profil a bien été modifiée.</p>')
