@@ -9,6 +9,13 @@ class Tile(Enum):
     def __str__(self) -> str:
         return str(self.value)
 
+    @staticmethod
+    def from_str(value: str) -> 'Tile | None':
+        for tile in Tile:
+            if str(tile) == value:
+                return tile
+        return None
+
 
 
 class Board:
@@ -38,11 +45,14 @@ class Board:
             s += '\n'
         return s
 
-    def load(self, csv_file: str) -> None:
-        with open(csv_file, 'r') as f:
-            for line in f.readlines():
-                x, y, value = line.strip().split(';')
-                self.set(int(x), int(y), value)
+    def load(self, data: dict) -> None:
+        self._board = [
+            [
+                Tile.White if data['board'][y][x] == 'W' else Tile.Black if data['board'][y][x] == 'B' else None
+                for x in range(self._size)
+            ]
+            for y in range(self._size)
+        ]
 
     def export(self) -> dict:
         return {

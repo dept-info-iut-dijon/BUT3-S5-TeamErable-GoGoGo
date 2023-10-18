@@ -9,13 +9,13 @@ def game(request: HttpRequest) -> HttpResponse:
     if (game_id := request.GET.get('id')) is None: return HttpResponseRedirect('/')
 
     try:
-        game_inst = Game.objects.get(id_game = game_id, code = None, done = False)
+        game_inst = Game.objects.get(id_game = game_id, done = False)
         if not game_inst: return HttpResponseRedirect('/')
 
     except:
         return HttpResponseRedirect('/')
 
-    if game_inst.player1 != request.user and game_inst.player2 is None:
+    if game_inst.player1 != request.user and game_inst.player2 is None and not game_inst.is_private:
         game_inst.player2 = request.user
         game_inst.save()
 
