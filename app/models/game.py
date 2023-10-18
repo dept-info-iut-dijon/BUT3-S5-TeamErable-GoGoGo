@@ -14,4 +14,4 @@ class Game(models.Model):
     player1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player1')
     player2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player2', null=True)
     winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='winner', null=True)
-    moove_list = models.FileField(upload_to='static/moove_files/moove_list', null=True)
+    move_list = models.FileField(upload_to='static/moove_files/move_list', null=True)
