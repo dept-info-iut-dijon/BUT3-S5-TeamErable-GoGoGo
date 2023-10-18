@@ -9,6 +9,13 @@ class Tile(Enum):
     def __str__(self) -> str:
         return str(self.value)
 
+    @staticmethod
+    def from_str(value: str) -> 'Tile | None':
+        for tile in Tile:
+            if str(tile) == value:
+                return tile
+        return None
+
 
 
 class Board:
@@ -37,3 +44,24 @@ class Board:
                 s += self._board[y][x] if self._board[y][x] else ' '
             s += '\n'
         return s
+
+    def load(self, data: dict) -> None:
+        self._board = [
+            [
+                Tile.White if data['board'][y][x] == 'W' else Tile.Black if data['board'][y][x] == 'B' else None
+                for x in range(self._size)
+            ]
+            for y in range(self._size)
+        ]
+
+    def export(self) -> dict:
+        return {
+            'board': [
+                [
+                    str(self._board[y][x]) if self._board[y][x] else ''
+                    for x in range(self._size)
+                ]
+                for y in range(self._size)
+            ],
+            'history': [],
+        }

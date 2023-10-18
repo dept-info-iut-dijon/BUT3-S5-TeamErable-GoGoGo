@@ -10,6 +10,9 @@ class Tournament(models.Model):
     code = models.CharField(max_length=16)
     description = models.CharField(max_length=255, null=True)
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    player_min = models.IntegerField()
+    start = models.BooleanField(default=False)
+    private = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.core.files.storage import FileSystemStorage
 from app.models import Game
 from ..logic import Board, Tile
 
@@ -8,13 +9,13 @@ def game(request: HttpRequest) -> HttpResponse:
     if (game_id := request.GET.get('id')) is None: return HttpResponseRedirect('/')
 
     try:
-        game_inst = Game.objects.get(id_game = game_id, code = None, done = False)
+        game_inst = Game.objects.get(id_game = game_id, done = False)
         if not game_inst: return HttpResponseRedirect('/')
 
     except:
         return HttpResponseRedirect('/')
 
-    if game_inst.player1 != request.user and game_inst.player2 is None:
+    if game_inst.player1 != request.user and game_inst.player2 is None and not game_inst.is_private:
         game_inst.player2 = request.user
         game_inst.save()
 
@@ -45,6 +46,8 @@ def game_code(request: HttpRequest) -> HttpResponse:
 
 def game_logic(request: HttpRequest, game: Game) -> HttpResponse:
     board = Board(6)
+    board.load(game.move_list.path)
+
     return render(
         request,
         'game.html',
