@@ -1,0 +1,39 @@
+table.go {
+    border-collapse: separate;
+    border: 1px solid #000;
+    margin: 0 auto;
+    border-radius: var(--border-radius);
+    border-spacing: 0;
+}
+
+table.go > tbody > tr > td {
+    width: 5rem;
+    height: 5rem;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #fff;
+}
+
+table.go > tbody > tr > td.cell:not(:last-child) {
+    border-right: 1px solid #000;
+}
+
+table.go > tbody > tr:not(:last-child) > td {
+    border-bottom: 1px solid #000;
+}
+
+table.go > tbody > tr:first-child > td:first-child {
+    border-top-left-radius: var(--border-radius);
+}
+
+table.go > tbody > tr:first-child > td:last-child {
+    border-top-right-radius: var(--border-radius);
+}
+
+table.go > tbody > tr:last-child > td:first-child {
+    border-bottom-left-radius: var(--border-radius);
+}
+
+table.go > tbody > tr:last-child > td:last-child {
+    border-bottom-right-radius: var(--border-radius);
+}

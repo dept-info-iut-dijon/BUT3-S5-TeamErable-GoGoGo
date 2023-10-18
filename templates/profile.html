@@ -26,6 +26,9 @@
                 <div class="sidebar-item">
                     <a href="#" activate="#friends" class="sidebar-link">Amis</a>
                 </div>
+                <div class="sidebar-item">
+                    <a href="#" activate="#account" class="sidebar-link">Supprimer mon compte</a>
+                </div>
                 <!-- <div class="sidebar-item">
                     <a href="#" activate="#stats" class="sidebar-link">Statistiques</a>
                 </div> -->
@@ -102,6 +105,20 @@
                 {% comment %} <section id="stats">
                     <h2>Statistiques</h2>
                 </section> {% endcomment %}
+
+                <section id="account">
+                    <h2>Supprimer mon compte</h2>
+                    <form id="delete-account">
+                        <div class="form-control">
+                            <label for="password">Pour supprimer votre compte, veuillez entrer votre mot de passe</label>
+                            <input type="password" name="password" id="password" required>
+                        </div>
+                        <div class="separator"></div>
+                        <div class="form-control">
+                            <input type="submit" value="Supprimer mon compte">
+                        </div>
+                    </form>
+                </section>
             </div>
         </div>
 
