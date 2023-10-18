@@ -1,3 +1,8 @@
+function validateForm() {
+    document.querySelector('input[type="submit"]').disabled = true;
+    return true;
+};
+
 document.body.addEventListener("htmx:afterRequest", function(event) {
     setTimeout(function() {
         if (
@@ -13,6 +18,7 @@ document.body.addEventListener("htmx:afterRequest", function(event) {
         }
         else {
             document.querySelector(".notify").innerHTML = event.detail.xhr.responseText;
+            document.querySelector('form input[type="submit"]').disabled = false;
         }
     });
 });

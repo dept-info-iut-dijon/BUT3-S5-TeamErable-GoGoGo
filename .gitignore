@@ -160,5 +160,6 @@ output/
 .vs/*
 migrations/
 profile_pictures/
+dynamic/
 tmp/
 appmap.yml

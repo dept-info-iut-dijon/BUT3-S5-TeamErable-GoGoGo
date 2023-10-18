@@ -37,3 +37,21 @@ class Board:
                 s += self._board[y][x] if self._board[y][x] else ' '
             s += '\n'
         return s
+
+    def load(self, csv_file: str) -> None:
+        with open(csv_file, 'r') as f:
+            for line in f.readlines():
+                x, y, value = line.strip().split(';')
+                self.set(int(x), int(y), value)
+
+    def export(self) -> dict:
+        return {
+            'board': [
+                [
+                    str(self._board[y][x]) if self._board[y][x] else ''
+                    for x in range(self._size)
+                ]
+                for y in range(self._size)
+            ],
+            'history': [],
+        }
