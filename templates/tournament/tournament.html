@@ -12,32 +12,32 @@
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
-    <section class="upper-section">
-        <div class="tournois-header-section">
-            <div class="tournois-container">
-                <img src="/header-pfp" alt="Icone de profil" />
-                <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username</h3>
+    <main>
+        <section class="upper-section">
+            <div class="tournois-header-section">
+                <div class="tournois-container">
+                    <img src="/header-pfp" alt="Icone de profil" />
+                    <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username</h3>
+                </div>
+                <div class="tournois-container">
+                    <p>999 Defaites</p>
+                    <p>0 Victoires</p>
+                    <p>3 Tournois</p>
+                </div>
+                <div class="tournois-container">
+                    <p>100%</p>
+                    <p>0%</p>
+                    <p>3 Tournois</p>
+                </div>
             </div>
-            <div class="tournois-container">
-                <p>999 Defaites</p>
-                <p>0 Victoires</p>
-                <p>3 Tournois</p>
+            
+            <div class="button-section">
+                    <a href="/profile">Consulter mon profil</a>
+                    <a href="/create-tournament">Creer un tournois</a>
             </div>
-            <div class="tournois-container">
-                <p>100%</p>
-                <p>0%</p>
-                <p>3 Tournois</p>
-            </div>
-        </div>
-        
-        <div class="button-section">
-                <a href="/profile">Consulter mon profil</a>
-                <a href="/create-tournament">Creer un tournois</a>
-        </div>
-    </section>
+        </section>
 
-    <div class="table-section">
-        <main>
+        <div class="table-section">
             {% csrf_token %}
             <div class="container" id="tournament">
                 <h2>Rejoindre un tournois</h2>
@@ -67,8 +67,9 @@
                     </tbody>
                 </table>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+    {% include 'reusable/footer.html' %}
     <script src="/static/js/join_tournament.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
 </body>
