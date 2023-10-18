@@ -29,9 +29,8 @@ urlpatterns = [
     path("delete-account", views.delete_account, name="delete_account"),
 
     #Tournois
-    path("tournois", views.tournois, name="tournois"),
-    path("tournois/<id>/", views.tournoisid, name="tournois-gestion"),
-    path("newtournois", views.new_tournois, name="new-tournois"),
+    path("tournament", views.tournament, name="tournament"),
+    path("tournament/<id>/", views.tournament_manager, name="tournament_manager"),
     #Parties
     path("create-game", views.create_game, name="create_game"),
     path("join-game", views.join_game, name="join_game"),
