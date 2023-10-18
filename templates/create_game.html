@@ -15,7 +15,7 @@
         <div class="container">
             <div class="center flex-column margin-top">
                 <h2>Créer une partie</h2>
-                <form id="create-game" class="no-border max-width" hx-post="/create-game" hx-trigger="submit" hx-swap="none">
+                <form id="create-game" class="no-border max-width" hx-post="/create-game" hx-trigger="submit" hx-swap="none" onsubmit="return validateForm()">
                     <div class="center flex-wrap">
                         <div class="form-control">
                             <label for="game-name">Nom de la partie</label>
