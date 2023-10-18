@@ -12,6 +12,8 @@
     <main>
         {% csrf_token %}
         <div class="container" id="game">
+            <h2>Parties en cours</h2>
+            <div id="current-game-list" hx-post="/search-current-game" hx-swap="innerHTML" hx-trigger="load"></div>
             <h2>Rejoindre une partie</h2>
             <div class="form-control">
                 <input type="text" id="search-input" placeholder="Rechercher de partie">
