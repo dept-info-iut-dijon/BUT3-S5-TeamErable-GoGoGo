@@ -1,6 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from .statistic import Statistic
 
 class CustomUser(AbstractUser):
     profile_picture = models.ImageField( null=True,upload_to='static/profile_pictures', blank=True)

@@ -10,6 +10,7 @@ class Game(models.Model):
     start_date = models.DateField()
     duration = models.IntegerField()
     done = models.BooleanField(default=False)
+    ranked = models.BooleanField(default=False)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='tournament', null=True)
     player1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player1')
     player2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player2', null=True)
