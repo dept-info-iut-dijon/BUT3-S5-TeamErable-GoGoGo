@@ -7,6 +7,7 @@ class Game(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     code = models.CharField(max_length=16, null=True)
+    is_private = models.BooleanField(default=False)
     start_date = models.DateField()
     duration = models.IntegerField()
     done = models.BooleanField(default=False)

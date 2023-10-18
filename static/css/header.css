@@ -6,7 +6,7 @@ header {
 
 header .navbar {
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 4rem 1fr; /* 1fr 3fr; */
     align-items: center;
     height: 3rem;
     overflow: hidden;
@@ -28,11 +28,17 @@ header .navbar ul {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    justify-self: end;
+    justify-self: start; /* end */
+    padding-inline-start: 0;
+    width: 100%;
 }
 
 header .navbar li {
     text-align: center;
+}
+
+header .navbar li:last-child {
+    margin-left: auto;
 }
 
 header .nav-item a {

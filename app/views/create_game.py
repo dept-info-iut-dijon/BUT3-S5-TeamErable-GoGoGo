@@ -15,9 +15,8 @@ def create_game(request: HttpRequest) -> HttpResponse:
 
         try:
             code = None
-            if is_private:
-                while code is None or Game.objects.filter(code = code).filter(done = False).exists():
-                    code = ''.join(random.choice(string.ascii_uppercase + string.octdigits) for _ in range(16))
+            while code is None or Game.objects.filter(code = code).filter(done = False).exists():
+                code = ''.join(random.choice(string.ascii_uppercase + string.octdigits) for _ in range(16))
 
             current_games = Game.objects.filter(player1 = request.user).filter(done = False).all()
             for game in current_games:
@@ -36,6 +35,7 @@ def create_game(request: HttpRequest) -> HttpResponse:
                 player1 = request.user,
                 player2 = None,
                 code = code,
+                is_private = is_private,
             )
 
             file = f'dynamic/games/{game.id_game:X}.json'

@@ -11,7 +11,7 @@ def join_game(request: HttpRequest) -> HttpResponse:
 def search_game(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         query = request.POST.get('game_name','')
-        games = Game.objects.filter(player2 = None).filter(done = False).exclude(player1 = request.user).filter(code = None).filter(name__icontains = query).order_by('name')[:12]
+        games = Game.objects.filter(player2 = None).filter(done = False).exclude(player1 = request.user).filter(is_private = False).filter(name__icontains = query).order_by('name')[:12]
         return render(
             request,
             'reusable/game_list.html',
@@ -23,7 +23,6 @@ def search_game(request: HttpRequest) -> HttpResponse:
 
 def search_current_game(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
-        query = request.POST.get('game_name','')
         games = (
             Game.objects.filter(Q(player1 = request.user) | Q(player2 = request.user)).filter(done = False).order_by('name')[:12]
         )[:12]
