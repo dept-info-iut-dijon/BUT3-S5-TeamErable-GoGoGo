@@ -2,7 +2,6 @@ from .reusable import *
 from .index import index
 from .login import login_, logout_
 from .register import register
-from .settings import settings
 from .profile import profile, change_pfp, change_user_info, change_pwd, search_notfriend_user, friend_list, add_friend, delete_friend, delete_account
 from .termsofuse import termsofuse
 from .privacypolicy import privacypolicy
