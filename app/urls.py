@@ -35,6 +35,7 @@ urlpatterns = [
     path("create-game", views.create_game, name="create_game"),
     path("join-game", views.join_game, name="join_game"),
     path("search-game", views.search_game, name="search_game"),
+    path("search-current-game", views.search_current_game, name="search_current_game"),
     path("game", views.game, name="game"),
     path("create-tournament", views.create_tournament, name="create_tournament"),
 
