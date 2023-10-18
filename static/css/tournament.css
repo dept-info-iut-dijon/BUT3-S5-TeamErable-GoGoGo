@@ -24,6 +24,8 @@
 .tournois-header-section img {
     height: 10rem;
     width: 10rem;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .tournois-container{
@@ -57,10 +59,6 @@
     color: black;
 }
 
-.description-section .button {
-    position: relative;
-    left: 90%;
-}
 
 .description-section {
     margin-left: 15rem;
@@ -70,8 +68,6 @@
 
 .description-section #desc {
     width: 80%;
-    position: relative;
-    top: -3rem;
 }
 
 .description-section h2{
@@ -90,7 +86,7 @@
 
 #informations {
     width: 100%;
-    display: inline-block;
+    display: flex;
 }
 
 #organisateur img {
@@ -101,7 +97,7 @@
 
 #informations > * {
     display: inline-grid;
-    width: 30%; /* Adjust the width as needed */
+    width: 50%; /* Adjust the width as needed */
     margin: 5px; /* Add spacing between the divs if desired */
     border: 1px solid #ccc; /* Optional: Add borders for separation */
     padding: 10px;
@@ -147,3 +143,27 @@
     font-weight: bold;
 }
 
+#join-btn {
+    display: flex;
+    align-items: center;
+}
+
+#join-btn img{
+    height: 2rem;
+}
+
+.top-right-btns {
+    position: absolute;
+    top: 5rem;
+    right: 10rem;
+}
+
+.top-right-btns button {
+    width: 100%;
+    
+}
+
+.top-right-btns > *:nth-child(2) {
+    float: right;
+    margin-top: 10px;
+}
