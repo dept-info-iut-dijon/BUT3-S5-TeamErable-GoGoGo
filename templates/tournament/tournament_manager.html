@@ -13,25 +13,24 @@
     {% include 'reusable/header.html' %}
     <section class="description-section">
         <h2>{{ tournament.name }}</h2>
-        <a href="/tournois" class="button gray">🔙 Retour</a>
+        <div class="top-right-btns">
+            <a href="/tournament_join" class="button" id="join-btn"><img src="/static/icons/joingame.png">Rejoindre le tournois</a>
+            <a href="/tournament" class="button gray">🔙 Retour</a>
+        </div>
         <p id="desc">
             {{ tournament.description }}
         </p>
         <div id="informations">
-            <div class="tournament-dates">
+            <div >
                 <label for="tournament-date-start">Date de debut</label>
                 <input type="date" id="tournament-date-start" name="tournament-date-start" value="{{ tournament.start_date|date:'Y-m-d' }}">
                 <label for="tournament-date-end">Date de fin</label>
                 <input type="date" id="tournament-date-end" name="tournament-date-end" value="{{ tournament.end_date|date:'Y-m-d' }}">
             </div>
-            <div id="organisateur">
+            <div >
                 <h3>Organisateur</h3>
                 <img src="" alt="Icone de profil" />
                 <h3>{{organisator.username}}</h3>
-            </div>
-            <div id="code">
-                <label for="code">Code</label>
-                <input type="text" name="code" readonly value="{{ tournament.code }}">
             </div>
         </div>
     </section>
