@@ -3,8 +3,8 @@ from enum import Enum
 
 
 class Tile(Enum):
-    White = 'W'
-    Black = 'B'
+    White = 'O'
+    Black = 'X'
 
     def __str__(self) -> str:
         return str(self.value)
@@ -38,17 +38,19 @@ class Board:
         self._board[y][x] = value
 
     def __str__(self) -> str:
-        s = ''
+        s = '╔' + '═' * (self._size * 2 + 1) + '╗\n'
         for y in range(self._size):
+            s += '║ '
             for x in range(self._size):
-                s += self._board[y][x] if self._board[y][x] else ' '
-            s += '\n'
-        return s
+                s += (str(self._board[y][x]) if self._board[y][x] else ' ') + ' '
+            s += '║\n'
+        return s + '╚' + '═' * (self._size * 2 + 1) + '╝'
 
     def load(self, data: dict) -> None:
+        b = data['board']
         self._board = [
             [
-                Tile.White if data['board'][y][x] == 'W' else Tile.Black if data['board'][y][x] == 'B' else None
+                Tile.from_str(b[y][x]) if b[y][x] else None
                 for x in range(self._size)
             ]
             for y in range(self._size)
@@ -58,7 +60,7 @@ class Board:
         return {
             'board': [
                 [
-                    str(self._board[y][x]) if self._board[y][x] else ''
+                    str(self._board[y][x]) if self._board[y][x] else None
                     for x in range(self._size)
                 ]
                 for y in range(self._size)
