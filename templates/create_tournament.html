@@ -37,6 +37,14 @@
                             <label for="end-date">Date de fin</label>
                             <input type="date" name="end-date" id="end-date" required></input>
                         </div>
+                        <div class="form-control">
+                            <label for="tournament-player-min">Nombre de participants minimum</label>
+                            <input type="number" name="tournament-player-min" id="tournament-player-min" required></input>
+                        </div>
+                        <div class="form-control">
+                            <label for="tournament-private">Privée ?</label>
+                            <switchbutton name="tournament-private" id="tournament-private"></switchbutton>
+                        </div>
                     </div>
                     <div class="separator"></div>
                     <div class="form-control">
@@ -52,5 +60,6 @@
     <script src="/static/js/global.js"></script>
     <script src="/static/js/notify.js"></script>
     <script src="/static/js/date-validation.js"></script>
+    <script src="/static/js/create_tournament.js"></script>
 </body>
 </html>

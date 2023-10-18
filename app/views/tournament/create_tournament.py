@@ -15,6 +15,8 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
         organisator = request.POST.get('tournament-organizer')
         code = request.POST.get('tournament-code')
         description = request.POST.get('tournament-desc', '')
+        player_min = request.POST.get('tournament-player-min')
+        private = bool(request.POST.get('tournament-private'))
         
         try:
             code = None
@@ -26,22 +28,20 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
             for tournament in current_tournaments:
                 tournament.delete()
 
-
-
-            print(register_date)
-
             tournament = Tournament.objects.create(
                 name = name,
                 description = description,
                 start_date = start_date,
+                private = private,
                 end_date = end_date,
                 organisator = organisator,
                 creator = request.user,
                 register_date = datetime.now().date(),
-                code = code
+                code = code,
+                player_min = player_min
             )
 
-            return HttpResponse(f'/tounament?id={tounament.id}')
+            return HttpResponse(f'/tournament?id={tournament.id}')
 
         except:
             return HttpResponseBadRequest('<p class="error">Erreur lors de la création du tournois</p>')

@@ -24,6 +24,8 @@
 .tournois-header-section img {
     height: 10rem;
     width: 10rem;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .tournois-container{
@@ -56,58 +58,6 @@
     background-color: #dfe4e8;
     color: black;
 }
-/*Table*/
-table {
-    border: 1px solid transparent;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    width: 100%;
-    border-spacing: 0;
-}
-
-table th,
-table td {
-    border-bottom: 1px solid #000;
-    padding: 8px;
-    text-align: left;
-}
-
-thead {
-    background-color: #cc7f4e;
-}
-
-tr {
-    height: 2.5rem;
-}
-
-td {
-    margin: 1em;
-}
-
-.table-section {
-    margin-left: 15rem;
-    margin-right: 15rem;
-    
-}
-
-.table-container {
-    overflow: hidden;
-    border: 1px solid transparent;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-}
-
-td {
-    text-align: left;
-    padding: 8px;
-}
-tbody tr:nth-child(even) td {
-    background-color: #dfe4e8; /* Change to your desired even row color */
-}
-
-tbody tr:nth-child(odd) td {
-    background-color: #f5b38b; /* Change to your desired odd row color */
-}
 
 
 .description-section {
@@ -126,7 +76,7 @@ tbody tr:nth-child(odd) td {
 
     .description-section .tournament-dates {
         display: inline-grid;
-        text-align: : center;
+        text-align: center;
     }
 
 .tournament-dates input{

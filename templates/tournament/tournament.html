@@ -8,71 +8,69 @@
     <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}">
     <link rel="stylesheet" href="/static/css/global.css">
     <link rel="stylesheet" href="/static/css/tournament.css">
+    <link rel="stylesheet" href="/static/css/tournament_list.css">
 </head>
-<body>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
-    <section class="upper-section">
-        <div class="tournois-header-section">
-            <div class="tournois-container">
-                <img src="/header-pfp" alt="Icone de profil" />
-                <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username</h3>
+    <main>
+        <section class="upper-section">
+            <div class="tournois-header-section">
+                <div class="tournois-container">
+                    <img src="/header-pfp" alt="Icone de profil" />
+                    <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username</h3>
+                </div>
+                <div class="tournois-container">
+                    <p>999 Defaites</p>
+                    <p>0 Victoires</p>
+                    <p>3 Tournois</p>
+                </div>
+                <div class="tournois-container">
+                    <p>100%</p>
+                    <p>0%</p>
+                    <p>3 Tournois</p>
+                </div>
             </div>
-            <div class="tournois-container">
-                <p>999 Defaites</p>
-                <p>0 Victoires</p>
-                <p>3 Tournois</p>
+            
+            <div class="button-section">
+                    <a href="/profile">Consulter mon profil</a>
+                    <a href="/create-tournament">Creer un tournois</a>
             </div>
-            <div class="tournois-container">
-                <p>100%</p>
-                <p>0%</p>
-                <p>3 Tournois</p>
+        </section>
+
+        <div class="table-section">
+            {% csrf_token %}
+            <div class="container" id="tournament">
+                <h2>Rejoindre un tournois</h2>
+                <div class="form-control">
+                    <input type="text" id="search-input" placeholder="Rechercher de tournois">
+                    <div id="user-datalist"></div>
+                </div>
+
+                <table id="tournament-table">
+                    <!-- {% if not tournaments %}
+                    <div class="row">
+                        <p>Aucun tournois n'est disponible pour le moment ou correspond à vos critères de recherche.</p>
+                    </div> 
+                    {% endif %} -->
+                    <thead>
+                        <tr>
+                            <th>Nom du tournois</th>
+                            <th>Créateur</th>
+                            <th>Description</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
+                            <th>Nombre de joueurs minimum</th>
+                            <th></th>
+                    </thead>
+                    <tbody id="tournament-list" hx-post="/search-tournament" hx-swap="innerHTML" hx-trigger="load" hx-target="#tournament-list">
+
+                    </tbody>
+                </table>
             </div>
         </div>
-         <div class="button-section">
-                <a href="/profile">Consulter mon profil</a>
-                <a href="/create-tournament">Creer un tournois</a>
-          </div>
-</section>
-    <div class="table-section">
-        <h1>Liste des tournois en cours</h1>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <td>Nom du Tournois</td>
-                        <td>Etat</td>
-                        <td>Nombre de Joueurs</td>
-                        <td>Niveau</td>
-                        <td>Organisateur</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-
+    </main>
+    {% include 'reusable/footer.html' %}
+    <script src="/static/js/join_tournament.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
 </body>
 </html>
