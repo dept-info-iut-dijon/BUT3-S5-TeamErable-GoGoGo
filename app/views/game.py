@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.core.files.storage import FileSystemStorage
 from app.models import Game
 from ..logic import Board, Tile
+import json
 
 def game(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
@@ -46,7 +47,13 @@ def game_code(request: HttpRequest) -> HttpResponse:
 
 def game_logic(request: HttpRequest, game: Game) -> HttpResponse:
     board = Board(6)
-    board.load(game.move_list.path)
+    with open(game.move_list.path, 'r') as f:
+        board.load(json.load(f))
+
+    board.set(0, 0, Tile.White)
+    board.set(1, 0, Tile.Black)
+    board.set(0, 1, Tile.White)
+    print(board)
 
     return render(
         request,
