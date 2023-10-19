@@ -12,7 +12,7 @@ from .help import help
 from .forgottenpassword import forgotten_password
 from .passwordresetconfirm import password_reset_confirm
 from .tournament.tournament import tournament
-from .tournament.tournament_manager import tournament_manager
+from .tournament.tournament_manager import tournament_manager, tournament_join
 from .create_game import create_game
 from .join_game import join_game, search_game, search_current_game
 from .game import game
