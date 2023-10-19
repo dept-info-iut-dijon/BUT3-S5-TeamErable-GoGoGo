@@ -50,11 +50,6 @@ def game_logic(request: HttpRequest, game: Game) -> HttpResponse:
     with open(game.move_list.path, 'r') as f:
         board.load(json.load(f))
 
-    board.set(0, 0, Tile.White)
-    board.set(1, 0, Tile.Black)
-    board.set(0, 1, Tile.White)
-    print(board)
-
     return render(
         request,
         'game.html',
