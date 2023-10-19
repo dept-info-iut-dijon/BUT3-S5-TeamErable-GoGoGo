@@ -1,4 +1,4 @@
-from django.http import FileResponse, HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import FileResponse, HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from ...models.tournament import Tournament, Participate
 from ...models.game import Game
@@ -26,7 +26,12 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
 
     tournament_games = []
 
-    current_round = [(participants[i], participants[i + 1]) for i in range(0, len(participants), 2)]
+    #liste des matchs pour le premier round
+    current_round = [(participants[i-1], participants[i]) for i in range(1, len(participants), 2)]
+    #gestion du participant impair
+    lone_member = None
+    if len(participants) % 2 == 1:
+        lone_member = participants[len(participants)-1]
     round_iter = 0
     while (len(current_round)!=0):
         #Ajout du round
@@ -39,24 +44,61 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
             player2 = [match[1],False]
             #Modification du status du gagnant
             if curr_game != None:
-                if curr_game.winner == player1:
+                if str(curr_game.winner) == str(player1[0].username):
+
                     player1[1] = True
                 else:
-                    player2[1] = True  
+                    player2[1] = True
                 next_round.append(curr_game.winner)
             else:
                 next_round.append(None)
             tournament_games[round_iter].append((player1,player2))
         #Creation du round suivant
-        if len(current_round) == 1 :
-            current_round = []
+        if lone_member != None:
+            if len(current_round) == 1:
+                current_round = [(lone_member, next_round[0])]
+                lone_member = None
+            else:
+                current_round = []
+                current_round = [(next_round[i-1], next_round[i]) for i in range(3, len(next_round), 2)]
+                current_round.insert(0,(lone_member, next_round[0]))
+                lone_member = next_round[1]
         else:
-            current_round = [(next_round[i], next_round[i + 1]) for i in range(0, len(next_round), 2)]
+            if len(current_round) == 1 :
+                current_round = []
+            else:
+                current_round = [(next_round[i-1], next_round[i]) for i in range(1, len(next_round), 2)]
         round_iter+=1
+
+    print(tournament.ongoing())
     context = {
         'tournament': tournament,
         'organisator': user,
         'tree': tournament_games,
+        'in_tournament': request.user in participants,
+        'ongoing': tournament.ongoing()
     }
 
     return render(request, 'tournament/tournament_manager.html', context)
+
+def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
+    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
+
+    tournament = get_object_or_404(Tournament, id=id_tournament)
+
+    if tournament.ongoing() == True: 
+        return HttpResponseBadRequest('<p class="error">Les inscription pour ce tournois sont terminees</p>') 
+
+    if len(Participate.objects.filter(person=request.user, tournament=tournament).all()) < 1:
+        link = Participate.objects.create(
+                person = request.user,
+                tournament = tournament,
+                win = False,
+            )
+        return HttpResponse(f'<p class="success">Vous avez rejoint le tournois.</p>')
+    else:
+        return HttpResponseBadRequest('<p class="error">Vous participez deja au tournois</p>') 
+
+    print(id_tournament)
+
+    
