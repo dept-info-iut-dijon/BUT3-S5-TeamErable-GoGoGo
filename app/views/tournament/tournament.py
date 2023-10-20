@@ -36,3 +36,16 @@ def search_current_tournament(request: HttpRequest) -> HttpResponse:
         )
 
     return HttpResponseBadRequest('')
+
+def tournament_code(request: HttpRequest) -> HttpResponse:
+    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
+    if (tournament_code := request.POST.get('code')) is None: return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
+
+    try:
+        tournament_inst = Tournament.objects.get(code = tournament_code)
+        if not tournament_inst: return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
+
+    except:
+        return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
+
+    return HttpResponse(f'/tournament/{tournament_inst.id}/')

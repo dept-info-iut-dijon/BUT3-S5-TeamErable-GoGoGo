@@ -46,7 +46,6 @@
                         <tr>
                             <th>Nom du tournois</th>
                             <th>Créateur</th>
-                            <th>Description</th>
                             <th>Date de début</th>
                             <th>Date de fin</th>
                             <th>Nombre de joueurs minimum</th>
@@ -62,8 +61,28 @@
         <div class="table-section">
             {% csrf_token %}
             <div class="container" id="tournament">
-                <h2>Rejoindre un tournois</h2>
+                <div class="row space-between">
+                    <h2>Rejoindre un tournois</h2>
+                    <a href="/create-tournament" class="button height-fit-content align-self-center">Créer un tournois</a>
+                </div>
+                <div>
+                    <h3 class="no-margin">Par code</h3>
+                    <form id="join-by-code" class="row">
+                        <div class="row form-control">
+                            <input type="text" id="search-code-input-0" class="pass-to-next" required minlength="4" maxlength="4">
+                            <p class="no-margin center">-</p>
+                            <input type="text" id="search-code-input-1" class="pass-to-next" required minlength="4" maxlength="4">
+                            <p class="no-margin center">-</p>
+                            <input type="text" id="search-code-input-2" class="pass-to-next" required minlength="4" maxlength="4">
+                            <p class="no-margin center">-</p>
+                            <input type="text" id="search-code-input-3" class="pass-to-next-last" required minlength="4" maxlength="4">
+                        </div>
+                        <div class="separator"></div>
+                        <input type="submit" value="Rejoindre">
+                    </form>
+                </div>
                 <div class="form-control">
+                    <h3>Par nom</h3>
                     <input type="text" id="search-input" placeholder="Rechercher de tournois">
                     <div id="user-datalist"></div>
                 </div>
@@ -77,7 +96,6 @@
                         <tr>
                             <th>Nom du tournois</th>
                             <th>Créateur</th>
-                            <th>Description</th>
                             <th>Date de début</th>
                             <th>Date de fin</th>
                             <th>Nombre de joueurs minimum</th>
@@ -88,9 +106,12 @@
                 </table>
             </div>
         </div>
+
+        <div class="notify" id="notify"></div>
     </main>
     {% include 'reusable/footer.html' %}
     <script src="/static/js/join_tournament.js"></script>
+    <script src="/static/js/notify.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
 </body>
 </html>
