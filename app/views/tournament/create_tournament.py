@@ -9,7 +9,6 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
 
     if request.method == 'POST':
         name = request.POST.get('tournament-name')
-        register_date = request.POST.get('tournament-register')
         start_date = request.POST.get('start-date')
         end_date = request.POST.get('end-date')
         organisator = request.POST.get('tournament-organizer')

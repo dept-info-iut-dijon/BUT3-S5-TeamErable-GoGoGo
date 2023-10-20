@@ -150,6 +150,18 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     justify-content: space-evenly;
 }
 
+.space-between {
+    justify-content: space-between;
+}
+
+.width-fit-content {
+    width: fit-content;
+}
+
+.height-fit-content {
+    height: fit-content;
+}
+
 @media screen and (max-width: 720px) {
     .row.dynamic-row {
         flex-direction: column;
@@ -187,6 +199,10 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
 
 .row > .separator {
     margin: 0 0.5rem;
+}
+
+.align-self-center {
+    align-self: center;
 }
 
 .error {

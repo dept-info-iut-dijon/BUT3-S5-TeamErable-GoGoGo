@@ -1,5 +1,6 @@
 from django.db import models
 from .custom_user import CustomUser
+import datetime
 
 class Tournament(models.Model):
     name = models.CharField(max_length=255)
@@ -13,6 +14,11 @@ class Tournament(models.Model):
     player_min = models.IntegerField()
     start = models.BooleanField(default=False)
     private = models.BooleanField(default=False)
+
+    #Permet de verifier si le tournois est en cours
+    def ongoing(self):
+        if(self.start_date <= datetime.datetime.now().date() <= self.end_date): return True
+        else: return False
 
     def __str__(self):
         return self.name
