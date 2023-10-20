@@ -14,24 +14,36 @@
     <section class="description-section">
         <div id="response-content"></div>
         <h2>{{ tournament.name }}</h2>
-        <div class="top-right-btns">
-            {% if not tournament.ongoing or in_tournament %}
-            {% if in_tournament %}
-            <button class="button gray" id="join-btn">
-                {% else %}
-                <button hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="#response-content" hx-indicator="true" class="button" id="join-btn">
-                    {% endif %}
-                    {% if in_tournament %}
-                    Vous participez au tournois
-                    {% else %}
-                    <img src="/static/icons/joingame.png">
-                    Rejoindre le tournois
-                    {% endif %}
-                </button>
+    <div class="top-right-btns" >
 
-                {% endif %}
-                <a href="/tournament" class="button gray">🔙 Retour</a>
+
+        {% if tournament.creator.id == request.user.id %}
+        <div class="button">
+            <a href="/delete-tournament/{{ tournament.id }}/" class="button" id="delete-btn">
+            <img src="/static/icons/delete.png">
+            Supprimer le tournoi
+            </a>
         </div>
+        {% endif %}
+
+
+        {% if not tournament.ongoing or in_tournament %}
+            {% if in_tournament %}
+                <button class="button gray" id="join-btn">
+                <img src="/static/icons/joingame.png">
+                Vous participez au tournois
+            {% else %}
+                <button hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="#response-content" hx-indicator="true" class="button" id="join-
+                <img src="/static/icons/joingame.png">
+                Rejoindre le tournois
+            {% endif %}
+            </button>
+        {% endif %}
+        <div class="separator"></div>
+        <a href="/tournament" class="button gray" id="return-btn">🔙 Retour</a>
+    </div>
+
+
         <p id="desc">
             {{ tournament.description }}
         </p>

@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpRes
 from ...models import Tournament
 from ...models import Participate
 from datetime import datetime
+from django.db.models import Q
 
 def tournament(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
@@ -12,7 +13,7 @@ def tournament(request: HttpRequest) -> HttpResponse:
 def search_tournament(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         query = request.POST.get('tournament_name','')
-        tournaments = Tournament.objects.exclude(participate = Participate.objects.filter(person_id = request.user)[:1]).filter(name__icontains = query).exclude(end_date__lt = datetime.now()).exclude(private = True).order_by('name')[:12]
+        tournaments = Tournament.objects.exclude(participate__in = Participate.objects.filter(person = request.user)).filter(name__icontains = query).exclude(end_date__lt = datetime.now()).exclude(private = True).order_by('name')[:12]
         return render(
             request,
             'reusable/tournament_list.html',
@@ -25,7 +26,7 @@ def search_tournament(request: HttpRequest) -> HttpResponse:
 def search_current_tournament(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         tournaments = (
-            Tournament.objects.filter(participate = Participate.objects.filter(person_id = request.user)[:1]).exclude(end_date__lt = datetime.now()).order_by('name')[:12]
+            Tournament.objects.filter(Q(participate__in = Participate.objects.filter(person = request.user)) | Q(creator = request.user)).exclude(end_date__lt = datetime.now()).order_by('name')[:12]
         )
         return render(
             request,

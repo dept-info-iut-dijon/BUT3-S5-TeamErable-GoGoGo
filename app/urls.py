@@ -37,9 +37,11 @@ urlpatterns = [
     path("search-game", views.search_game, name="search_game"),
     path("search-current-game", views.search_current_game, name="search_current_game"),
     path("game", views.game, name="game"),
+    path("game-code", views.game_code, name="game_code"),
     path("create-tournament", views.create_tournament, name="create_tournament"),
     path("search-tournament", views.search_tournament, name="search_tournament"),
     path("tournament-join/<id_tournament>/", views.tournament_join, name="tournament_join"),
-    path("search-current-tournament", views.search_current_tournament, name="search_current_tournament")
+    path("search-current-tournament", views.search_current_tournament, name="search_current_tournament"),
+    path("delete-tournament/<id_tournament>/", views.delete_tournament, name="delete_tournament"),
 
 ]

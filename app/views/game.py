@@ -1,6 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
-from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from app.models import Game
 from ..logic import Board, Tile
 import json
@@ -26,22 +25,22 @@ def game(request: HttpRequest) -> HttpResponse:
 
 def game_code(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
-    if (game_code := request.GET.get('code')) is None: return HttpResponseRedirect('/')
+    if (game_code := request.POST.get('code')) is None: return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
 
     try:
         game_inst = Game.objects.get(code = game_code, done = False)
-        if not game_inst: return HttpResponseRedirect('/')
+        if not game_inst: return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
 
     except:
-        return HttpResponseRedirect('/')
+        return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
 
     if game_inst.player1 != request.user and game_inst.player2 is None:
         game_inst.player2 = request.user
         game_inst.save()
 
-    if game_inst.player1 != request.user and game_inst.player2 != request.user: return HttpResponseRedirect('/')
+    if game_inst.player1 != request.user and game_inst.player2 != request.user: return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
 
-    return game_logic(request, game_inst)
+    return HttpResponse(f'/game?id={game_inst.id_game}')
 
 
 
