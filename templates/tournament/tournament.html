@@ -37,6 +37,15 @@
             </div>
         </section>
 
+        <div>
+            {% csrf_token %}
+            <div>
+                <h2>Tounois en cours</h2>
+                <div id="current-tourament-list" hx-post="/search-current-tournament" hx-swap="innerHTML" hx-trigger="load"></div>
+            </div>
+            
+        </div>
+
         <div class="table-section">
             {% csrf_token %}
             <div class="container" id="tournament">
@@ -63,7 +72,6 @@
                             <th></th>
                     </thead>
                     <tbody id="tournament-list" hx-post="/search-tournament" hx-swap="innerHTML" hx-trigger="load" hx-target="#tournament-list">
-
                     </tbody>
                 </table>
             </div>
