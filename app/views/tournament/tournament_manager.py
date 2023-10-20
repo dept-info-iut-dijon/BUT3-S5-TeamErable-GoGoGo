@@ -13,6 +13,28 @@ def has_game_happened(tournament_games, player1, player2):
             return game
     return None
 
+def create_tournament_game(tournament, player1, player2):
+    curr_game = Game.objects.create(
+        name = str(player1[0]) + " VS " + str(player2[0]),
+        description = "Match du tournois " + str(tournament.name) + " oposant " + str(player1[0]) + " et " + str(player2[0]),
+        start_date = datetime.datetime.now(),
+        duration = 0,
+        done = False,
+        tournament = tournament,
+        player1 = player1[0],
+        player2 = player2[0],
+        code = tournament.code,
+        is_private = False,
+    )
+    file = f'dynamic/games/{curr_game.id_game:X}.json'
+    size = 6
+    if not os.path.exists('dynamic/games'): os.makedirs('dynamic/games')
+    with open(file, 'w') as f:
+        b = Board(size)
+        json.dump(b.export(), f)
+    curr_game.move_list = file
+    curr_game.save()
+
 def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
     
@@ -53,28 +75,10 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
                 next_round.append(curr_game.winner)
             else:
                 next_round.append(None)
-                curr_game = Game.objects.create(
-                    name = str(player1[0]) + " VS " + str(player2[0]),
-                    description = "Match du tournois " + str(tournament.name) + " oposant " + str(player1[0]) + " et " + str(player2[0]),
-                    start_date = datetime.datetime.now(),
-                    duration = 0,
-                    done = False,
-                    tournament = tournament,
-                    player1 = player1[0],
-                    player2 = player2[0],
-                    code = tournament.code,
-                    is_private = False,
-                )
-                file = f'dynamic/games/{curr_game.id_game:X}.json'
-                size = 6
-
-                if not os.path.exists('dynamic/games'): os.makedirs('dynamic/games')
-                with open(file, 'w') as f:
-                    b = Board(size)
-                    json.dump(b.export(), f)
-
-                curr_game.move_list = file
-                curr_game.save()
+                #creation de la partie si deux joueurs et que le tournois est en cours
+                if player1[0] != None and player2[0] != None and tournament.ongoing():
+                    create_tournament_game(tournament, player1, player2)
+                
             tournament_games[round_iter].append((player1,player2,curr_game))
         #Creation du round suivant
         if lone_member != None:
