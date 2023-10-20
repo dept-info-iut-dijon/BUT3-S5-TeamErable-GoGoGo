@@ -3,13 +3,37 @@ from django.shortcuts import render, get_object_or_404
 from ...models.tournament import Tournament, Participate
 from ...models.game import Game
 from django.contrib.auth import get_user_model
-
+import datetime, os, json
+from ...logic import Board
+from app.models import Game
 
 def has_game_happened(tournament_games, player1, player2):
     for game in tournament_games:
         if (game.player1 == player1 and game.player2 == player2) or (game.player1 == player2 and game.player2 == player1):
             return game
     return None
+
+def create_tournament_game(tournament, player1, player2):
+    curr_game = Game.objects.create(
+        name = str(player1[0]) + " VS " + str(player2[0]),
+        description = "Match du tournois " + str(tournament.name) + " oposant " + str(player1[0]) + " et " + str(player2[0]),
+        start_date = datetime.datetime.now(),
+        duration = 0,
+        done = False,
+        tournament = tournament,
+        player1 = player1[0],
+        player2 = player2[0],
+        code = tournament.code,
+        is_private = False,
+    )
+    file = f'dynamic/games/{curr_game.id_game:X}.json'
+    size = 6
+    if not os.path.exists('dynamic/games'): os.makedirs('dynamic/games')
+    with open(file, 'w') as f:
+        b = Board(size)
+        json.dump(b.export(), f)
+    curr_game.move_list = file
+    curr_game.save()
 
 def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
     if not request.user.is_authenticated: return HttpResponseRedirect('/login')
@@ -45,14 +69,16 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
             #Modification du status du gagnant
             if curr_game != None:
                 if str(curr_game.winner) == str(player1[0].username):
-
                     player1[1] = True
-                else:
+                elif str(curr_game.winner) == str(player2[0].username):
                     player2[1] = True
                 next_round.append(curr_game.winner)
             else:
                 next_round.append(None)
-            tournament_games[round_iter].append((player1,player2))
+                if player1[0] != None and player2[0] != None:
+                    create_tournament_game(tournament, player1, player2)
+                
+            tournament_games[round_iter].append((player1,player2,curr_game))
         #Creation du round suivant
         if lone_member != None:
             if len(current_round) == 1:
