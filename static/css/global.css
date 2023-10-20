@@ -62,6 +62,25 @@ a.button {
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    align-items: center;
+}
+
+a.button:has(img) {
+    color: var(--font-color);
+}
+
+a.button.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 2rem;
+    padding: 0.5rem 1rem;
+}
+
+a.button.row > img {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
 }
 
 a.button:hover {
@@ -136,11 +155,20 @@ input[type="submit"], input[type="button"], button {
     display: inline-block;
     padding: 0.5rem 1rem;
     background-color: var(--main-color);
-    color: #fff;
+    color: var(--font-color-light);
     text-decoration: none;
     border-radius: var(--border-radius);
     border: none;
     transition: all 0.2s ease-in-out;
+}
+
+button:has(img) {
+    color: var(--font-color);
+}
+
+input[type="submit"] img, input[type="button"] img, button img, a.button img {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 input[type="submit"]:hover, input[type="button"]:hover, button:hover {

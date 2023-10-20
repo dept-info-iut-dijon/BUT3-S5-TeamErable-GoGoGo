@@ -4,7 +4,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tournois</title>
+    <title>Tournoi</title>
     <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}">
     <link rel="stylesheet" href="/static/css/global.css">
     <link rel="stylesheet" href="/static/css/tournament.css">
@@ -12,53 +12,54 @@
 <body>
     {% include 'reusable/header.html' %}
     <section class="description-section">
-        <div id="response-content"></div>
-        <h2>{{ tournament.name }}</h2>
-    <div class="top-right-btns" >
-
-
-        {% if tournament.creator.id == request.user.id %}
-        <div class="button">
-            <a href="/delete-tournament/{{ tournament.id }}/" class="button" id="delete-btn">
-            <img src="/static/icons/delete.png">
-            Supprimer le tournoi
-            </a>
-        </div>
-        {% endif %}
-
-
-        {% if not tournament.ongoing or in_tournament %}
-            {% if in_tournament %}
-                <button class="button gray" id="join-btn">
-                
-                Vous participez au tournois
-            {% else %}
-                <button hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="#response-content" hx-indicator="true" class="button" id="join-
-                    <img src="/static/icons/joingame.png">
-                    Rejoindre le tournois
+        <div class="row space-between">
+            <a href="/tournament" class="button gray">🔙 Retour</a>
+            {% if tournament.creator.id == request.user.id %}
+            <div class="row">
+                <a href="/edit-tournament/{{ tournament.id }}/" class="button row"><img src="/static/icons/edit.png">Modifier le tournoi</a>
+                <div class="separator"></div>
+                <a href="/delete-tournament/{{ tournament.id }}/" class="button row"><img src="/static/icons/delete.png">Supprimer le tournoi</a>
+            </div>
             {% endif %}
-            </button>
-        {% endif %}
+        </div>
         <div class="separator"></div>
-        <a href="/tournament" class="button gray" id="return-btn">🔙 Retour</a>
-    </div>
-
+        <div class="row space-between">
+            <h2>{{ tournament.name }}</h2>
+            {% if not tournament.ongoing or in_tournament %}
+                {% if in_tournament %}
+                    <button class="button height-fit-content" disabled>Vous participez au tournoi</button>
+                {% else %}
+                    <a hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="none" hx-indicator="true" class="button row height-fit-content">
+                        <img src="/static/icons/joingame.png">
+                        Rejoindre le tournoi
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
 
         <p id="desc">
             {{ tournament.description }}
         </p>
         <div id="informations">
-            <div>
-                <label for="tournament-date-start">Date de debut</label>
-                <input type="date" id="tournament-date-start" name="tournament-date-start" value="{{ tournament.start_date|date:'Y-m-d' }}">
+            <div class="form-control">
+                <label for="tournament-date-start">Date de début</label>
+                <input type="date" id="tournament-date-start" name="tournament-date-start" value="{{ tournament.start_date|date:'Y-m-d' }}" disabled>
+            </div>
+            <div class="form-control">
                 <label for="tournament-date-end">Date de fin</label>
-                <input type="date" id="tournament-date-end" name="tournament-date-end" value="{{ tournament.end_date|date:'Y-m-d' }}">
+                <input type="date" id="tournament-date-end" name="tournament-date-end" value="{{ tournament.end_date|date:'Y-m-d' }}" disabled>
             </div>
             <div>
                 <h3>Organisateur</h3>
-                <img src="" alt="Icone de profil" />
-                <h3>{{organisator.username}}</h3>
+                <div class="row profile">
+                    <img src="/header-pfp" alt="Icône de profil" class="pfp" />
+                    <p>{{organisator.username}}</p>
+                </div>
             </div>
+        </div>
+        <div id="players">
+            <h3>Joueurs</h3>
+            <div id="players-list" class="container" hx-get="/tournament-player-list?id={{ tournament.id }}" hx-swap="innerHTML" hx-trigger="load"></div>
         </div>
     </section>
     <section id="arbre-section">
