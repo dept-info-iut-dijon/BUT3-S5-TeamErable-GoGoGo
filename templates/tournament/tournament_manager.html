@@ -13,10 +13,23 @@
     {% include 'reusable/header.html' %}
     <section class="description-section">
         <h2>{{ tournament.name }}</h2>
-        <div class="top-right-btns">
-            <a href="/tournament_join" class="button" id="join-btn"><img src="/static/icons/joingame.png">Rejoindre le tournois</a>
-            <a href="/tournament" class="button gray">🔙 Retour</a>
-        </div>
+    <div class="top-right-btns">
+        {% if not tournament.ongoing or in_tournament %}
+            {% if in_tournament %}
+                <a class="button gray" id="join-btn">
+            {% else %}
+                <a href="/tournament-join/{{ tournament.id }}/" class="button" id="join-btn">
+            {% endif %}
+            {% if in_tournament %}
+            Vous participez au tournois
+            {% else %}
+            <img src="/static/icons/joingame.png">
+            Rejoindre le tournois
+            {% endif %}
+            </a>
+        {% endif %}
+        <a href="/tournament" class="button gray">🔙 Retour</a>
+    </div>
         <p id="desc">
             {{ tournament.description }}
         </p>
@@ -40,23 +53,19 @@
             <div class="round">
                 {% for match in round %}
                 {% if not match.0.1 and not match.1.1 %}
-                <a href="{% url 'tournament_game' 1 2 %}">
-                    {% endif %}
+                    <a href="{% url 'game' %}?id={{ match.2.id_game }}">
+                {% endif %}
                     <div class="match">
-                        {% for team in match %}
-                        <div class="team{% if team.1 %} winner{% endif %}">{{ team.0.username }}</div>
-                        {% endfor %}
+                        <div class="team{% if match.0.1 %} winner{% endif %}">{{ match.0.0.username }}</div>
+                        <div class="team{% if match.1.1 %} winner{% endif %}">{{ match.1.0.username }}</div>
                     </div>
-                    {% if not match.0.1 and not match.1.1 %}
-                </a>
+                {% if not match.0.1 and not match.1.1 %}
+                    </a>
                 {% endif %}
                 {% endfor %}
             </div>
             {% endfor %}
         </div>
-
-
-
     </section>
 </body>
 </html>
