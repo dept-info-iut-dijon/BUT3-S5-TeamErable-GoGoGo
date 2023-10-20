@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGoGo</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login">
+            <form onsubmit="return validateForm()">
+                {% csrf_token %}
+                <a href="/login" class="button gray">🔙 Retour</a>
+                <div class="separator"></div>
+                <h2>S'inscrire</h2>
+                <div class="form-control">
+                    <label for="username">Nom d'Utilisateur</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
+                <div class="form-control">
+                    <label for="email">Adresse Email</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="form-control">
+                    <label for="password">Mot de Passe</label>
+                    <input type="password" name="password" id="password" required onkeyup='check();' maxlength="18" minlength="8">
+                </div>
+                <div class="form-control">
+                    <label>Votre mot de passe doit contenir :</label>
+                    <ul>
+                        <li><span id="password-length-check"></span> Au moins <strong>8 caractères</strong></li>
+                    </ul>
+                </div>
+                <div class="form-control">
+                    <label for="confirm-password">Confirmer le Mot de Passe <span id="password-same-check"></span></label>
+                    <input type="password" name="confirm-password" id="confirm-password" required onkeyup='check();' maxlength="18" minlength="8">
+                </div>
+                <div class="separator"></div>
+                <div class="form-control">
+                    <input type="submit" value="S'inscrire">
+                </div>
+            </form>
+        </div>
+
+        <div class="notify" id="notify"></div>
+    </div>
+
+    <script src="/static/js/register.js"></script>
+    <script src="/static/js/notify.js"></script>
+</body>
+</html>
