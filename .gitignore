@@ -156,4 +156,14 @@ useless/
 *.pdn
 temp/
 output/
-*.bat
+# *.bat
+.vs/*
+migrations/
+profile_pictures/
+dynamic/
+tmp/
+appmap.yml
+test.py
+classes.puml
+packages.puml
+generate.bat

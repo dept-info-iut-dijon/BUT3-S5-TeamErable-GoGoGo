@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGoGo • Acceuil</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+    <link rel="stylesheet" href="/static/css/global.css">
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% include 'reusable/header.html' %}
+    <main>
+        {% csrf_token %}
+        <div class="container">
+            <div class="separator"></div>
+            <div class="center flex-column">
+                <h2>Modifier un tournoi</h2>
+                <form id="edit-tournament" class="no-border max-width" hx-post="/edit-tournament/{{ tournament.id }}/" hx-trigger="submit" hx-swap="none">
+                    <div class="center flex-wrap">
+                        <div class="form-control">
+                            <label for="tournament-name">Nom du tournoi</label>
+                            <input type="text" name="tournament-name" id="tournament-name" placeholder="Nom du tournoi" required value="{{ tournament.name }}">
+                        </div>
+                        <div class="form-control">
+                            <label for="tournament-organizer">Organisateur</label>
+                            <input type="text" name="tournament-organizer" id="tournament-organizer" placeholder="Organisateur du tournoi" required value="{{ tournament.organisator }}">
+                        </div> 
+                        <div class="form-control">
+                            <label for="tournament-desc">Description</label>
+                            <textarea name="tournament-desc" id="tournament-desc" placeholder="Description du tournoi">{{ tournament.description }}</textarea>
+                        </div>
+                        <div class="form-control">
+                            <label for="start-date">Date de début</label>
+                            <input type="date" name="start-date" id="start-date" required value="{{ tournament.start_date|date:'Y-m-d' }}"></input>
+                        </div>
+                        <div class="form-control">
+                            <label for="end-date">Date de fin</label>
+                            <input type="date" name="end-date" id="end-date" required value="{{ tournament.end_date|date:'Y-m-d' }}"></input>
+                        </div>
+                        <div class="form-control">
+                            <label for="tournament-player-min">Nombre de participants minimum</label>
+                            <input type="number" name="tournament-player-min" id="tournament-player-min" required min="8" value="{{ tournament.player_min }}"></input>
+                        </div>
+                        <div class="form-control">
+                            <label for="tournament-private">Privée ?</label>
+                            <switchbutton name="tournament-private" id="tournament-private" {{ checked }}></switchbutton>
+                        </div>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="form-control">
+                        <input type="submit" value="Modifier le tournoi">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="notify" id="notify"></div>
+    </main>
+    {% include 'reusable/footer.html' %}
+    <script src="/static/js/global.js"></script>
+    <script src="/static/js/notify.js"></script>
+    <script src="/static/js/date_validation.js"></script>
+    <script src="/static/js/edit_tournament.js"></script>
+</body>
+</html>

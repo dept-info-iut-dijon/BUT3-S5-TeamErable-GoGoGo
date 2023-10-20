@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGoGo • Acceuil</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css/game.css">
+</head>
+<body>
+    {% include 'reusable/header.html' %}
+    <main class="center">
+        <table class="go" cellspacing="0">
+            {% for row in board.raw %}
+            <tr>
+                {% for cell in row %}
+                <td class="cell">
+                    <div class="inside"></div>
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </main>
+</body>
+</html>

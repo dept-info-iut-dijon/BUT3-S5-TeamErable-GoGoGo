@@ -1,0 +1,45 @@
+<header>
+    <link rel="stylesheet" href="/static/css/header.css">
+    <div class="grad-bar"></div>
+    <nav class="navbar">
+        <a href="/">
+            <img src="/static/icons/favicon.svg" alt="Logo de GoGoGo">
+        </a>
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <ul class="nav mobile-ul">
+            <li class="nav-item"><a href="/">Accueil</a></li>
+            <li class="nav-item"><a href="/join-game">Parties</a></li>
+            <li class="nav-item"><a href="/tournament">Tournois</a></li>
+            <li class="nav-item"><a href="#" onclick="pfpMenuToggle();" class="pfp"><img src="/header-pfp" alt="Icône de profil"></a></li>
+        </ul>
+    </nav>
+
+    <div class="pfp-menu">
+        <div class="username-info">
+            <img src="/header-pfp" alt="Photo de profil">
+            <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">???</h3>
+        </div>
+        <ul>
+            <li>
+                <a href="/profile"><img src="/static/icons/profile.png"/>Mon profil</a>
+            </li>
+            {% comment %} <li>
+                <a href="/settings"><img src="/static/icons/settings.png"/>Paramètres</a>
+            </li> {% endcomment %}
+            <li>
+                <a href="/help"><img src="/static/icons/help.png"/>Aide</a>
+            </li>
+            <li>
+                <a href="/logout"><img src="/static/icons/logout.png"/>Se Déconnecter</a>
+            </li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="/static/js/header.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+</header>
