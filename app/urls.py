@@ -30,6 +30,7 @@ urlpatterns = [
 
     #Tournois
     path("tournament", views.tournament, name="tournament"),
+    path("tournament-code", views.tournament_code, name="tournament_code"),
     path("tournament/<id>/", views.tournament_manager, name="tournament_manager"),
     #Parties
     path("create-game", views.create_game, name="create_game"),

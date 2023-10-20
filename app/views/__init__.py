@@ -18,5 +18,5 @@ from .join_game import join_game, search_game, search_current_game
 from .game import game, game_code
 from .tournament.create_tournament import create_tournament
 from .tournament.tournament_game import tournament_game
-from .tournament.tournament import search_tournament, search_current_tournament
+from .tournament.tournament import search_tournament, search_current_tournament, tournament_code
 from .tournament.delete_tournament import delete_tournament
