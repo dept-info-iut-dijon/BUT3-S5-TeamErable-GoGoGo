@@ -183,3 +183,15 @@
     float: right;
     margin-top: 10px;
 }
+
+form#join-by-code {
+    border: none;
+}
+
+form#join-by-code .form-control {
+    margin-bottom: 0;
+}
+
+form#join-by-code input[type="text"] {
+    text-align: center;
+}
