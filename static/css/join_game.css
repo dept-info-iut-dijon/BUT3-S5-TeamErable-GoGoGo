@@ -59,3 +59,15 @@ a.join-game > img {
 .description {
     margin-left: 1rem;
 }
+
+form#join-by-code {
+    border: none;
+}
+
+form#join-by-code .form-control {
+    margin-bottom: 0;
+}
+
+form#join-by-code input[type="text"] {
+    text-align: center;
+}
