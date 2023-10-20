@@ -30,12 +30,12 @@
         {% if not tournament.ongoing or in_tournament %}
             {% if in_tournament %}
                 <button class="button gray" id="join-btn">
-                <img src="/static/icons/joingame.png">
+                
                 Vous participez au tournois
             {% else %}
                 <button hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="#response-content" hx-indicator="true" class="button" id="join-
-                <img src="/static/icons/joingame.png">
-                Rejoindre le tournois
+                    <img src="/static/icons/joingame.png">
+                    Rejoindre le tournois
             {% endif %}
             </button>
         {% endif %}
