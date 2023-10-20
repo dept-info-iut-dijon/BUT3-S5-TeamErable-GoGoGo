@@ -163,3 +163,5 @@ profile_pictures/
 dynamic/
 tmp/
 appmap.yml
+classes.puml
+packages.puml
