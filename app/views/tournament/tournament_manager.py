@@ -75,7 +75,8 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
                 next_round.append(curr_game.winner)
             else:
                 next_round.append(None)
-                if player1[0] != None and player2[0] != None:
+                #creation de la partie si deux joueurs et que le tournois est en cours
+                if player1[0] != None and player2[0] != None and tournament.ongoing():
                     create_tournament_game(tournament, player1, player2)
                 
             tournament_games[round_iter].append((player1,player2,curr_game))
