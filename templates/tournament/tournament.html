@@ -4,7 +4,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tournois</title>
+    <title>Tournoi</title>
     <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}">
     <link rel="stylesheet" href="/static/css/global.css">
     <link rel="stylesheet" href="/static/css/tournament.css">
@@ -30,11 +30,8 @@
                     <p>3 Tournois</p>
                 </div>
             </div>
-            
-            <div class="button-section">
-                    <a href="/profile">Consulter mon profil</a>
-                    <a href="/create-tournament">Creer un tournois</a>
-            </div>
+
+            <a href="/profile" class="button height-fit-content">Consulter mon profil</a>
         </section>
 
         <div class="table-section">
@@ -44,7 +41,7 @@
                 <table id="tournament-table">
                     <thead>
                         <tr>
-                            <th>Nom du tournois</th>
+                            <th>Nom du tournoi</th>
                             <th>Créateur</th>
                             <th>Date de début</th>
                             <th>Date de fin</th>
@@ -62,8 +59,8 @@
             {% csrf_token %}
             <div class="container" id="tournament">
                 <div class="row space-between">
-                    <h2>Rejoindre un tournois</h2>
-                    <a href="/create-tournament" class="button height-fit-content align-self-center">Créer un tournois</a>
+                    <h2>Rejoindre un tournoi</h2>
+                    <a href="/create-tournament" class="button height-fit-content align-self-center">Créer un tournoi</a>
                 </div>
                 <div>
                     <h3 class="no-margin">Par code</h3>
@@ -83,18 +80,18 @@
                 </div>
                 <div class="form-control">
                     <h3>Par nom</h3>
-                    <input type="text" id="search-input" placeholder="Rechercher de tournois">
+                    <input type="text" id="search-input" placeholder="Rechercher de tournoi">
                     <div id="user-datalist"></div>
                 </div>
                 <table id="tournament-table">
                     <!-- {% if not tournaments %}
                     <div class="row">
-                        <p>Aucun tournois n'est disponible pour le moment ou correspond à vos critères de recherche.</p>
+                        <p>Aucun tournoi n'est disponible pour le moment ou correspond à vos critères de recherche.</p>
                     </div> 
                     {% endif %} -->
                     <thead>
                         <tr>
-                            <th>Nom du tournois</th>
+                            <th>Nom du tournoi</th>
                             <th>Créateur</th>
                             <th>Date de début</th>
                             <th>Date de fin</th>

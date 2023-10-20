@@ -70,19 +70,18 @@
     width: 80%;
 }
 
-.description-section h2{
+.description-section h2 {
     font-size: 2.3rem;
 }
 
-    .description-section .tournament-dates {
-        display: inline-grid;
-        text-align: center;
-    }
+.description-section .tournament-dates {
+    display: inline-grid;
+    text-align: center;
+}
 
 .tournament-dates input{
     margin-bottom: 15px;
 }
-
 
 #informations {
     width: 100%;
@@ -102,6 +101,52 @@
     border: 1px solid #ccc; /* Optional: Add borders for separation */
     padding: 10px;
     text-align: center;
+    border-radius: var(--border-radius);
+}
+
+#players {
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+}
+
+#players-list ul {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#players-list ul li {
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.25rem 0;
+    list-style: none;
+}
+
+#players-list ul li > div {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--main-color-light);
+    border-radius: var(--border-radius);
+}
+
+#players-list ul li img.pfp {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+#players-list ul li button {
+    display: flex;
+    align-items: center;
+}
+
+#players-list ul li button img {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
 }
 
 #code {
@@ -194,4 +239,15 @@ form#join-by-code .form-control {
 
 form#join-by-code input[type="text"] {
     text-align: center;
+}
+
+.profile {
+    justify-content: center;
+}
+
+.profile img.pfp {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    margin-right: 1rem;
 }

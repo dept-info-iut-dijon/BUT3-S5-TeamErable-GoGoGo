@@ -4,7 +4,7 @@ from django.db import models
 from .statistic import Statistic
 
 class CustomUser(AbstractUser):
-    profile_picture = models.ImageField( null=True,upload_to='dynamic/profile_pictures', blank=True)
+    profile_picture = models.ImageField( null=True,upload_to='static/profile_pictures', blank=True)
     stat = models.ForeignKey(Statistic, on_delete=models.CASCADE, null=False)
     friends = models.ManyToManyField('self', blank=True)
     # Add related_name to avoid clashes

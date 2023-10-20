@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 import datetime, os, json
 from ...logic import Board
 from app.models import Game
+from app.models import CustomUser
 
 def has_game_happened(tournament_games, player1, player2):
     for game in tournament_games:
@@ -131,6 +132,15 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
     else:
         return HttpResponseBadRequest('<p class="error">Vous participez deja au tournois</p>') 
 
-    print(id_tournament)
+def tournament_player_list(request: HttpRequest) -> HttpResponse:
+    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
 
-    
+    if request.method == 'GET':
+        if (id_tournament := request.GET.get('id')) is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+        try:
+            listplayers = CustomUser.objects.filter(participate__tournament__id = id_tournament).all()
+            return render(request, 'reusable/tournament_player_list.html', {'players': listplayers})
+        
+        except: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+
+    return HttpResponseBadRequest()

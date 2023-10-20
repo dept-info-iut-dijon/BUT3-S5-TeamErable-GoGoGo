@@ -1,0 +1,12 @@
+<ul class="players-list">
+    {% for player in players %}
+    <li>
+        <div class="row">
+            <div class="row">
+                <img src="{{player.profile_picture.url}}" alt="profile picture" class="pfp">
+                <p>{{ player.username }}</p>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
