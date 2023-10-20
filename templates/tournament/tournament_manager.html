@@ -14,7 +14,7 @@
     <section class="description-section">
         <div class="row space-between">
             <a href="/tournament" class="button gray">🔙 Retour</a>
-            {% if tournament.creator.id == request.user.id %}
+            {% if tournament_unstarted == true %}
             <div class="row">
                 <a href="/edit-tournament/{{ tournament.id }}/" class="button row"><img src="/static/icons/edit.png">Modifier le tournoi</a>
                 <div class="separator"></div>

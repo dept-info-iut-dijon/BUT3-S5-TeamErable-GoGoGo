@@ -138,8 +138,9 @@ def tournament_player_list(request: HttpRequest) -> HttpResponse:
     if request.method == 'GET':
         if (id_tournament := request.GET.get('id')) is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
         try:
+            tournament = Tournament.objects.get(id = id_tournament)
             listplayers = CustomUser.objects.filter(participate__tournament__id = id_tournament).all()
-            return render(request, 'reusable/tournament_player_list.html', {'players': listplayers})
+            return render(request, 'reusable/tournament_player_list.html', {'players': listplayers, 'tournament_unstarted': (not tournament.ongoing()) and tournament.creator.id == request.user.id})
         
         except: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
 
