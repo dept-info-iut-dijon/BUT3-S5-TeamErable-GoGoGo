@@ -57,6 +57,7 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
     if len(participants) % 2 == 1:
         lone_member = participants[len(participants)-1]
     round_iter = 0
+    #Generation de l'arbre de tournois jusqu'a match final
     while (len(current_round)!=0):
         #Ajout du round
         tournament_games.append([])
@@ -81,6 +82,7 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
                 
             tournament_games[round_iter].append((player1,player2,curr_game))
         #Creation du round suivant
+        #Si aucun membre seul
         if lone_member != None:
             if len(current_round) == 1:
                 current_round = [(lone_member, next_round[0])]
@@ -90,14 +92,13 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
                 current_round = [(next_round[i-1], next_round[i]) for i in range(3, len(next_round), 2)]
                 current_round.insert(0,(lone_member, next_round[0]))
                 lone_member = next_round[1]
+        #si tous les membres sont match a un autre
         else:
             if len(current_round) == 1 :
                 current_round = []
             else:
                 current_round = [(next_round[i-1], next_round[i]) for i in range(1, len(next_round), 2)]
         round_iter+=1
-
-    print(tournament.ongoing())
     context = {
         'tournament': tournament,
         'organisator': user,
@@ -122,7 +123,11 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
                 tournament = tournament,
                 win = False,
             )
-        return HttpResponse(f'<p class="success">Vous avez rejoint le tournois.</p>')
+        return HttpResponse('''
+            <script>
+                    window.location.reload();
+            </script>
+            ''')
     else:
         return HttpResponseBadRequest('<p class="error">Vous participez deja au tournois</p>') 
 
