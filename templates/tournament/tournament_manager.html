@@ -12,6 +12,7 @@
 <body>
     {% include 'reusable/header.html' %}
     <section class="description-section">
+        <div id="response-content"></div>
         <h2>{{ tournament.name }}</h2>
     <div class="top-right-btns" >
 
@@ -28,14 +29,15 @@
 
         {% if not tournament.ongoing or in_tournament %}
             {% if in_tournament %}
-                <a class="button gray" id="join-btn">
+                <button class="button gray" id="join-btn">
+                
                 Vous participez au tournois
             {% else %}
-                <a href="/tournament-join/{{ tournament.id }}/" class="button" id="join-btn">
-                <img src="/static/icons/joingame.png">
-                Rejoindre le tournois
+                <button hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="#response-content" hx-indicator="true" class="button" id="join-
+                    <img src="/static/icons/joingame.png">
+                    Rejoindre le tournois
             {% endif %}
-            </a>
+            </button>
         {% endif %}
         <div class="separator"></div>
         <a href="/tournament" class="button gray" id="return-btn">🔙 Retour</a>
@@ -46,13 +48,13 @@
             {{ tournament.description }}
         </p>
         <div id="informations">
-            <div >
+            <div>
                 <label for="tournament-date-start">Date de debut</label>
                 <input type="date" id="tournament-date-start" name="tournament-date-start" value="{{ tournament.start_date|date:'Y-m-d' }}">
                 <label for="tournament-date-end">Date de fin</label>
                 <input type="date" id="tournament-date-end" name="tournament-date-end" value="{{ tournament.end_date|date:'Y-m-d' }}">
             </div>
-            <div >
+            <div>
                 <h3>Organisateur</h3>
                 <img src="" alt="Icone de profil" />
                 <h3>{{organisator.username}}</h3>
