@@ -37,11 +37,24 @@
             </div>
         </section>
 
-        <div>
+        <div class="table-section">
             {% csrf_token %}
-            <div>
+            <div class="container" id="tournament">
                 <h2>Tounois en cours</h2>
-                <div id="current-tourament-list" hx-post="/search-current-tournament" hx-swap="innerHTML" hx-trigger="load"></div>
+                <table id="tournament-table">
+                    <thead>
+                        <tr>
+                            <th>Nom du tournois</th>
+                            <th>Créateur</th>
+                            <th>Description</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
+                            <th>Nombre de joueurs minimum</th>
+                            <th></th>
+                    </thead>
+                    <tbody id="current-tourament-list" hx-post="/search-current-tournament" hx-swap="innerHTML" hx-trigger="load">
+                    </tbody>
+                </table>
             </div>
             
         </div>
@@ -54,7 +67,6 @@
                     <input type="text" id="search-input" placeholder="Rechercher de tournois">
                     <div id="user-datalist"></div>
                 </div>
-
                 <table id="tournament-table">
                     <!-- {% if not tournaments %}
                     <div class="row">
