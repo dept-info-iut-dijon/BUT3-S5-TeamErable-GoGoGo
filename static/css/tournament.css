@@ -146,10 +146,26 @@
 #join-btn {
     display: flex;
     align-items: center;
+    height: 21px;
 }
 
 #join-btn img{
     height: 2rem;
+}
+
+#delete-btn {
+    display: flex;
+    align-items: center;
+    width: max-content;
+}
+
+#delete-btn img{
+    height: 2rem;
+    margin-right: 7px;
+}
+
+#return-btn{
+    margin-top: 10px;
 }
 
 .top-right-btns {
