@@ -19,13 +19,17 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
         
         try:
             code = None
-            while code is None or Tournament.objects.filter(code=code, end_date__gt=datetime.now()).exists():
+            while code is None or Tournament.objects.filter(code = code, end_date__gt = datetime.now()).exists():
                 code = ''.join(random.choice(string.ascii_uppercase + string.octdigits) for _ in range(16))
             
-            current_tournaments = Tournament.objects.filter(creator=request.user, end_date__gt=datetime.now()).all()
+            current_tournaments = Tournament.objects.filter(creator=request.user, end_date__gt = datetime.now().date()).all()
 
-            for tournament in current_tournaments:
-                tournament.delete()
+            if current_tournaments.count() > 0:
+                current_tournament = current_tournaments[0]
+                if datetime.now().date() >= current_tournament.start_date:
+                    return HttpResponseBadRequest('<p class="error">Erreur: un tournoi en cours existe déjà. Attendez la fin de celui-ci pour en créer un nouveau.</p>')
+
+            current_tournaments.delete()
 
             tournament = Tournament.objects.create(
                 name = name,

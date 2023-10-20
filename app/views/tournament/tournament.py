@@ -42,7 +42,7 @@ def tournament_code(request: HttpRequest) -> HttpResponse:
     if (tournament_code := request.POST.get('code')) is None: return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
 
     try:
-        tournament_inst = Tournament.objects.get(code = tournament_code)
+        tournament_inst = Tournament.objects.get(code = tournament_code, end_date__gt = datetime.now())
         if not tournament_inst: return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
 
     except:
