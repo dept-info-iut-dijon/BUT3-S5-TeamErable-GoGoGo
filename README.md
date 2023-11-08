@@ -16,7 +16,6 @@ TODO-DESCRIPTION
 - TODO
 
 
-
 ## Contributors
 
 John GAUDRY, Hugo MRULA, Matthieu THIVARD, Samuel MONTAGNA
