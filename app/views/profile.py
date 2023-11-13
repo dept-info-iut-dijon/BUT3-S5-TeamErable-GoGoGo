@@ -1,53 +1,100 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.password_validation import validate_password
 from ..models import CustomUser
+from .decorators import login_required, request_type, RequestType
+from ..http import HttpResponseNotifError, HttpResponseNotifSuccess
 import os
 
+@login_required
+@request_type(RequestType.GET)
 def profile(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
-    
-    if request.method == 'GET':
-        return render(request, 'profile.html', {'user': request.user, 'friends': request.user.friends.all()})
+    '''Controlleur de la page de profil
 
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        HttpResponse: Réponse HTTP de la page de profil
+    '''
+
+    return render(request, 'profile.html', {'user': request.user, 'friends': request.user.friends.all()})
+
+
+@login_required
+@request_type(RequestType.POST)
 def change_user_info(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
+    '''Controlleur de la modification des informations de l'utilisateur
 
-    if request.method == 'POST':
-        name = request.POST.get('username')
-        email = request.POST.get('email')
+    Args:
+        request (HttpRequest): Requête HTTP
 
-        if name:
-            request.user.username = name
-        if email:
-            request.user.email = email
-        
-        request.user.save()
-        return HttpResponse('<p class="success">Les informations ont bien été modifiées.</p>')
+    Returns:
+        HttpResponse: Réponse HTTP de la modification des informations de l'utilisateur
+    '''
 
-    return HttpResponse('<p class="error">Une erreur est survenue.</p>')
+    name = request.POST.get('username')
+    email = request.POST.get('email')
 
+    if name: request.user.username = name
+    if email: request.user.email = email
+
+    request.user.save()
+    return HttpResponseNotifSuccess('Les informations ont bien été modifiées.')
+
+
+def remove_pfp(path: str | None) -> None:
+    '''Supprime la photo de profil d'un utilisateur
+
+    Args:
+        path (str): Chemin de la photo de profil
+    '''
+    if path:
+        try: os.remove(path)
+        except: pass
+
+
+@login_required
+@request_type(RequestType.POST)
 def change_pfp(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
+    '''Controlleur de la modification de la photo de profil de l'utilisateur
 
-    if request.method == 'POST':
-        pfp = request.FILES.get('pfp')
-        if pfp:
-            if pfp.size > 2 * 1024 * 1024:
-                return HttpResponseBadRequest('<p class="error">La photo de profil est trop volumineuse.</p>')
+    Args:
+        request (HttpRequest): Requête HTTP
 
-            if request.user.profile_picture:
-                try: os.remove(request.user.profile_picture.path)
-                except: pass
+    Returns:
+        HttpResponse: Réponse HTTP de la modification de la photo de profil de l'utilisateur
+    '''
+    ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
+
+    pfp = request.FILES.get('pfp')
+    if pfp:
+        if pfp.size > 2097152: # 2 * 1024 * 1024 = 2097152 (2MB)
+            return HttpResponseNotifError('La photo de profil ne doit pas dépasser 2 Mo.')
+
+        else:
+            remove_pfp(request.user.profile_picture.path if request.user.profile_picture else None)
+
             request.user.profile_picture = pfp
             request.user.save()
-            return HttpResponse('<p class="success">La photo de profil a bien été modifiée.</p>')
 
-    return HttpResponse('<p class="error">Une erreur est survenue.</p>')
+            ret = HttpResponseNotifSuccess('La photo de profil a bien été modifiée.')
 
+    return ret
+
+
+@login_required
 def change_pwd(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseBadRequest()
+    '''Controlleur de la modification du mot de passe de l'utilisateur
+
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        HttpResponse: Réponse HTTP de la modification du mot de passe de l'utilisateur
+    '''
+    ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
 
     if request.method == 'POST':
         old_pwd = request.POST.get('old-pwd')
@@ -64,84 +111,143 @@ def change_pwd(request: HttpRequest) -> HttpResponse:
                         request.user.save()
                         request.user = authenticate(username=request.user.username, password=new_pwd)
                         if request.user: login(request, request.user)
-                        return HttpResponse('<p class="success">Le mot de passe a bien été modifié. Rechargement de la page...</p>')
+                        ret = HttpResponseNotifSuccess('Le mot de passe a bien été modifié. Rechargement de la page...')
 
                     else:
-                        return HttpResponseBadRequest('<p class="error">L\'ancien mot de passe est incorrect.</p>')
+                        ret = HttpResponseNotifError('L\'ancien mot de passe est incorrect.')
 
                 except Exception as e:
-                    return HttpResponseBadRequest('<p class="error">Le mot de passe n\'est pas assez sécurisé.</p>')
+                    ret = HttpResponseNotifError('Le mot de passe n\'est pas assez sécurisé.')
 
-            return HttpResponseBadRequest('<p class="error">Les mots de passe ne correspondent pas.</p>')
+            else: ret = HttpResponseNotifError('Les mots de passe ne correspondent pas.')
 
-    return HttpResponseBadRequest('<p class="error">Une erreur est survenue. Vérifiez que vous avez bien rempli tous les champs.</p>')
+    return ret
 
+
+@login_required
 def friends(request: HttpRequest) -> HttpResponse:
+    '''Controlleur de la liste d'amis de l'utilisateur
+
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        HttpResponse: Réponse HTTP de la liste d'amis de l'utilisateur
+    '''
     listfriends = request.user.friends.all()
     return render(request, 'friends.html', {'friends': listfriends})
 
+
+@login_required
 def search_notfriend_user(request: HttpRequest) -> HttpResponse:
+    '''Controlleur de la recherche d'utilisateurs non amis de l'utilisateur
+
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        HttpResponse: Réponse HTTP de la recherche d'utilisateurs non amis de l'utilisateur
+    '''
+    ret: HttpResponse = HttpResponseBadRequest()
+
     if request.method == 'POST':
         query = request.POST.get('username')
         if query:
             users = CustomUser.objects.filter(username__icontains = query).exclude(id = request.user.id).exclude(friends = request.user).order_by('username')[:6]
-            return render(request, 'reusable/search_user.html', {'users': users})
-        
-        return render(request, 'reusable/search_user.html', {'users': []})
+            ret = render(request, 'reusable/search_user.html', {'users': users})
 
-    return HttpResponseBadRequest('')
+        else: ret = render(request, 'reusable/search_user.html', {'users': []})
 
+    return ret
+
+
+@login_required
 def friend_list(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
+    '''Controlleur de la liste d'amis de l'utilisateur
+
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        HttpResponse: Réponse HTTP de la liste d'amis de l'utilisateur
+    '''
+    ret: HttpResponse = HttpResponseBadRequest()
 
     if request.method == 'GET':
         listfriends = request.user.friends.all()
-        return render(request, 'reusable/friend_list.html', {'friends': listfriends})
-    
-    return HttpResponseBadRequest()
+        ret = render(request, 'reusable/friend_list.html', {'friends': listfriends})
 
+    return ret
+
+
+@login_required
 def add_friend(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseBadRequest()
+    '''Controlleur de l'ajout d'un ami à l'utilisateur
+
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        HttpResponse: Réponse HTTP de l'ajout d'un ami à l'utilisateur
+    '''
+    ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
 
     if request.method == 'GET':
         friend_id = request.GET.get('id')
-        if friend_id is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
 
-        friend = CustomUser.objects.get(id=friend_id)
-        if request.user.friends.filter( id=friend_id).exists(): return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+        if friend_id is not None:
+            friend = CustomUser.objects.get(id = friend_id)
+            if not request.user.friends.filter(id = friend_id).exists() and friend:
+                request.user.friends.add(friend)
+                ret = HttpResponseNotifSuccess(f'{friend.username} a été ajouté à vos amis.')
 
-        if friend:
-            request.user.friends.add(friend)
-            return HttpResponse(f'<p class="success">{friend.username} a été ajouté à vos amis.</p>')
+    return ret
 
-    return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
 
+@login_required
 def delete_friend(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseBadRequest()
+    '''Controlleur de la suppression d'un ami à l'utilisateur
+
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        HttpResponse: Réponse HTTP de la suppression d'un ami à l'utilisateur
+    '''
+    ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
 
     if request.method == 'GET':
         friend_id = request.GET.get('id')
-        if friend_id is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
-    
-        friend = CustomUser.objects.get(id=friend_id)
-        if not request.user.friends.filter( id=friend_id).exists(): return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
 
-        if friend:
-            request.user.friends.remove(friend)
-            return HttpResponse(f'<p class="success">{friend.username} a été supprimé de vos amis.</p>')
+        if friend_id is not None:
+            friend = CustomUser.objects.get(id = friend_id)
 
-    return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+            if request.user.friends.filter(id = friend_id).exists() and friend:
+                request.user.friends.remove(friend)
+                ret = HttpResponseNotifSuccess(f'{friend.username} a été supprimé de vos amis.')
 
+    return ret
+
+
+@login_required
 def delete_account(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseBadRequest()
+    '''Controlleur de la suppression du compte de l'utilisateur
+
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        HttpResponse: Réponse HTTP de la suppression du compte de l'utilisateur
+    '''
+    ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
 
     if request.method == 'POST':
         password = request.POST.get('password')
         if password:
             if request.user.check_password(password):
                 request.user.delete()
-                return HttpResponse('<p class="success">Votre compte a bien été supprimé. Redirection vers la page de connexion...</p>')
+                ret = HttpResponseNotifSuccess('Votre compte a bien été supprimé. Redirection vers la page de connexion...')
 
-            return HttpResponseBadRequest('<p class="error">Le mot de passe est incorrect.</p>')
+            else: ret = HttpResponseNotifError('Le mot de passe est incorrect.')
 
-    return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+    return ret
