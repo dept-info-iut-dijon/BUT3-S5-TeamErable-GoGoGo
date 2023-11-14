@@ -32,7 +32,7 @@ def register(request: HttpRequest) -> HttpResponse:
             with open('./static/icons/default-pfp.png', 'rb') as f:
                 user.profile_picture.save('default-pfp.png', f, save=True)
 
-            return HttpResponse()
+            return HttpResponseRedirect('/login')
         
         else:
             if form.errors.get('username'): return HttpResponseBadRequest('<p class="error">Ce nom d\'utilisateur est déjà pris.</p>')
