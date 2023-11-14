@@ -112,8 +112,8 @@ document.querySelector("#search-input").addEventListener('keyup', async function
 
 
 
-document.body.addEventListener("htmx:afterRequest", function(event) {
-    setTimeout(function() {
+document.body.addEventListener("htmx:afterRequest", async function(event) {
+    setTimeout(async function() {
         if (
             !(
                 (event.detail.xhr.responseURL.startsWith(window.location.origin + "/add-friend")) ||
@@ -126,15 +126,15 @@ document.body.addEventListener("htmx:afterRequest", function(event) {
 
         var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
-        fetch('/friend-list', {
+        await fetch('/friend-list', {
             method: 'GET',
             headers: {
                 'X-CSRFToken': csrf_token
             }
         })
-        .then(function(response) {
+        .then(async function(response) {
             if (response.status == 200) {
-                document.querySelector("#friends-list").innerHTML = response.responseText;
+                document.querySelector("#friends-list").innerHTML = await response.text();
                 htmx.process(document.querySelector("#friends-list"));
             }
         })
@@ -143,7 +143,7 @@ document.body.addEventListener("htmx:afterRequest", function(event) {
 
 
 
-document.querySelector("#delete-account").addEventListener('submit', function(event) {
+document.querySelector("#delete-account").addEventListener('submit', async function(event) {
     event.preventDefault();
     document.querySelector('form#delete-account input[type="submit"]').disabled = true;
 
@@ -152,7 +152,7 @@ document.querySelector("#delete-account").addEventListener('submit', function(ev
     var formData = new FormData();
     formData.append('password', document.querySelector('input[name="password"]').value);
 
-    fetch('/delete-account', {
+    await fetch('/delete-account', {
         method: 'POST',
         headers: {
             'X-CSRFToken': csrf_token
@@ -160,8 +160,8 @@ document.querySelector("#delete-account").addEventListener('submit', function(ev
         redirect: 'follow',
         body: formData
     })
-    .then(function(response) {
-        document.querySelector(".notify").innerHTML = response.responseText;
+    .then(async function(response) {
+        document.querySelector(".notify").innerHTML = await response.text();
 
         if (response.redirected) {
             setTimeout(function() {

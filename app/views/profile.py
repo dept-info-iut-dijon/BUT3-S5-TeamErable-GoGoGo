@@ -85,6 +85,7 @@ def change_pfp(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+@request_type(RequestType.POST)
 def change_pwd(request: HttpRequest) -> HttpResponse:
     '''Controlleur de la modification du mot de passe de l'utilisateur
 
@@ -96,35 +97,35 @@ def change_pwd(request: HttpRequest) -> HttpResponse:
     '''
     ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
 
-    if request.method == 'POST':
-        old_pwd = request.POST.get('old-pwd')
-        new_pwd = request.POST.get('new-pwd')
-        confirm_new_pwd = request.POST.get('new-pwd-confirm')
+    old_pwd = request.POST.get('old-pwd')
+    new_pwd = request.POST.get('new-pwd')
+    confirm_new_pwd = request.POST.get('new-pwd-confirm')
 
-        if old_pwd and new_pwd and confirm_new_pwd:
-            if new_pwd == confirm_new_pwd:
-                try:
-                    validate_password(new_pwd)
+    if old_pwd and new_pwd and confirm_new_pwd:
+        if new_pwd == confirm_new_pwd:
+            try:
+                validate_password(new_pwd)
 
-                    if request.user.check_password(old_pwd):
-                        request.user.set_password(new_pwd)
-                        request.user.save()
-                        request.user = authenticate(username=request.user.username, password=new_pwd)
-                        if request.user: login(request, request.user)
-                        ret = HttpResponseNotifSuccess('Le mot de passe a bien été modifié. Rechargement de la page...')
+                if request.user.check_password(old_pwd):
+                    request.user.set_password(new_pwd)
+                    request.user.save()
+                    request.user = authenticate(username=request.user.username, password=new_pwd)
+                    if request.user: login(request, request.user)
+                    ret = HttpResponseNotifSuccess('Le mot de passe a bien été modifié. Rechargement de la page...')
 
-                    else:
-                        ret = HttpResponseNotifError('L\'ancien mot de passe est incorrect.')
+                else:
+                    ret = HttpResponseNotifError('L\'ancien mot de passe est incorrect.')
 
-                except Exception as e:
-                    ret = HttpResponseNotifError('Le mot de passe n\'est pas assez sécurisé.')
+            except Exception as e:
+                ret = HttpResponseNotifError('Le mot de passe n\'est pas assez sécurisé.')
 
-            else: ret = HttpResponseNotifError('Les mots de passe ne correspondent pas.')
+        else: ret = HttpResponseNotifError('Les mots de passe ne correspondent pas.')
 
     return ret
 
 
 @login_required
+@request_type(RequestType.GET, RequestType.POST)
 def friends(request: HttpRequest) -> HttpResponse:
     '''Controlleur de la liste d'amis de l'utilisateur
 
@@ -139,6 +140,7 @@ def friends(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+@request_type(RequestType.POST)
 def search_notfriend_user(request: HttpRequest) -> HttpResponse:
     '''Controlleur de la recherche d'utilisateurs non amis de l'utilisateur
 
@@ -150,18 +152,18 @@ def search_notfriend_user(request: HttpRequest) -> HttpResponse:
     '''
     ret: HttpResponse = HttpResponseBadRequest()
 
-    if request.method == 'POST':
-        query = request.POST.get('username')
-        if query:
-            users = CustomUser.objects.filter(username__icontains = query).exclude(id = request.user.id).exclude(friends = request.user).order_by('username')[:6]
-            ret = render(request, 'reusable/search_user.html', {'users': users})
+    query = request.POST.get('username')
+    if query:
+        users = CustomUser.objects.filter(username__icontains = query).exclude(id = request.user.id).exclude(friends = request.user).order_by('username')[:6]
+        ret = render(request, 'reusable/search_user.html', {'users': users})
 
-        else: ret = render(request, 'reusable/search_user.html', {'users': []})
+    else: ret = render(request, 'reusable/search_user.html', {'users': []})
 
     return ret
 
 
 @login_required
+@request_type(RequestType.GET, RequestType.POST)
 def friend_list(request: HttpRequest) -> HttpResponse:
     '''Controlleur de la liste d'amis de l'utilisateur
 
@@ -181,6 +183,7 @@ def friend_list(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+@request_type(RequestType.GET)
 def add_friend(request: HttpRequest) -> HttpResponse:
     '''Controlleur de l'ajout d'un ami à l'utilisateur
 
@@ -192,19 +195,19 @@ def add_friend(request: HttpRequest) -> HttpResponse:
     '''
     ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
 
-    if request.method == 'GET':
-        friend_id = request.GET.get('id')
+    friend_id = request.GET.get('id')
 
-        if friend_id is not None:
-            friend = CustomUser.objects.get(id = friend_id)
-            if not request.user.friends.filter(id = friend_id).exists() and friend:
-                request.user.friends.add(friend)
-                ret = HttpResponseNotifSuccess(f'{friend.username} a été ajouté à vos amis.')
+    if friend_id is not None:
+        friend = CustomUser.objects.get(id = friend_id)
+        if not request.user.friends.filter(id = friend_id).exists() and friend:
+            request.user.friends.add(friend)
+            ret = HttpResponseNotifSuccess(f'{friend.username} a été ajouté à vos amis.')
 
     return ret
 
 
 @login_required
+@request_type(RequestType.GET)
 def delete_friend(request: HttpRequest) -> HttpResponse:
     '''Controlleur de la suppression d'un ami à l'utilisateur
 
@@ -216,20 +219,20 @@ def delete_friend(request: HttpRequest) -> HttpResponse:
     '''
     ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
 
-    if request.method == 'GET':
-        friend_id = request.GET.get('id')
+    friend_id = request.GET.get('id')
 
-        if friend_id is not None:
-            friend = CustomUser.objects.get(id = friend_id)
+    if friend_id is not None:
+        friend = CustomUser.objects.get(id = friend_id)
 
-            if request.user.friends.filter(id = friend_id).exists() and friend:
-                request.user.friends.remove(friend)
-                ret = HttpResponseNotifSuccess(f'{friend.username} a été supprimé de vos amis.')
+        if request.user.friends.filter(id = friend_id).exists() and friend:
+            request.user.friends.remove(friend)
+            ret = HttpResponseNotifSuccess(f'{friend.username} a été supprimé de vos amis.')
 
     return ret
 
 
 @login_required
+@request_type(RequestType.POST)
 def delete_account(request: HttpRequest) -> HttpResponse:
     '''Controlleur de la suppression du compte de l'utilisateur
 
@@ -241,13 +244,12 @@ def delete_account(request: HttpRequest) -> HttpResponse:
     '''
     ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
 
-    if request.method == 'POST':
-        password = request.POST.get('password')
-        if password:
-            if request.user.check_password(password):
-                request.user.delete()
-                ret = HttpResponseNotifSuccess('Votre compte a bien été supprimé. Redirection vers la page de connexion...')
+    password = request.POST.get('password')
+    if password:
+        if request.user.check_password(password):
+            request.user.delete()
+            ret = HttpResponseNotifSuccess('Votre compte a bien été supprimé. Redirection vers la page de connexion...')
 
-            else: ret = HttpResponseNotifError('Le mot de passe est incorrect.')
+        else: ret = HttpResponseNotifError('Le mot de passe est incorrect.')
 
     return ret
