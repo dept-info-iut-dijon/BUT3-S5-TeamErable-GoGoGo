@@ -1,4 +1,4 @@
-async function validateForm() {
+function validateForm() {
     document.querySelector('input[type="submit"]').disabled = true;
 
     var formData = new FormData();
@@ -7,23 +7,19 @@ async function validateForm() {
 
     var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
-    await fetch('/login', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': csrf_token
-        },
-        redirect: 'follow',
-        body: formData
-    })
-    .then(async function(response) {
-        if (response.redirected) {
-            window.location.replace(response.url);
+    var request = new XMLHttpRequest();
+    request.open('POST', '/login');
+    request.setRequestHeader('X-CSRFToken', csrf_token);
+    request.onload = function() {
+        if (request.status === 200) {
+            window.location.href = '/';
         }
         else {
-            document.querySelector(".notify").innerHTML = await response.text();
+            document.querySelector(".notify").innerHTML = request.responseText;
             document.querySelector('input[type="submit"]').disabled = false;
         }
-    });
+    };
+    request.send(formData);
 
     return false;
 }

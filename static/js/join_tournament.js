@@ -1,24 +1,20 @@
 htmx.config.useTemplateFragments = true;
-
-document.querySelector("#search-input").addEventListener('keyup', async function(event) {
+document.querySelector("#search-input").addEventListener('keyup', function(event) {
     var formData = new FormData();
     formData.append('tournament_name', event.target.value);
 
     var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
-    await fetch('/search-tournament', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': csrf_token
-        },
-        body: formData
-    })
-    .then(async function(response) {
-        if (response.status == 200) {
-            document.querySelector("#tournament-list").innerHTML = await response.text();
+    var request = new XMLHttpRequest();
+    request.open('POST', '/search-tournament');
+    request.setRequestHeader('X-CSRFToken', csrf_token);
+    request.onload = function() {
+        if (request.status == 200) {
+            document.querySelector("#tournament-list").innerHTML = request.responseText;
             htmx.process(document.querySelector("#tournament-list"));
         }
-    })
+    }
+    request.send(formData);
 });
 
 document.querySelectorAll(".pass-to-next").forEach(function(element) {
@@ -57,13 +53,14 @@ document.querySelector(".pass-to-next-last").addEventListener('keyup', function(
     event.target.value = event.target.value.replace(/[^A-Z0-9]/g, '');
 });
 
-document.querySelector("form#join-by-code").addEventListener('submit', async function(event) {
+document.querySelector("form#join-by-code").addEventListener('submit', function(event) {
     event.target.querySelector("input[type='submit']").disabled = true;
     event.preventDefault();
-
-    var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-    
     var formData = new FormData(event.target);
+    var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+    var request = new XMLHttpRequest();
+    request.open('POST', '/tournament-code');
     formData.append(
         'code',
         event.target.querySelector("#search-code-input-0").value +
@@ -71,22 +68,14 @@ document.querySelector("form#join-by-code").addEventListener('submit', async fun
         event.target.querySelector("#search-code-input-2").value +
         event.target.querySelector("#search-code-input-3").value
     )
-
-    await fetch('/tournament-code', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': csrf_token
-        },
-        redirect: 'follow',
-        body: formData
-    })
-    .then(async function(response) {
-        if (response.redirected) {
-            window.location.replace(response.url);
-        }
-        else {
-            document.querySelector(".notify").innerHTML = await response.text();
+    request.setRequestHeader('X-CSRFToken', csrf_token);
+    request.onload = function() {
+        if (request.status == 400) {
+            document.querySelector(".notify").innerHTML = request.responseText;
             event.target.querySelector("input[type='submit']").disabled = false;
+        } else if (request.status == 200) {
+            window.location.href = request.responseText;
         }
-    });
+    }
+    request.send(formData);
 });
