@@ -13,7 +13,7 @@ from .connection.forgottenpassword import forgotten_password
 from .profil.security.passwordresetconfirm import password_reset_confirm
 from .tournament.tournament import tournament
 from .tournament.tournament_manager import tournament_manager, tournament_join
-from .create_game import create_game
+from .game.create_game import create_game
 from .game.join_game import join_game, search_game, search_current_game
 from .game.game import game, game_code
 from .tournament.create_tournament import create_tournament
