@@ -3,9 +3,9 @@ from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpRes
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.password_validation import validate_password
 from django.db.models import Q
-from ..models import Game
-from .decorators import login_required, request_type, RequestType
-from ..http import HttpResponseNotifError, HttpResponseNotifSuccess
+from ...models import Game
+from ..decorators import login_required, request_type, RequestType
+from ...http import HttpResponseNotifError, HttpResponseNotifSuccess
 
 @login_required
 @request_type(RequestType.GET)

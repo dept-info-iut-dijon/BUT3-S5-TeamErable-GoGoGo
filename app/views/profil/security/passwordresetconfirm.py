@@ -4,9 +4,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import render
-from ..forms.ResetPasswordForm import ResetPasswordForm
+from ....forms.ResetPasswordForm import ResetPasswordForm
 from django.contrib.auth import login
-from .decorators import logout_required, request_type, RequestType
+from ...decorators import logout_required, request_type, RequestType
 
 @logout_required
 @request_type(RequestType.POST)

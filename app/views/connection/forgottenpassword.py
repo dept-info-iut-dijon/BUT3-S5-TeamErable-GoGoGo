@@ -2,13 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from ..forms.ForgottenPassForm import ForgottenPassForm
-from ..models.custom_user import CustomUser
+from ...forms.ForgottenPassForm import ForgottenPassForm
+from ...models.custom_user import CustomUser
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.conf import settings
-from .decorators import logout_required, request_type, RequestType
+from ..decorators import logout_required, request_type, RequestType
 
 
 def send_password_reset_email(user: CustomUser, token: bytes | str) -> None:
