@@ -24,6 +24,7 @@ class Tile(Enum):
                 return tile
         return None
 
+    @property
     def next(self) -> 'Tile':
         '''Renvoie la tuile suivante.
 
