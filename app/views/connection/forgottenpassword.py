@@ -1,16 +1,23 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from ..forms.ForgottenPassForm import ForgottenPassForm
-from ..models.custom_user import CustomUser
+from ...forms.ForgottenPassForm import ForgottenPassForm
+from ...models.custom_user import CustomUser
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.conf import settings
+from ..decorators import logout_required, request_type, RequestType
 
 
-def send_password_reset_email(user, token):
+def send_password_reset_email(user: CustomUser, token: bytes | str) -> None:
+    '''Envoie un email de reinitialisation de mot de passe a l'utilisateur
+
+    Args:
+        user (CustomUser): L'utilisateur
+        token (bytes | str): Le token de reinitialisation de mot de passe
+    '''
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     subject = "Recuperation de votre mot de passe"
     message = f"<h2>Bonjour, {user.username}!</h2>"
@@ -28,8 +35,18 @@ def send_password_reset_email(user, token):
     send_mail(subject, message,from_email, recipient_list, html_message=message, fail_silently=False)
     
 
+@logout_required
+@request_type(RequestType.GET, RequestType.POST)
 def forgotten_password(request: HttpRequest) -> HttpResponse:
-    if request.method == 'POST':
+    '''Controlleur de la page de recuperation de mot de passe
+
+    Args:
+        request (HttpRequest): La requete HTTP
+
+    Returns:
+        HttpResponse: La reponse HTTP a la requete de recuperation de mot de passe
+    '''
+    if request.method == RequestType.POST.value:
         form = ForgottenPassForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
@@ -49,6 +66,7 @@ def forgotten_password(request: HttpRequest) -> HttpResponse:
             except CustomUser.DoesNotExist:
                 # Handle the case where the email is not found
                 pass
-    else:
+    elif request.method == RequestType.GET.value:
         form = ForgottenPassForm()
+
     return render(request, 'forgottenpassword.html', {'form':form})

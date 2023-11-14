@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from django.contrib.auth import authenticate, login, logout
-from ..forms.ConnectForm import ConnectForm
-from .decorators import login_required, logout_required, request_type, RequestType
+from ...forms.ConnectForm import ConnectForm
+from ..decorators import login_required, logout_required, request_type, RequestType
 
 
 @logout_required

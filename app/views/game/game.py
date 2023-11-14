@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from app.models import Game
-from ..logic import Board, Tile
+from ...logic import Board, Tile
 import json
-from .decorators import login_required, request_type, RequestType
-from ..http import HttpResponseNotifError
+from ..decorators import login_required, request_type, RequestType
+from ...http import HttpResponseNotifError
 
 @login_required
 @request_type(RequestType.GET)
