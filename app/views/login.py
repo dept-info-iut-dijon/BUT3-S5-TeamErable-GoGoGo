@@ -17,7 +17,7 @@ def login_(request: HttpRequest) -> HttpResponse:
             user = authenticate(request, username = request.POST['username'], password = request.POST['password'])
             if user:
                 login(request, user)
-                return HttpResponse()
+                return HttpResponseRedirect('/')
 
         return HttpResponseBadRequest('<p class="error">Le mot de passe ou le nom d\'utilisateur est incorrect.</p>')
         
