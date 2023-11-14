@@ -1,26 +1,17 @@
 from django.db import models
-from .custom_user import CustomUser
+from .game_participate import GameParticipate
 from .tournament import Tournament
+from .game_configuration import GameConfiguration
 
 class Game(models.Model):
     id_game = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     code = models.CharField(max_length=16, null=True)
-    is_private = models.BooleanField(default=False)
     start_date = models.DateField()
     duration = models.IntegerField()
     done = models.BooleanField(default=False)
-    ranked = models.BooleanField(default=False)
-    map_size = models.IntegerField(null=False)
-    komi = models.FloatField(null=False)
-    counting_method = models.CharField(max_length=255, null=False)
-    clock_type = models.CharField(max_length=255, null=False)
-    clock_value = models.IntegerField(null=False)
-    byo_yomi = models.IntegerField(null=False)
-    handicap = models.IntegerField(null=True)
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='tournament', null=True)
-    player1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player1')
-    player2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player2', null=True)
-    winner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='winner', null=True)
     move_list = models.FileField(upload_to='dynamic/games', null=True)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='tournament', null=True)
+    game_configuration = models.ForeignKey(GameConfiguration, on_delete=models.CASCADE, null=False)
+    game_participate = models.ForeignKey(GameParticipate, on_delete=models.CASCADE, null=True)

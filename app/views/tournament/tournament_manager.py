@@ -1,6 +1,6 @@
 from django.http import FileResponse, HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
-from ...models.tournament import Tournament, Participate
+from ...models.tournament import Tournament, ParticipateTournament
 from ...models.game import Game
 from django.contrib.auth import get_user_model
 import datetime, os, json
@@ -45,7 +45,7 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
     except get_user_model().DoesNotExist:
         user = None
     
-    participate = Participate.objects.filter(tournament=tournament)
+    participate = ParticipateTournament.objects.filter(tournament=tournament)
     participants = [entry.person for entry in participate]
     games = Game.objects.filter(tournament=tournament)
 
@@ -118,7 +118,7 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
     if tournament.ongoing() == True: 
         return HttpResponseBadRequest('<p class="error">Les inscription pour ce tournois sont terminees</p>') 
 
-    if len(Participate.objects.filter(person=request.user, tournament=tournament).all()) < 1:
+    if len(ParticipateTournament.objects.filter(person=request.user, tournament=tournament).all()) < 1:
         link = Participate.objects.create(
                 person = request.user,
                 tournament = tournament,
