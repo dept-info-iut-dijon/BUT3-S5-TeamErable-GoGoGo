@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
-from ..models.game import Game
+from ...models.game import Game
 from datetime import datetime
 import random, string, os, json
-from ..logic import Board
-from .decorators import login_required, request_type, RequestType
-from ..http import HttpResponseNotifError
-from .code_manager import CodeManager
+from ...logic import Board
+from ..decorators import login_required, request_type, RequestType
+from ...http import HttpResponseNotifError
+from ..code_manager import CodeManager
 
 
 def _delete_current_games(user):
@@ -94,6 +94,6 @@ def create_game(request: HttpRequest) -> HttpResponse:
             ret = HttpResponseNotifError('Erreur lors de la création de la partie')
 
     elif request.method == RequestType.GET.value:
-        ret = render(request, 'create_game.html')
+        ret = render(request, 'game/create_game.html')
 
     return ret
