@@ -4,6 +4,36 @@ from ...forms.SignUpForm import SignUpForm
 from ...models import CustomUser, Statistic
 from ..decorators import logout_required, request_type, RequestType
 
+def _create_user(form: SignUpForm) -> CustomUser:
+    '''Fonction qui cree un utilisateur a partir du formulaire
+    Args:
+        form (SignUpForm): Le formulaire de creation de compte
+    
+    Returns:
+        CustomUser: L'utilisateur cree
+    '''
+    statistic = Statistic.objects.create(
+        game_win = 0,
+        game_loose = 0,
+        game_ranked_win = 0,
+        game_ranked_loose = 0,
+        average_time_move = 0,
+    )
+
+    user = CustomUser.objects.create(
+        username = form.cleaned_data['username'],
+        email = form.cleaned_data['email'],
+        password = '',
+        stat = statistic,
+    )
+
+    user.set_password(form.cleaned_data['password1'])
+
+    with open('./static/icons/default-pfp.png', 'rb') as f:
+        user.profile_picture.save('default-pfp.png', f, save=True)
+    return user
+
+
 @logout_required
 @request_type(RequestType.GET, RequestType.POST)
 def register(request: HttpRequest) -> HttpResponse:
@@ -24,26 +54,7 @@ def register(request: HttpRequest) -> HttpResponse:
     elif request.method == RequestType.POST.value:
         form = SignUpForm(request.POST)
         if form.is_valid():
-            statistic = Statistic.objects.create(
-                game_win = 0,
-                game_loose = 0,
-                game_ranked_win = 0,
-                game_ranked_loose = 0,
-                average_time_move = 0,
-            )
-
-            user = CustomUser.objects.create(
-                username = form.cleaned_data['username'],
-                email = form.cleaned_data['email'],
-                password = '',
-                stat = statistic,
-            )
-
-            user.set_password(form.cleaned_data['password1'])
-
-            with open('./static/icons/default-pfp.png', 'rb') as f:
-                user.profile_picture.save('default-pfp.png', f, save=True)
-
+            user = _create_user(form)
             ret = HttpResponseRedirect('/login')
         
         else:
