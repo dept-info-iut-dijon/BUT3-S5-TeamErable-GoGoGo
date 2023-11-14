@@ -5,7 +5,6 @@ class Statistic(models.Model):
     game_loose = models.IntegerField()
     game_ranked_win = models.IntegerField()
     game_ranked_loose = models.IntegerField()
-    average_time_move = models.IntegerField()
 
 
 
