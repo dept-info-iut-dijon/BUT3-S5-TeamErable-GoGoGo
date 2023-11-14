@@ -13,4 +13,4 @@ def team(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête d'équipe
     '''
-    return render(request, 'team.html')
+    return render(request, 'footer/team.html')

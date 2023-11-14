@@ -19,7 +19,7 @@ def profile(request: HttpRequest) -> HttpResponse:
         HttpResponse: Réponse HTTP de la page de profil
     '''
 
-    return render(request, 'profile.html', {'user': request.user, 'friends': request.user.friends.all()})
+    return render(request, 'profile/profile.html', {'user': request.user, 'friends': request.user.friends.all()})
 
 
 @login_required
@@ -122,21 +122,6 @@ def change_pwd(request: HttpRequest) -> HttpResponse:
         else: ret = HttpResponseNotifError('Les mots de passe ne correspondent pas.')
 
     return ret
-
-
-@login_required
-@request_type(RequestType.GET, RequestType.POST)
-def friends(request: HttpRequest) -> HttpResponse:
-    '''Controlleur de la liste d'amis de l'utilisateur
-
-    Args:
-        request (HttpRequest): Requête HTTP
-
-    Returns:
-        HttpResponse: Réponse HTTP de la liste d'amis de l'utilisateur
-    '''
-    listfriends = request.user.friends.all()
-    return render(request, 'friends.html', {'friends': listfriends})
 
 
 @login_required

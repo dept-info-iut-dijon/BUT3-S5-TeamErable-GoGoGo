@@ -13,4 +13,4 @@ def privacypolicy(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête de politique de confidentialité
     '''
-    return render(request, 'privacypolicy.html')
+    return render(request, 'footer/privacypolicy.html')

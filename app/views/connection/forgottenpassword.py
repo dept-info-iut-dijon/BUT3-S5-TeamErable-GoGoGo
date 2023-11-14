@@ -69,4 +69,4 @@ def forgotten_password(request: HttpRequest) -> HttpResponse:
     elif request.method == RequestType.GET.value:
         form = ForgottenPassForm()
 
-    return render(request, 'forgottenpassword.html', {'form':form})
+    return render(request, 'connection/forgottenpassword.html', {'form':form})

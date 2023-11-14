@@ -48,4 +48,4 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
         except:
             return HttpResponseBadRequest('<p class="error">Erreur lors de la création du tournois</p>')
 
-    return render(request, 'create_tournament.html')
+    return render(request, 'tournament/create_tournament.html')

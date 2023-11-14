@@ -41,4 +41,4 @@ def edit_tournament(request: HttpRequest, id_tournament: int) -> HttpResponse:
         except:
             return HttpResponseBadRequest('<p class="error">Erreur lors de la modification du tournois</p>')
 
-    return render(request, 'edit_tournament.html', {'tournament': tournament, 'checked': 'checked' if tournament.private else ''})
+    return render(request, 'tournament/edit_tournament.html', {'tournament': tournament, 'checked': 'checked' if tournament.private else ''})

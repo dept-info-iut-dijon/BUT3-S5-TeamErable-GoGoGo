@@ -20,7 +20,7 @@ def login_(request: HttpRequest) -> HttpResponse:
     ret: HttpResponse = HttpResponseBadRequest()
 
     if request.method == RequestType.GET.value:
-        ret = render(request, 'login.html')
+        ret = render(request, 'connection/login.html')
     
     elif request.method == RequestType.POST.value:
         form = ConnectForm(request.POST)
