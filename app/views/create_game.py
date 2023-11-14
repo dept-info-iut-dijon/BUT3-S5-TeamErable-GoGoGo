@@ -1,14 +1,27 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from ..models.game import Game
 from datetime import datetime
 import random, string, os, json
 from ..logic import Board
+from .decorators import login_required, request_type, RequestType
+from ..http import HttpResponseNotifError
 
+@login_required
+@request_type(RequestType.GET, RequestType.POST)
 def create_game(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
+    '''Controlleur de la page de création de partie
 
-    if request.method == 'POST':
+    Args:
+        request (HttpRequest): La requête HTTP
+
+    Returns:
+        HttpResponse: La réponse HTTP à la requête de création de partie
+    '''
+
+    ret: HttpResponse = HttpResponseBadRequest()
+
+    if request.method == RequestType.POST.value:
         name = request.POST.get('game-name')
         description = request.POST.get('game-desc', '')
         is_private = bool(request.POST.get('game-private', False))
@@ -49,11 +62,12 @@ def create_game(request: HttpRequest) -> HttpResponse:
             game.move_list = file
             game.save()
 
-            return HttpResponse(f'/game?id={game.id_game}')
+            ret = HttpResponseRedirect(f'/game?id={game.id_game}')
 
         except:
-            import traceback
-            traceback.print_exc()
-            return HttpResponseBadRequest('<p class="error">Erreur lors de la création de la partie</p>')
+            ret = HttpResponseNotifError('Erreur lors de la création de la partie')
 
-    return render(request, 'create_game.html')
+    elif request.method == RequestType.GET.value:
+        ret = render(request, 'create_game.html')
+
+    return ret
