@@ -39,14 +39,14 @@ def password_reset_confirm(request: HttpRequest, uidb64: bytes | str, token: byt
                 # Log the user in (optional)
                 login(request, user)
 
-                ret = render(request, 'profil.html')
+                ret = render(request, 'profile/profil.html')
 
         elif default_token_generator.check_token(user, token):
-            ret = render(request, 'password_reset_form.html', {'form':ResetPasswordForm(),'user':user, 'token':token})
+            ret = render(request, 'connection/password_reset_form.html', {'form':ResetPasswordForm(),'user':user, 'token':token})
         else:
-            ret = render(request, 'password_reset_token_invalid.html')
+            ret = render(request, 'connection/password_reset_token_invalid.html')
 
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        ret = render(request, 'password_reset_token_invalid.html')
+        ret = render(request, 'connection/password_reset_token_invalid.html')
 
     return ret

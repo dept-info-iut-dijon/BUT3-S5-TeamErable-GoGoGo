@@ -13,4 +13,4 @@ def termsofuse(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête de conditions d'utilisation
     '''
-    return render(request, 'termsofuse.html')
+    return render(request, 'footer/termsofuse.html')

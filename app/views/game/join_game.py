@@ -18,7 +18,7 @@ def join_game(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête de recherche de parties
     '''
-    return render(request, 'join_game.html')
+    return render(request, 'game/join_game.html')
 
 
 @login_required

@@ -14,4 +14,4 @@ def legalmention(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête de mentions légales
     '''
-    return render(request, 'legalmention.html')
+    return render(request, 'footer/legalmention.html')

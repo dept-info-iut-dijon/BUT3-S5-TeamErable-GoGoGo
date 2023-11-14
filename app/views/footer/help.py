@@ -13,4 +13,4 @@ def help(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête d'aide
     '''
-    return render(request, 'help.html')
+    return render(request, 'footer/help.html')

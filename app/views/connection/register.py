@@ -19,7 +19,7 @@ def register(request: HttpRequest) -> HttpResponse:
     ret: HttpResponse = HttpResponseBadRequest()
 
     if request.method == RequestType.GET.value:
-        ret = render(request, 'register.html')
+        ret = render(request, 'connection/register.html')
 
     elif request.method == RequestType.POST.value:
         form = SignUpForm(request.POST)

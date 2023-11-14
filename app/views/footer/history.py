@@ -13,4 +13,4 @@ def history(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête d'histoire
     '''
-    return render(request, 'history.html')
+    return render(request, 'footer/history.html')
