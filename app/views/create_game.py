@@ -6,6 +6,60 @@ import random, string, os, json
 from ..logic import Board
 from .decorators import login_required, request_type, RequestType
 from ..http import HttpResponseNotifError
+from .code_manager import CodeManager
+
+
+def _delete_current_games(user):
+    '''Fonction supprimant les parties en cours d'un utilisateur
+    
+    Args:
+        user (CustomUser): l'utilisateur concerné
+    '''
+    current_games = Game.objects.filter(player1=user).filter(done=False).all()
+    for game in current_games:
+        if game.move_list:
+            try:
+                os.remove(game.move_list.path)
+            except:
+                pass
+        game.delete()
+
+def _create_new_game(name, description, is_private, user):
+    '''Fonction permettant de creer une nouvelle partie
+    
+    Args:
+        name (str): le nom de la partie
+        description (str): la description de la partie
+        is_private (bool): boolean indiquant si la partie est privee
+        user (CustomUser): l'utilisateur concerné
+    '''
+    game = Game.objects.create(
+        name = name,
+        description = description,
+        start_date = datetime.now(),
+        duration = 0,
+        done = False,
+        tournament = None,
+        player1 = request.user,
+        player2 = None,
+        code = code,
+        is_private = is_private,
+        )
+    
+    file = f'dynamic/games/{game.id_game:X}.json'
+    size = 6
+
+    if not os.path.exists('dynamic/games'):
+        os.makedirs('dynamic/games')
+    with open(file, 'w') as f:
+        b = Board(size)
+        json.dump(b.export(), f)
+
+    game.move_list = file
+    game.save()
+
+    return game
+
 
 @login_required
 @request_type(RequestType.GET, RequestType.POST)
@@ -27,40 +81,12 @@ def create_game(request: HttpRequest) -> HttpResponse:
         is_private = bool(request.POST.get('game-private', False))
 
         try:
-            code = None
-            while code is None or Game.objects.filter(code = code).filter(done = False).exists():
-                code = ''.join(random.choice(string.ascii_uppercase + string.octdigits) for _ in range(16))
+            code_manager = CodeManager()
+            code = code_manager.generate_unique_code()
 
-            current_games = Game.objects.filter(player1 = request.user).filter(done = False).all()
-            for game in current_games:
-                if game.move_list:
-                    try: os.remove(game.move_list.path)
-                    except: pass
-                game.delete()
-
-            game = Game.objects.create(
-                name = name,
-                description = description,
-                start_date = datetime.now(),
-                duration = 0,
-                done = False,
-                tournament = None,
-                player1 = request.user,
-                player2 = None,
-                code = code,
-                is_private = is_private,
-            )
-
-            file = f'dynamic/games/{game.id_game:X}.json'
-            size = 6
-
-            if not os.path.exists('dynamic/games'): os.makedirs('dynamic/games')
-            with open(file, 'w') as f:
-                b = Board(size)
-                json.dump(b.export(), f)
-
-            game.move_list = file
-            game.save()
+            _delete_current_games(request.user)
+            
+            game = _create_new_game(name, description, is_private, request.user)
 
             ret = HttpResponseRedirect(f'/game?id={game.id_game}')
 
