@@ -17,7 +17,6 @@ def _create_user(form: SignUpForm) -> CustomUser:
         game_loose = 0,
         game_ranked_win = 0,
         game_ranked_loose = 0,
-        average_time_move = 0,
     )
 
     user = CustomUser.objects.create(
