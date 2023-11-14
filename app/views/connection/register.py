@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
-from ..forms.SignUpForm import SignUpForm
-from ..models import CustomUser, Statistic
-from .decorators import logout_required, request_type, RequestType
+from ...forms.SignUpForm import SignUpForm
+from ...models import CustomUser, Statistic
+from ..decorators import logout_required, request_type, RequestType
 
 @logout_required
 @request_type(RequestType.GET, RequestType.POST)
