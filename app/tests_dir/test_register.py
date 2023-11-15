@@ -22,4 +22,4 @@ class SignUpTestCase(TestCase):
 			'password2': 'error',
 		}
 		response = self.client.post('/register',invalid_sample)
-		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.status_code, 400)
