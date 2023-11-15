@@ -38,8 +38,8 @@
                             </select>
                         </div>
                         <div class="form-control">
-                            <label for="game-rules">Regles de la partie</label>
-                            <select name="game-rules" id="game-rules">
+                            <label for="counting-method">Regles de la partie</label>
+                            <select name="counting-method" id="counting-method">
                                 <option value="japanese">Japonaise</option>
                                 <option value="chinese">Chinoise</option>
                             </select>
@@ -63,6 +63,14 @@
                             <label for="komi">Valeur donnée au Komi</label>
                             <input type="number" name="komi" id="komi" min="3.5" max="25.5" value="6.5" placeholder="Valeur donnée au Komi">
                         </div>
+                        <div class="form-control">
+                            <label for="game-is-handicap">Handicap ?</label>
+                            <switchbutton name="game-is-handicap" id="game-is-handicap" onclick="toggleHandicap()"></switchbutton>
+                        <div id="handicap-form" class="form-control" hidden>
+                            <label for="handicap">Handicap</label>
+                            <input type="number" name="handicap" id="handicap" min="0" max="9" value="0" placeholder="Handicap">
+                        </div>
+                        
                     <div class="separator"></div>
                     <div class="form-control">
                         <input type="submit" value="Créer la partie">
