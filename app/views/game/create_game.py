@@ -35,6 +35,10 @@ def _create_new_game(name, description, is_private, user, code, map_size, counti
         is_private (bool): boolean indiquant si la partie est privee
         user (CustomUser): l'utilisateur concerné
     '''
+
+    list_str = clock_value.split(':')
+    clock_value = int(list_str[0]) * 3600 + int(list_str[1]) * 60 + int(list_str[2])
+
     configuration = GameConfiguration.objects.create(
         is_private = is_private,
         map_size = map_size,
@@ -101,7 +105,7 @@ def create_game(request: HttpRequest) -> HttpResponse:
         counting_method = request.POST.get('counting-method', '')
         byo_yomi = int(request.POST.get('byo-yomi', 30))
         clock_type = request.POST.get('clock-type', 'normal')
-        clock_value = int(request.POST.get('clock_value', 3600))
+        clock_value = request.POST.get('clock_value', '01:00:00')
         komi = float(request.POST.get('komi', 6.5))
         handicap = int(request.POST.get('handicap', 0))
 

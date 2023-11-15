@@ -15,3 +15,18 @@ document.body.addEventListener("htmx:afterRequest", function(event) {
         document.querySelector('form input[type="submit"]').disabled = false;
     }
 });
+
+// Récupérer la case à cocher et le div
+var handicap = document.getElementById('handicap-form');
+
+// Ajouter un écouteur d'événement pour la case à cocher
+function toggleHandicap() {
+
+    // Inverser l'état actif du switch button
+    let switchbutton = document.getElementById('game-is-handicap').querySelector('input[type="checkbox"]');
+
+    // Si le switch button est activé, afficher le div, sinon le masquer
+    handicap.hidden = !switchbutton.checked;
+
+
+};
