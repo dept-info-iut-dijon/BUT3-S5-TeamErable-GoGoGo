@@ -16,14 +16,15 @@ def _set_password(old_pwd, new_pwd, request) -> HttpResponse:
     Returns:
         HttpResponse: Réponse HTTP de la modification du mot de passe de l'utilisateur
     '''
+
     validate_password(new_pwd)
     ret = HttpResponseNotifError('L\'ancien mot de passe est incorrect.')
     if request.user.check_password(old_pwd):
         request.user.set_password(new_pwd)
         request.user.save()
         request.user = authenticate(username=request.user.username, password=new_pwd)        
-        login(request, request.user)       
-        ret = HttpResponseNotifSuccess('Le mot de passe a bien été modifié. Rechargement de la page...')               
+        ret = HttpResponseNotifSuccess('Le mot de passe a bien été modifié. Rechargement de la page...') 
+        login(request, request.user)   
     return ret
         
 
@@ -40,7 +41,6 @@ def change_pwd(request: HttpRequest) -> HttpResponse:
         HttpResponse: Réponse HTTP de la modification du mot de passe de l'utilisateur
     '''
     ret: HttpResponse = HttpResponseNotifError('Une erreur est survenue.')
-
     old_pwd = request.POST.get('old-pwd')
     new_pwd = request.POST.get('new-pwd')
     confirm_new_pwd = request.POST.get('new-pwd-confirm')
@@ -48,13 +48,11 @@ def change_pwd(request: HttpRequest) -> HttpResponse:
     passwords_not_null = False 
     if request.user and old_pwd and new_pwd and confirm_new_pwd:
         passwords_not_null = True
-
     if passwords_not_null and new_pwd == confirm_new_pwd:
         try:
-            _set_password(old_pwd, new_pwd, request)
+            ret = _set_password(old_pwd, new_pwd, request)
         except Exception as e:
             ret = HttpResponseNotifError('Le mot de passe n\'est pas assez sécurisé.')
-
     else: 
         ret = HttpResponseNotifError('Les mots de passe ne correspondent pas.')
     
