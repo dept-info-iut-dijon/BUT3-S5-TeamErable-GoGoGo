@@ -71,3 +71,15 @@ class Island:
                     arround_tiles.append(arrond_tile)
 
         return tuple(arround_tiles)
+
+
+    def contains(self, island: 'Island') -> bool:
+        '''Vérifie si l'île contient une autre île.
+
+        Args:
+            island (Island): Île à vérifier.
+
+        Returns:
+            bool: True si l'île est contenue, False sinon.
+        '''
+        return set(island._coords).issubset(set(self._coords))
