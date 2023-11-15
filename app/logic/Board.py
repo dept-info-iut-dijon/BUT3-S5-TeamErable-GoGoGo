@@ -3,20 +3,26 @@ from .Tile import Tile
 from .Island import Island
 from ..exceptions import InvalidMoveException
 from .GoConstants import GoConstants
+from .RuleBase import RuleBase
 
 
 class Board:
     '''Plateau de jeu.'''
 
-    def __init__(self, size: int) -> None:
+    def __init__(self, size: int, rule_cls: type[RuleBase]) -> None:
         '''Initialise un plateau de jeu.
 
         Args:
             size (int): Taille du plateau.
         '''
         self._size = Vector2(size, size)
-        self._board: list[list[Tile | None]] = [[None for _ in range(size)] for _ in range(size)]
+        self._rule: RuleBase = rule_cls(self)
+        self._board: list[list[Tile | None]] = [[None for _ in range(self._size.x)] for _ in range(self._size.y)]
         self._current_player = Tile.White
+
+        self._eaten_tiles = {}
+        for tile in Tile:
+            self._eaten_tiles[tile] = 0
 
 
     @property
@@ -73,6 +79,7 @@ class Board:
         Raises:
             InvalidMoveException: Si le joueur n'est pas le joueur courant.
             InvalidMoveException: Si la case est déjà occupée.
+            InvalidMoveException: Si l'île serait entourée (Si le joueur n'est pas autorisé à jouer dans les zones mortes).
         '''
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
         if self._board[coords.y][coords.x] is not None: raise InvalidMoveException('Impossible de jouer ici, la case est déjà occupée.')
@@ -82,7 +89,9 @@ class Board:
         island = self.get_island_from_coords(coords)
         if self.is_island_surronded(island):
             if GoConstants.AllowPlayInDeadZones:
-                for c in island.coords: self.set(c, tile.next())
+                for c in island.coords:
+                    self.set(c, None)
+                    self._eaten_tiles[tile.next] += 1
 
             else:
                 self.set(coords, None)
@@ -91,15 +100,17 @@ class Board:
         else:
             for n in self.get_neighbors(coords):
                 if self.is_outside(n): continue
-                if self.get(n) != tile.next(): continue
+                if self.get(n) != tile.next: continue
 
                 island = self.get_island_from_coords(n)
                 if island is None: continue
 
                 if self.is_island_surronded(island):
-                    for c in island.coords: self.set(c, tile)
+                    for c in island.coords:
+                        self.set(c, None)
+                        self._eaten_tiles[tile] += 1
 
-        self._current_player = tile.next()
+        self._current_player = tile.next
 
 
     def get_neighbors(self, coords: Vector2) -> list[Vector2]:
@@ -179,7 +190,7 @@ class Board:
         Returns:
             bool: True si l'île est entourée, False sinon.
         '''
-        enemy_tile = island.tile.next()
+        enemy_tile = island.tile.next
 
         for coords in island.get_arround_tiles():
             if self.is_outside(coords): continue
@@ -201,6 +212,18 @@ class Board:
 
     def __repr__(self) -> str:
         return str(self)
+
+
+    def get_eaten_tiles(self, tile: Tile) -> int:
+        '''Renvoie le nombre de tuiles mangées par le joueur.
+
+        Args:
+            tile (Tile): Tuile du joueur.
+
+        Returns:
+            int: Nombre de tuiles mangées.
+        '''
+        return self._eaten_tiles[tile]
 
 
     def load(self, data: dict) -> None:
