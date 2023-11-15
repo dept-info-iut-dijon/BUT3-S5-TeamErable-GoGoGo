@@ -2,8 +2,8 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
-from ..models.custom_user import CustomUser
-from ..models.statistic import Statistic
+from ...models.custom_user import CustomUser
+from ...models.statistic import Statistic
 import os
 from django.conf import settings
 

@@ -1,9 +1,9 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from ..logic import Board
-from ..models.custom_user import CustomUser
-from ..models.statistic import Statistic
+from ...logic import Board
+from ...models.custom_user import CustomUser
+from ...models.statistic import Statistic
 
 class InitGameTestCase(TestCase):
     def setUp(self):
