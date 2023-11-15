@@ -51,16 +51,16 @@
                         <div class="form-control">
                             <label for="clock-type">Type d'horloge</label>
                             <select name="clock-type" id="clock-type">
-                                <option value="Byo-yomi Japonais">Byo-yomi Japonais</option>
-                                <option value="Byo-yomi">Byo-yomi Chinois</option>
+                                <option value="japanese">Byo-yomi Japonais</option>
+                                <option value="chinese">Byo-yomi Chinois</option>
                             </select>
                         </div>
                         <div class="form-control">
-                            <label for="time-clock">Temps attribué (en secondes)</label>
-                            <input type="datetime" name="time-clock" id="time-clock" min="0" max="10800" value="3600" placeholder="Temps donné en seconde ">
+                            <label for="time-clock">Temps attribué (Heures : Minutes : Secondes)</label>
+                            <input type="text" name="time-clock" id="time-clock" class="duration-picker" value="01:00:00" data-duration-min="00:00:00" data-duration-max="10:00:00">
                         </div>
                         <div class="form-control">
-                            <label for="komi">Valeur donné au Komi</label>
+                            <label for="komi">Valeur donnée au Komi</label>
                             <input type="number" name="komi" id="komi" min="3.5" max="25.5" value="6.5" placeholder="Valeur donnée au Komi">
                         </div>
                     <div class="separator"></div>
@@ -75,6 +75,7 @@
     </main>
     {% include 'reusable/footer.html' %}
     <script src="/static/js/global.js"></script>
+    <script src="/static/js/duration_picker.js" type="module"></script>
     <script src="/static/js/notify.js"></script>
     <script src="/static/js/game/create_game.js"></script>
 </body>
