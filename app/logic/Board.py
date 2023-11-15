@@ -26,12 +26,12 @@ class Board:
 
 
     @property
-    def size(self) -> int:
+    def size(self) -> Vector2:
         return self._size
 
 
     @property
-    def raw(self) -> list:
+    def raw(self) -> list[list[Tile | None]]:
         return self._board
 
 
