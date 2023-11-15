@@ -150,6 +150,22 @@ form.no-border {
     border-color: var(--main-color);
 }
 
+.form-control select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid var(--gray-color);
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease-in-out;
+    background-color: var(--font-color-light);
+}
+
+.form-control select:hover, .form-control select:focus {
+    outline: none;
+    border-color: var(--main-color);
+}
+
 input[type="submit"], input[type="button"], button {
     cursor: pointer;
     display: inline-block;
@@ -179,6 +195,10 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     background-color: var(--gray-color);
     cursor: not-allowed;
 }
+
+/* input[type="number"]::-webkit-inner-spin-button {
+    opacity: 1;
+} */
 
 .row {
     display: flex;
@@ -335,4 +355,62 @@ input:checked + .slider:before {
 
 .notify.active {  
     height: 50px;
+}
+
+.duration-picker-input-controls-wrapper .duration-picker {
+    text-align: left;
+    padding-right: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    cursor: text;
+}
+
+.duration-picker-input-controls-wrapper .scroll-btn {
+    text-align: center;
+    width: 16px;
+    padding: 0 4px;
+    border: none;
+    cursor: default;
+    position: absolute;
+}
+
+.duration-picker-input-controls-wrapper .caret {
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.duration-picker-input-controls-wrapper .caret.caret-up {
+    border-width: 0 4px 5px 4px;
+    border-color: transparent transparent #000 transparent;
+}
+
+.duration-picker-input-controls-wrapper .caret.caret-down {
+    border-width: 5px 4px 0 4px;
+    border-color: #000 transparent transparent transparent;
+}
+
+.duration-picker-input-controls-wrapper .controls {
+    display: inline-block;
+    position: absolute;
+    top: 1px;
+    padding: 2px 0;
+}
+
+.duration-picker-input-controls-wrapper {
+    display: inline-block;
+    position: relative;
+    background: transparent;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.duration-picker-input-controls-wrapper .controls button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    outline: none;
 }
