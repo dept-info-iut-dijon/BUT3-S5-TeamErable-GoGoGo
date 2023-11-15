@@ -29,7 +29,7 @@ def game(request: HttpRequest) -> HttpResponse:
         except:
             return HttpResponseRedirect('/')
 
-        if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 is None and not game_inst.is_private:
+        if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 is None and not game_inst.game_configuration.is_private:
             game_inst.game_participate.player2 = request.user
             game_inst.game_participate.save()
 
@@ -69,7 +69,7 @@ def game_code(request: HttpRequest) -> HttpResponse:
 
         if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 != request.user: return HttpResponseNotifError('Code invalide.')
 
-        ret = HttpResponseRedirect(f'/game?id={game_inst.id_game}')
+        ret = HttpResponse(f'/game?id={game_inst.id_game}')
 
     return ret
 
