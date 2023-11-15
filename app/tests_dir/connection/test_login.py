@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from ..models.custom_user import CustomUser
-from ..models.statistic import Statistic
+from ...models.custom_user import CustomUser
+from ...models.statistic import Statistic
 
 class LogInTestCase(TestCase):
     def setUp(self):
