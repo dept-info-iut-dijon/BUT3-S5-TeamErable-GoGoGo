@@ -103,6 +103,7 @@ def create_game(request: HttpRequest) -> HttpResponse:
         clock_type = request.POST.get('clock-type', 'normal')
         clock_value = int(request.POST.get('clock_value', 3600))
         komi = float(request.POST.get('komi', 6.5))
+        handicap = int(request.POST.get('handicap', 0))
 
         try:
             code_manager = CodeManager()
@@ -110,7 +111,7 @@ def create_game(request: HttpRequest) -> HttpResponse:
 
             _delete_current_games(request.user)
             
-            game = _create_new_game(name, description, is_private, request.user, code, map_size, counting_method, byo_yomi, clock_type, clock_value, komi)
+            game = _create_new_game(name, description, is_private, request.user, code, map_size, counting_method, byo_yomi, clock_type, clock_value, komi, handicap)
 
             ret = HttpResponse(f'/game?id={game.id_game}')
 
