@@ -33,6 +33,7 @@ AUTH_USER_MODEL = 'app.CustomUser'
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -144,3 +145,15 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'gogogo.noreply@gmail.com'
 EMAIL_HOST_PASSWORD = 'yoyj ekdq kxrn uiwk '
+
+# Channels
+ASGI_APPLICATION = 'GoGoGo.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

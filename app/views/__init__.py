@@ -35,4 +35,3 @@ from .tournament.tournament_manager import tournament_player_list
 from .game.create_game import create_game
 from .game.join_game import join_game, search_game, search_current_game
 from .game.game import game, game_code
-from .game.game_play import game_play, game_fetch

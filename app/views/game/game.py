@@ -92,7 +92,8 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
     tile = Tile.White if request.user == game.game_participate.player1 else Tile.Black
     can_play = board.is_player_turn(tile)
 
-    print(board)
+    # player_id = 0 if game.game_participate.player1 == request.user else 1 if game.game_participate.player2 == request.user else -1
+    # if player_id == -1: return HttpResponseNotifError('Vous n\'êtes pas dans cette partie.')
 
     return render(
         request,
@@ -102,7 +103,7 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
             'board': [
                 [
                     {
-                        'tile': tile,
+                        'tile': tile if tile else '',
                         'x': x,
                         'y': y,
                     }
@@ -111,5 +112,6 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
                 for y, row in enumerate(board.raw)
             ],
             'can_play': 'can-play' * int(can_play),
+            # 'player_id': player_id,
         }
     )
