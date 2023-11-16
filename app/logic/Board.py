@@ -1,3 +1,4 @@
+from plum import dispatch as overload
 from .Vector2 import Vector2
 from .Tile import Tile
 from .Island import Island
@@ -10,6 +11,17 @@ from .RuleFactory import RuleFactory
 class Board:
     '''Plateau de jeu.'''
 
+    @overload
+    def __init__(self, data: dict) -> None:
+        '''Initialise un plateau de jeu.
+
+        Args:
+            data (dict): Données du plateau.
+        '''
+        self.load(data)
+
+
+    @overload
     def __init__(self, size: int, rule_cls: type[RuleBase]) -> None:
         '''Initialise un plateau de jeu.
 
@@ -85,7 +97,7 @@ class Board:
         return coords.x < 0 or coords.x >= self._size.x or coords.y < 0 or coords.y >= self._size.y
 
 
-    def play(self, coords: Vector2, tile: Tile) -> None:
+    def play(self, coords: Vector2, tile: Tile) -> dict[Tile, tuple[Vector2]]:
         '''Joue un coup.
 
         Args:
@@ -101,6 +113,8 @@ class Board:
         if self.is_outside(coords): raise InvalidMoveException('Impossible de jouer ici, les coordonnées sont en dehors du plateau.')
         if self.get(coords) is not None: raise InvalidMoveException('Impossible de jouer ici, la case est déjà occupée.')
 
+        ret: dict[Tile, list[Vector2]] = {t: [] for t in Tile} | {None: []}
+
         self.set(coords, tile)
 
         has_eaten = False
@@ -115,6 +129,7 @@ class Board:
                 has_eaten = True
                 for c in island.coords:
                     self.set(c, None)
+                    ret[None].append(c)
                     self._eaten_tiles[tile.next] += 1
 
         if not has_eaten:
@@ -123,37 +138,19 @@ class Board:
                 if GoConstants.AllowPlayInDeadZones:
                     for c in island.coords:
                         self.set(c, None)
+                        ret[None].append(c)
                         self._eaten_tiles[tile.next] += 1
 
                 else:
                     self.set(coords, None)
                     raise InvalidMoveException('Impossible de jouer ici, l\'île serait entourée.')
 
-        # island = self.get_island_from_coords(coords)
-        # if self.is_island_surronded(island):
-        #     if GoConstants.AllowPlayInDeadZones:
-        #         for c in island.coords:
-        #             self.set(c, None)
-        #             self._eaten_tiles[tile.next] += 1
-
-        #     else:
-        #         self.set(coords, None)
-        #         raise InvalidMoveException('Impossible de jouer ici, l\'île serait entourée.')
-
-        # else:
-        #     for n in self.get_neighbors(coords):
-        #         if self.is_outside(n): continue
-        #         if self.get(n) != tile.next: continue
-
-        #         island = self.get_island_from_coords(n)
-        #         if island is None: continue
-
-        #         if self.is_island_surronded(island):
-        #             for c in island.coords:
-        #                 self.set(c, None)
-        #                 self._eaten_tiles[tile] += 1
+        if self.get(coords) is not None:
+            ret[tile].append(coords)
 
         self._current_player = tile.next
+
+        return ret
 
 
     def get_neighbors(self, coords: Vector2) -> list[Vector2]:
@@ -368,6 +365,16 @@ class Board:
         #                 new_territories[tile].append(territory)
 
         return new_territories
+
+
+    @property
+    def current_player(self) -> Tile:
+        '''Renvoie le joueur courant.
+
+        Returns:
+            Tile: Joueur courant.
+        '''
+        return self._current_player
 
 
     def is_player_turn(self, tile: Tile) -> bool:

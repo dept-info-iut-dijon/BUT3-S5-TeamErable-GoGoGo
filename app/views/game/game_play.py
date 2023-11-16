@@ -36,9 +36,8 @@ def game_play(request: HttpRequest) -> HttpResponse:
 
                 if x < 0 or x > size or y < 0 or y > size: ret = HttpResponseNotifError('Coordonnées invalides.')
                 else:
-                    board = Board(game_inst.game_configuration.map_size, RuleFactory().get(game_inst.game_configuration.counting_method))
                     with open(game_inst.move_list.path, 'r') as f:
-                        board.load(json.load(f))
+                        board = Board(json.load(f))
 
                     try:
                         board.play(Vector2(x, y), Tile.White if request.user == game_inst.game_participate.player1 else Tile.Black)
