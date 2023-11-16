@@ -289,6 +289,9 @@ class Board:
         Returns:
             tuple[Island]: Territoires de tuiles.
         '''
+
+        # TODO: Write a better algorithm
+
         raw_territories = self.get_raw_territories()
         territories: dict[Tile, tuple[Island]] = {}
 
