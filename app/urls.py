@@ -47,6 +47,8 @@ urlpatterns = [
     path("search-current-game", views.search_current_game, name="search_current_game"),
     path("game", views.game, name="game"),
     path("game-code", views.game_code, name="game_code"),
+    path("game-play", views.game_play, name="game_play"),
+    path("game-fetch", views.game_fetch, name="game_fetch"),
 
 
 ]
