@@ -13,7 +13,7 @@ def tournament(request: HttpRequest) -> HttpResponse:
 def search_tournament(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         query = request.POST.get('tournament_name','')
-        tournaments = Tournament.objects.exclude(participate__in = ParticipateTournament.objects.filter(person = request.user)).filter(name__icontains = query).exclude(end_date__lt = datetime.now()).exclude(private = True).order_by('name')[:12]
+        tournaments = Tournament.objects.exclude(id__in = ParticipateTournament.objects.filter(person = request.user).values('tournament')).filter(name__icontains = query).exclude(end_date__lt = datetime.now()).exclude(private = True).order_by('name')[:12]
         return render(
             request,
             'reusable/tournament_list.html',
@@ -26,7 +26,7 @@ def search_tournament(request: HttpRequest) -> HttpResponse:
 def search_current_tournament(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         tournaments = (
-            Tournament.objects.filter(Q(participate__in = ParticipateTournament.objects.filter(person = request.user)) | Q(creator = request.user)).exclude(end_date__lt = datetime.now()).order_by('name')[:12]
+            Tournament.objects.filter(Q(id__in = ParticipateTournament.objects.filter(person = request.user).values('tournament')) | Q(creator = request.user)).exclude(end_date__lt = datetime.now()).order_by('name')[:12]
         )
         return render(
             request,
