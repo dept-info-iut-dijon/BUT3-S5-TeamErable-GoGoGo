@@ -22,3 +22,20 @@ setTimeout(function() {
     var mindate = document.getElementById("start-date");
     mindate.dispatchEvent(new Event('change'));
 }, 50);
+
+
+
+// Récupérer la case à cocher et le div
+var handicap = document.getElementById('handicap-form');
+
+// Ajouter un écouteur d'événement pour la case à cocher
+function toggleHandicap() {
+
+    // Inverser l'état actif du switch button
+    let switchbutton = document.getElementById('tournament-is-handicap').querySelector('input[type="checkbox"]');
+
+    // Si le switch button est activé, afficher le div, sinon le masquer
+    handicap.hidden = !switchbutton.checked;
+
+
+};
