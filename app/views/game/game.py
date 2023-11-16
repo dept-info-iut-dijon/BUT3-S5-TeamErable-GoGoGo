@@ -35,7 +35,7 @@ def game(request: HttpRequest) -> HttpResponse:
 
         if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 != request.user: return HttpResponseRedirect('/')
 
-        ret = game_logic(request, game_inst)
+        ret = game_view(request, game_inst)
 
     return ret
 
@@ -74,7 +74,7 @@ def game_code(request: HttpRequest) -> HttpResponse:
     return ret
 
 
-def game_logic(request: HttpRequest, game: Game) -> HttpResponse:
+def game_view(request: HttpRequest, game: Game) -> HttpResponse:
     '''Logique de la page de la partie
 
     Args:
@@ -85,15 +85,31 @@ def game_logic(request: HttpRequest, game: Game) -> HttpResponse:
         HttpResponse: La réponse HTTP à la requête de la partie
     '''
 
-    # TODO: LE CODE CI-DESSOUS EST TEMPORAIRE, IL FAUT LE MODIFIER DURANT LE SPRINT 3
     board = Board(game.game_configuration.map_size, RuleFactory().get(game.game_configuration.counting_method))
     with open(game.move_list.path, 'r') as f:
         board.load(json.load(f))
+
+    tile = Tile.White if request.user == game.game_participate.player1 else Tile.Black
+    can_play = board.is_player_turn(tile)
+
+    print(board)
 
     return render(
         request,
         'game/game.html',
         {
-            'board': board,
+            'id': game.id_game,
+            'board': [
+                [
+                    {
+                        'tile': tile,
+                        'x': x,
+                        'y': y,
+                    }
+                    for x, tile in enumerate(row)
+                ]
+                for y, row in enumerate(board.raw)
+            ],
+            'can_play': 'can-play' * int(can_play),
         }
     )
