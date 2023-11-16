@@ -29,7 +29,7 @@
                 {% if in_tournament %}
                     <button class="button height-fit-content" disabled>Vous participez au tournoi</button>
                 {% else %}
-                    <a hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="none" hx-indicator="true" class="button row height-fit-content">
+                    <a hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="" hx-indicator="true" class="button row height-fit-content">
                         <img src="/static/icons/joingame.png">
                         Rejoindre le tournoi
                     </a>
