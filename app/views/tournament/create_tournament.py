@@ -120,6 +120,7 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
 
         else: ret = create_tournament_post(request, name, description, start_date, end_date, organisator, player_min, map_size, counting_method, byo_yomi, clock_type, time_clock, komi, handicap)
 
-    elif request.method == RequestType.GET.value: ret = render(request, 'tournament/create_tournament.html')
+    elif request.method == RequestType.GET.value:
+        ret = render(request, 'tournament/create_tournament.html')
 
     return ret
