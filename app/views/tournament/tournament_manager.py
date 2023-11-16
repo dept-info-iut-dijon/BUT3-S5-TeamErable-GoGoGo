@@ -119,7 +119,7 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
         return HttpResponseBadRequest('<p class="error">Les inscription pour ce tournois sont terminees</p>') 
 
     if len(ParticipateTournament.objects.filter(person=request.user, tournament=tournament).all()) < 1:
-        link = Participate.objects.create(
+        link = ParticipateTournament.objects.create(
                 person = request.user,
                 tournament = tournament,
                 win = False,
@@ -139,7 +139,7 @@ def tournament_player_list(request: HttpRequest) -> HttpResponse:
         if (id_tournament := request.GET.get('id')) is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
         try:
             tournament = Tournament.objects.get(id = id_tournament)
-            listplayers = CustomUser.objects.filter(participate__tournament__id = id_tournament).all()
+            listplayers = CustomUser.objects.filter(participatetournament__tournament__id = id_tournament).all()
             return render(request, 'reusable/tournament_player_list.html', {'players': listplayers, 'tournament_unstarted': (not tournament.ongoing()) and tournament.creator.id == request.user.id})
         
         except: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
