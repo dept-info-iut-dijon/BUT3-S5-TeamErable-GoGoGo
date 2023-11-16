@@ -94,35 +94,37 @@ def create_game(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête de création de partie
     '''
-
-    ret: HttpResponse = HttpResponseBadRequest()
-
+    ret: HttpResponse = HttpResponseNotifError('Erreur lors de la création de la partie')
     if request.method == RequestType.POST.value:
-        name = request.POST.get('game-name')
-        description = request.POST.get('game-desc', '')
-        is_private = bool(request.POST.get('game-private', False))
-        map_size = int(request.POST.get('map-size', 13))
-        counting_method = request.POST.get('counting-method', '')
-        byo_yomi = int(request.POST.get('byo-yomi', 30))
-        clock_type = request.POST.get('clock-type', 'normal')
-        clock_value = request.POST.get('clock_value', '01:00:00')
-        komi = float(request.POST.get('komi', 6.5))
-        handicap = int(request.POST.get('handicap', 0))
+        if (name := request.POST.get('game-name')) is None: ret = HttpResponseNotifError('Erreur : Le nom de la partie est vide')
+        elif (is_private := bool(request.POST.get('game-private', False))) is None: ret = HttpResponseNotifError('Erreur : Le statut de la partie n\'est pas défini')
+        elif (description := request.POST.get('game-desc')) is None: ret = HttpResponseNotifError('Erreur : La description de la partie est vide')
+        elif (map_size := request.POST.get('map-size')) is None: ret = HttpResponseNotifError('Erreur : La taille de la carte est vide')
+        elif (counting_method := request.POST.get('counting-method')) is None: ret = HttpResponseNotifError('Erreur : La methode de comptage est vide')
+        elif (byo_yomi := request.POST.get('byo-yomi')) is None: ret = HttpResponseNotifError('Erreur : Le byo-yomi est vide')
+        elif (clock_type := request.POST.get('clock-type')) is None: ret = HttpResponseNotifError('Erreur : Le temps de la partie est vide ')
+        elif (time_clock := request.POST.get('time-clock')) is None: ret = HttpResponseNotifError('Erreur : Le temps de la partie est vide')
+        elif (komi := request.POST.get('komi')) is None: ret = HttpResponseNotifError('Erreur : La valeur de komi est vide')
+        elif (handicap := request.POST.get('handicap')) is None: ret = HttpResponseNotifError('Erreur : La valeur de handicap est vide')
 
-        try:
+
+        else:
+            try: 
+                map_size = int(map_size)
+                komi = float(komi)
+                handicap = int(handicap)
+            except:
+                return HttpResponseNotifError('Erreur : Valeur invalide')
+            
             code_manager = CodeManager()
             code = code_manager.generate_unique_code()
 
             _delete_current_games(request.user)
             
-            game = _create_new_game(name, description, is_private, request.user, code, map_size, counting_method, byo_yomi, clock_type, clock_value, komi, handicap)
-
+            game = _create_new_game(name, description, is_private, request.user, code, map_size, counting_method, byo_yomi, clock_type, time_clock, komi, handicap)
+            
             ret = HttpResponse(f'/game?id={game.id_game}')
-
-        except:
-            ret = HttpResponseNotifError('Erreur lors de la création de la partie')
-            import traceback
-            traceback.print_exc()
+                
 
     elif request.method == RequestType.GET.value:
         ret = render(request, 'game/create_game.html')
