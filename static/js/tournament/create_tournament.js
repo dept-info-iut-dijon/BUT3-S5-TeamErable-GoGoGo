@@ -23,7 +23,7 @@ var handicap = document.getElementById('handicap-form');
 function toggleHandicap() {
 
     // Inverser l'état actif du switch button
-    let switchbutton = document.getElementById('game-is-handicap').querySelector('input[type="checkbox"]');
+    let switchbutton = document.getElementById('tournament-is-handicap').querySelector('input[type="checkbox"]');
 
     // Si le switch button est activé, afficher le div, sinon le masquer
     handicap.hidden = !switchbutton.checked;
