@@ -51,12 +51,12 @@ class Board:
         return self._board[coords.y][coords.x]
 
 
-    def set(self, coords: Vector2, value: str) -> None:
+    def set(self, coords: Vector2, value: Tile) -> None:
         '''Définit la tuile aux coordonnées spécifiées.
 
         Args:
             coords (Vector2): Coordonnées de la tuile.
-            value (str): Valeur de la tuile.
+            value (Tile): Valeur de la tuile.
 
         Raises:
             ValueError: Si les coordonnées sont en dehors du plateau.
@@ -226,6 +226,107 @@ class Board:
         return self._eaten_tiles[tile]
 
 
+    def get_raw_territory(self, tile: Tile) -> tuple[Island]:
+        '''Renvoie le territoire brut de tuiles du joueur donné. -> Ne prend pas en compte les autres joueurs.
+
+        Args:
+            tile (Tile): Tuile du joueur. Renvoie les territoires du joueur si spécifié.
+
+        Returns:
+            tuple[Island]: Territoire de tuiles.
+        '''
+        territories = []
+
+        board = [[(self.get(Vector2(x, y)) == tile) for x in range(self._size.x)] for y in range(self._size.y)]
+
+        def next_tile():
+            for y in range(self._size.y):
+                for x in range(self._size.x):
+                    if board[y][x]: continue
+
+                    return Vector2(x, y)
+
+            return None
+
+        while pos := next_tile():
+            group: list[Vector2] = []
+
+            stack = [pos]
+            while stack:
+                coords = stack.pop()
+                group.append(coords)
+                board[coords.y][coords.x] = True
+
+                for neighbor in self.get_neighbors(coords):
+                    if self.is_outside(neighbor): continue
+
+                    if not board[neighbor.y][neighbor.x]:
+                        board[neighbor.y][neighbor.x] = True
+                        stack.append(neighbor)
+
+            territories.append(Island(tile, *(group)))
+
+        return tuple(territories)
+
+
+    def get_raw_territories(self) -> dict[Tile, tuple[Island]]:
+        '''Renvoie les territoires bruts de tuiles.
+
+        Returns:
+            dict[Tile, tuple[Island]]: Territoires bruts de tuiles.
+        '''
+        territories = {}
+
+        for tile in Tile:
+            territories[tile] = self.get_raw_territory(tile)
+
+        return territories
+
+
+    def get_territories(self) -> dict[Tile, tuple[Island]]:
+        '''Renvoie les territoires de tuiles.
+
+        Returns:
+            tuple[Island]: Territoires de tuiles.
+        '''
+
+        # TODO: Write a better algorithm
+
+        raw_territories = self.get_raw_territories()
+        territories: dict[Tile, tuple[Island]] = {}
+
+        for tile in Tile:
+            territories[tile] = list(raw_territories[tile])
+
+        # islands = self.get_islands()
+        # for island in islands:
+        #     territories[island.tile].append(island)
+
+        for tile in Tile:
+            for other_territory in territories[tile.next].copy():
+                for this_territory in territories[tile].copy():
+                    if this_territory.contains(other_territory):
+                        territories[tile.next].remove(other_territory)
+
+        new_territories = {}
+
+        for tile in Tile:
+            new_territories[tile] = list(raw_territories[tile])
+
+            for territory in territories[tile]:
+                new_territories[tile].remove(territory)
+
+            new_territories[tile] = tuple(new_territories[tile])
+
+        # for tile in Tile:
+        #     for territory in territories[tile]:
+        #         for other_territory in new_territories[tile.next]:
+        #             if not territory.contains(other_territory) and other_territory.contains(territory):
+        #                 new_territories[tile].append(territory)
+
+        return new_territories
+
+
     def load(self, data: dict) -> None:
         '''Charge un plateau de jeu.
 
@@ -260,3 +361,17 @@ class Board:
             ],
             'history': [],
         }
+
+
+    def copy(self) -> 'Board':
+        '''Copie le plateau de jeu.
+
+        Returns:
+            Board: Copie du plateau de jeu.
+        '''
+
+        b = Board(self._size.x, self._rule.__class__)
+        b._board = [row.copy() for row in self._board]
+        b._current_player = self._current_player
+        b._eaten_tiles = self._eaten_tiles.copy()
+        return b
