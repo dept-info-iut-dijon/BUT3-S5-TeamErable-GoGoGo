@@ -1,14 +1,22 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from ..models.custom_user import CustomUser
+from ...models.custom_user import CustomUser
+from ...models.statistic import Statistic
 
 class LogInTestCase(TestCase):
     def setUp(self):
+        self.statistic = Statistic.objects.create(
+            game_win = 0,
+            game_loose = 0,
+            game_ranked_win = 0,
+            game_ranked_loose = 0,
+        )
         self.sample_user = get_user_model().objects.create_user(
             username='testuser',
             email='testemail@sezamail.net',
-            password='testpassword123'
+            password='testpassword123',
+            stat=self.statistic
         )
         sample_data = {
             "username":'testuser',

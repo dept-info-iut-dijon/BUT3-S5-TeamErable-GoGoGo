@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.password_validation import validate_password
 from django.db.models import Q
 from ...models import Game
+from ...models.game_configuration import GameConfiguration
+from ...models.game_participate import GameParticipate
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError, HttpResponseNotifSuccess
 
@@ -33,7 +35,7 @@ def search_game(request: HttpRequest) -> HttpResponse:
         HttpResponse: La réponse HTTP à la requête de recherche de parties
     '''
     query = request.POST.get('game_name','')
-    games = Game.objects.filter(player2 = None).filter(done = False).exclude(player1 = request.user).filter(is_private = False).filter(name__icontains = query).order_by('name')[:12]
+    games = Game.objects.filter(game_participate__in = GameParticipate.objects.filter(player2 = None)).filter(done = False).exclude(game_participate__in = GameParticipate.objects.filter(player1 = request.user)).filter(game_configuration__in = GameConfiguration.objects.filter(is_private = False)).filter(name__icontains = query).order_by('name')[:12]
     return render(
         request,
         'reusable/game_list.html',
@@ -54,8 +56,9 @@ def search_current_game(request: HttpRequest) -> HttpResponse:
         HttpResponse: La réponse HTTP à la requête de recherche de parties courantes
     '''
     games = (
-        Game.objects.filter(Q(player1 = request.user) | Q(player2 = request.user)).filter(done = False).order_by('name')[:12]
-    )[:12]
+        Game.objects.filter(Q(game_participate__in = GameParticipate.objects.filter(player1 = request.user)) | Q(game_participate__in = GameParticipate.objects.filter(player2 = request.user))).filter(done = False).order_by('name')[:12]
+        
+        )[:12]
     return render(
         request,
         'reusable/game_list.html',
