@@ -1,16 +1,17 @@
 from enum import Enum
+from .TileColor import TileColor
 
 class Tile(Enum):
     '''Tuile du plateau de jeu.'''
 
-    White = '⚪'
-    Black = '⚫'
+    White = TileColor('⚪', 'white')
+    Black = TileColor('⚫', 'black')
 
     def __str__(self) -> str:
         return str(self.value)
 
     @staticmethod
-    def from_str(value: str) -> 'Tile | None':
+    def from_value(value: str) -> 'Tile | None':
         '''Convertit une chaîne de caractères en une tuile.
 
         Args:
@@ -20,7 +21,22 @@ class Tile(Enum):
             Tile | None: Tuile correspondante ou None si la chaîne n'est pas valide.
         '''
         for tile in Tile:
-            if str(tile) == value:
+            if tile.value.value == value:
+                return tile
+        return None
+
+    @staticmethod
+    def from_color(color: str) -> 'Tile | None':
+        '''Convertit une couleur en une tuile.
+
+        Args:
+            color (str): Couleur à convertir.
+
+        Returns:
+            Tile | None: Tuile correspondante ou None si la couleur n'est pas valide.
+        '''
+        for tile in Tile:
+            if tile.value.color == color:
                 return tile
         return None
 
