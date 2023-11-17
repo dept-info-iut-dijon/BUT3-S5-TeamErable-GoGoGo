@@ -27,7 +27,7 @@ websocket.onmessage = function(event) {
     switch(type) {
         case 'connect':
         case 'disconnect':
-            break; // Do nothing for now, maybe later add a notification
+            break; // Ne fait rien pour l'instant, mais on pourrait afficher une notification
 
         case 'play':
             receivedPlay(data);
@@ -106,4 +106,14 @@ function play(element) {
             'data': element.attributes.x.value + ";" + element.attributes.y.value
         }));
     }
+}
+
+
+
+const code = document.querySelector("#code");
+
+function toggleCodeVisibility() {
+    let checked = document.querySelector("#show-code").querySelector("input[type=checkbox]").checked;
+    if (checked) code.classList.remove("opacity-0");
+    else code.classList.add("opacity-0");
 }
