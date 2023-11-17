@@ -85,7 +85,7 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
         HttpResponse: La réponse HTTP à la requête de la partie
     '''
 
-    board = Board(game.game_configuration.map_size, RuleFactory().get(game.game_configuration.counting_method))
+    board = Board(game.game_configuration.map_size,game.game_configuration.komi, RuleFactory().get(game.game_configuration.counting_method))
     with open(game.move_list.path, 'r') as f:
         board.load(json.load(f))
 
@@ -111,7 +111,11 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
                 ]
                 for y, row in enumerate(board.raw)
             ],
-            'can_play': 'can-play' * int(can_play),
+            'can_play': 'can-play' * int(can_play and not board.ended),
+            'player1': game.game_participate.player1.username,
+            'player2': game.game_participate.player2.username if game.game_participate.player2 else '???',
+            'code': game.code,
+            'action_buttons_class': '' if can_play and not board.ended else 'hidden',
             # 'player_id': player_id,
         }
     )

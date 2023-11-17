@@ -27,7 +27,7 @@ websocket.onmessage = function(event) {
     switch(type) {
         case 'connect':
         case 'disconnect':
-            break; // Do nothing for now, maybe later add a notification
+            break; // Ne fait rien pour l'instant, mais on pourrait afficher une notification
 
         case 'play':
             receivedPlay(data);
@@ -85,8 +85,14 @@ function receivedPlay(data) {
 }
 
 function receivedCanPlay(data) {
-    if (data === true) board.classList.add("can-play");
-    else board.classList.remove("can-play");
+    if (data === true) {
+        board.classList.add("can-play");
+        action_buttons.classList.remove("hidden");
+    }
+    else {
+        board.classList.remove("can-play");
+        action_buttons.classList.add("hidden");
+    }
 }
 
 
@@ -98,6 +104,7 @@ document.querySelectorAll(".stone").forEach((element) => {
 });
 
 const board = document.querySelector(".board");
+const action_buttons = document.querySelector("#action-buttons");
 
 function play(element) {
     if (board.classList.contains("can-play")) {
@@ -106,4 +113,31 @@ function play(element) {
             'data': element.attributes.x.value + ";" + element.attributes.y.value
         }));
     }
+}
+
+function skip() {
+    websocket.send(JSON.stringify({
+        'type': 'skip',
+        'data': null
+    }));
+}
+
+function giveUp() {
+    websocket.send(JSON.stringify({
+        'type': 'give-up',
+        'data': null
+    }));
+}
+
+document.querySelector("#skip-button").addEventListener("click", skip);
+document.querySelector("#give-up-button").addEventListener("click", giveUp);
+
+
+
+const code = document.querySelector("#code");
+
+function toggleCodeVisibility() {
+    let checked = document.querySelector("#show-code").querySelector("input[type=checkbox]").checked;
+    if (checked) code.classList.remove("opacity-0");
+    else code.classList.add("opacity-0");
 }

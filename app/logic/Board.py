@@ -22,7 +22,7 @@ class Board:
 
 
     @overload
-    def __init__(self, size: int, rule_cls: type[RuleBase]) -> None:
+    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase]) -> None:
         '''Initialise un plateau de jeu.
 
         Args:
@@ -37,10 +37,29 @@ class Board:
         for tile in Tile:
             self._eaten_tiles[tile] = 0
 
+        self._komi = komi
+
+        self._ended: bool = False
+        self._skip_list: list[Tile] = []
+
 
     @property
     def size(self) -> Vector2:
         return self._size
+
+
+    @property
+    def current_player(self) -> Tile:
+        return self._current_player
+
+
+    @property
+    def ended(self) -> bool:
+        return self._ended
+
+    @property
+    def komi(self) -> float:
+        return self._komi
 
 
     @property
@@ -105,10 +124,12 @@ class Board:
             tile (Tile): Tuile du joueur.
 
         Raises:
+            InvalidMoveException: Si la partie est terminée.
             InvalidMoveException: Si le joueur n'est pas le joueur courant.
             InvalidMoveException: Si la case est déjà occupée.
             InvalidMoveException: Si l'île serait entourée (Si le joueur n'est pas autorisé à jouer dans les zones mortes).
         '''
+        if self._ended: raise InvalidMoveException('La partie est terminée.')
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
         if self.is_outside(coords): raise InvalidMoveException('Impossible de jouer ici, les coordonnées sont en dehors du plateau.')
         if self.get(coords) is not None: raise InvalidMoveException('Impossible de jouer ici, la case est déjà occupée.')
@@ -149,8 +170,36 @@ class Board:
             ret[tile].append(coords)
 
         self._current_player = tile.next
+        self._skip_list = []
 
         return ret
+
+
+    def play_skip(self, tile: Tile) -> None:
+        '''Passe le tour.
+
+        Args:
+            tile (Tile): Tuile du joueur.
+
+        Raises:
+            InvalidMoveException: Si la partie est terminée.
+            InvalidMoveException: Si le joueur n'est pas le joueur courant.
+        '''
+        if self._ended: raise InvalidMoveException('La partie est terminée.')
+        if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
+
+        self._skip_list.append(tile)
+
+        self._current_player = tile.next
+
+        if set(self._skip_list) == set(Tile):
+            self.end_game()
+
+
+    def end_game(self) -> None:
+        '''Termine la partie.'''
+        if self._ended: raise InvalidMoveException('La partie est déjà terminée.')
+        self._ended = True
 
 
     def get_neighbors(self, coords: Vector2) -> list[Vector2]:
@@ -345,16 +394,6 @@ class Board:
         return {tile: tuple(territories[tile]) for tile in Tile}
 
 
-    @property
-    def current_player(self) -> Tile:
-        '''Renvoie le joueur courant.
-
-        Returns:
-            Tile: Joueur courant.
-        '''
-        return self._current_player
-
-
     def is_player_turn(self, tile: Tile) -> bool:
         '''Vérifie si c'est au joueur de jouer.
 
@@ -389,6 +428,9 @@ class Board:
             for k, v in data['eaten-tiles'].items()
         }
         self._rule = RuleFactory().get(data['rule'])
+        self._komi = data['komi']
+        self._ended = data['ended']
+        self._skip_list = [Tile.from_value(t) for t in data['skip-list']]
 
 
     def export(self) -> dict:
@@ -413,6 +455,9 @@ class Board:
                 for tile in Tile
             },
             'rule': self._rule.key,
+            'komi': self._komi,
+            'ended': self._ended,
+            'skip-list': [str(tile) for tile in self._skip_list],
             # 'history': [],
         }
 
@@ -428,4 +473,8 @@ class Board:
         b._board = [row.copy() for row in self._board]
         b._current_player = self._current_player
         b._eaten_tiles = self._eaten_tiles.copy()
+        b._ended = self._ended
+        b._skip_list = self._skip_list.copy()
+        b._komi = self._komi
+
         return b

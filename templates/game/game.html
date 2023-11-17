@@ -11,27 +11,73 @@
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
-    <main class="center">
+    <main>
         {% csrf_token %}
         <input type="text" id="game-id" value="{{ id }}" hidden>
-        <table class="board {{ can_play }}" cellspacing="0">
-            {% for row in board %}
-            <tr>
-                {% for cell in row %}
-                <td class="cell">
-                    <div class="inside">
-                        <div class="stone {{ cell.tile }}" x="{{ cell.x }}" y="{{ cell.y }}"></div>
+
+        <div class="band transition hidden">
+            <div class="center flex-column">
+                <div>
+                    <div class="center flex-column">
+                        <p class="big">XXX a gagné la partie !</p>
+                        <p>YYYY (Player1) vs ZZZZ (Player2)</p>
                     </div>
-                </td>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="row align-self-left">
+            <div class="row code-block">
+                <p>Code:</p>
+                <p class="pcode opacity-0" id="code" data-content="{{ code }}">{{ code }}</p>
+                <switchbutton name="show-code" id="show-code" onclick="toggleCodeVisibility()"></switchbutton>
+            </div>
+            <div></div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="row">
+            <div class="row stone-fixed">
+                <div class="stone white"></div>
+                <div class="name">{{ player1 }}</div>
+            </div>
+            <div class="row stone-fixed">
+                <div class="stone black"></div>
+                <div class="name">{{ player2 }}</div>
+            </div>
+        </div>
+
+        <div class="center">
+            <table class="board {{ can_play }}" cellspacing="0">
+                {% for row in board %}
+                <tr>
+                    {% for cell in row %}
+                    <td class="cell">
+                        <div class="inside">
+                            <div class="stone {{ cell.tile }}" x="{{ cell.x }}" y="{{ cell.y }}"></div>
+                        </div>
+                    </td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
+            </table>
+        </div>
+
+        <div class="center transition {{ action_buttons_class }}" id="action-buttons">
+            <div class="row width-fit-content">
+                <button class="margin-side" id="skip-button">Passer le Tour</button>
+                <button class="margin-side" id="give-up-button">Déclarer Forfait</button>
+            </div>
+        </div>
 
         <div class="notify" id="notify"></div>
     </main>
 
     <script src="/static/js/game/game.js"></script>
+    <script src="/static/js/global.js"></script>
     <script src="/static/js/notify.js"></script>
 </body>
 </html>

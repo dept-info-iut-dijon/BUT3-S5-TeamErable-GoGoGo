@@ -1,5 +1,6 @@
 from ..RuleBase import RuleBase, Board, Tile
 from ..RuleFactory import RuleFactory
+from .rules import JapaneseRule
 
 class ChineseRule(RuleBase):
     '''Règle chinoise.'''
@@ -20,7 +21,19 @@ class ChineseRule(RuleBase):
         Returns:
             dict[Tile, int]: Points des joueurs.
         '''
-        pass # TODO: Implement this method
+        
+        total = JapaneseRule.count_points(self.board)
+
+        for x in range(self.board.size.x):
+            for y in range(self.board.size.y):
+                if self.board.get(Vector2(x, y)) == Tile.Black:
+                    total[Tile.Black] += 1
+                if self.board.get(Vector2(x, y)) == Tile.White:
+                    total[Tile.White] += 1
+
+        return total
+
+
 
 
 

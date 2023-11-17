@@ -74,7 +74,7 @@ def _create_new_game(name, description, is_private, user, code, map_size, counti
     if not os.path.exists('dynamic/games'):
         os.makedirs('dynamic/games')
     with open(file, 'w') as f:
-        b = Board(map_size,RuleFactory().get(counting_method))
+        b = Board(map_size,komi,RuleFactory().get(counting_method))
         json.dump(b.export(), f)
 
     game.move_list = file
