@@ -2,6 +2,7 @@
 
 header {
     background-color: var(--main-color);
+    z-index: 1000;
 }
 
 header .navbar {
