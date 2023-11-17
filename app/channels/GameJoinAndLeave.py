@@ -81,9 +81,15 @@ class GameJoinAndLeave(WebsocketConsumer):
             board.load(json.load(f))
 
         return game, board, Tile.White if self._player_id == 0 else Tile.Black
-    
+
+    def _update_game(self, game: Game, board: Board) -> None:
+        if board.ended != game.done:
+            game.done = board.ended
+            game.save()
+
 
     def _save_game_board(self, game: Game, board: Board) -> None:
+        self._update_game(game, board)
         with open(game.move_list.path, 'w') as f:
             json.dump(board.export(), f)
 
