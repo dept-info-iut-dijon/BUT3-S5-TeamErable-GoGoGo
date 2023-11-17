@@ -168,3 +168,4 @@ classes.puml
 packages.puml
 generate.bat
 tmp.py
+generate-reqs.bat

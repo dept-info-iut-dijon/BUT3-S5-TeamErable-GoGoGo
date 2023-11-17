@@ -26,10 +26,8 @@ websocket.onmessage = function(event) {
 
     switch(type) {
         case 'connect':
-            break;
-
         case 'disconnect':
-            break;
+            break; // Do nothing for now, maybe later add a notification
 
         case 'play':
             receivedPlay(data);
