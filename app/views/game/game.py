@@ -115,6 +115,7 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
             'player1': game.game_participate.player1.username,
             'player2': game.game_participate.player2.username if game.game_participate.player2 else '???',
             'code': game.code,
+            'action_buttons_class': '' if can_play else 'hidden',
             # 'player_id': player_id,
         }
     )

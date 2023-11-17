@@ -424,3 +424,11 @@ input:checked + .slider:before {
     cursor: pointer;
     outline: none;
 }
+
+.transition {
+    transition: all 0.2s ease-in-out;
+}
+
+.hidden {
+    transform: scaleY(0);
+}
