@@ -51,6 +51,9 @@ class GameJoinAndLeave(WebsocketConsumer):
                 case 'skip':
                     self.receive_skip(data)
 
+                case 'give-up':
+                    self.receive_give_up(data)
+
                 case _:
                     raise ValueError('Une erreur est survenue.')
 
@@ -144,6 +147,17 @@ class GameJoinAndLeave(WebsocketConsumer):
         game, board, tile = self._get_game_board()
 
         board.play_skip(tile)
+
+        self._save_game_board(game, board)
+
+        new_event = {'type': 'send_can_play', 'data': self._get_can_play(board)}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+
+    def receive_give_up(self, event: dict) -> None:
+        game, board, tile = self._get_game_board()
+
+        board.end_game()
 
         self._save_game_board(game, board)
 
