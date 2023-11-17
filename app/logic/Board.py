@@ -330,41 +330,19 @@ class Board:
             tuple[Island]: Territoires de tuiles.
         '''
 
-        # TODO: Write a better algorithm
-
-        raw_territories = self.get_raw_territories()
-        territories: dict[Tile, tuple[Island]] = {}
+        raw_territories: dict[Tile, tuple[Island]] = self.get_raw_territories()
+        territories: dict[Tile, list[Island]] = {}
 
         for tile in Tile:
             territories[tile] = list(raw_territories[tile])
 
-        # islands = self.get_islands()
-        # for island in islands:
-        #     territories[island.tile].append(island)
-
         for tile in Tile:
             for other_territory in territories[tile.next].copy():
                 for this_territory in territories[tile].copy():
-                    if this_territory.contains(other_territory):
+                    if other_territory.contains(this_territory) and other_territory in territories[tile.next]:
                         territories[tile.next].remove(other_territory)
 
-        new_territories = {}
-
-        for tile in Tile:
-            new_territories[tile] = list(raw_territories[tile])
-
-            for territory in territories[tile]:
-                new_territories[tile].remove(territory)
-
-            new_territories[tile] = tuple(new_territories[tile])
-
-        # for tile in Tile:
-        #     for territory in territories[tile]:
-        #         for other_territory in new_territories[tile.next]:
-        #             if not territory.contains(other_territory) and other_territory.contains(territory):
-        #                 new_territories[tile].append(territory)
-
-        return new_territories
+        return {tile: tuple(territories[tile]) for tile in Tile}
 
 
     @property

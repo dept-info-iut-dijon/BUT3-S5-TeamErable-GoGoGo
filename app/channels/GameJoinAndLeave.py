@@ -1,12 +1,11 @@
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
-from plum import dispatch as overload
 import json
 from ..models import Game
 from ..logic import Board, Tile, RuleFactory, Vector2
 from ..exceptions import InvalidMoveException
 
-class JoinAndLeave(WebsocketConsumer):
+class GameJoinAndLeave(WebsocketConsumer):
     def connect(self) -> None:
         self._user = self.scope['user']
         self._game_id = self.scope['url_route']['kwargs']['game_id']
@@ -36,10 +35,10 @@ class JoinAndLeave(WebsocketConsumer):
                 case 'play':
                     self.receive_play(data)
 
-            #async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', data)
-
         except (InvalidMoveException, ValueError) as e:
             self.send(text_data = json.dumps({'type': 'error', 'data': str(e)}))
+
+        except: pass
 
 
     def disconnect(self, code: int) -> None:
