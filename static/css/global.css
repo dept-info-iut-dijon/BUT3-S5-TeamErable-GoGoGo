@@ -244,6 +244,10 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     justify-content: center;
 }
 
+.flex {
+    display: flex;
+}
+
 .flex-row {
     flex-direction: row;
 }
@@ -254,6 +258,48 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
 
 .flex-wrap {
     flex-wrap: wrap;
+}
+
+@media screen and (max-width: 720px) {
+    .row.mobile-flex-column {
+        flex-direction: row-reverse;
+    }
+
+    .flex-row.mobile-flex-column {
+        flex-direction: row-reverse;
+    }
+
+    .flex-column.mobile-flex-reverse {
+        flex-direction: column-reverse;
+    }
+
+    .row.mobile-flex-direction {
+        flex-direction: column;
+    }
+
+    .flex-row.mobile-flex-direction {
+        flex-direction: column;
+    }
+
+    .flex-column.mobile-flex-direction {
+        flex-direction: row;
+    }
+
+    .mobile-separator {
+        height: 1rem;
+    }
+
+    .mobile-separator-2 {
+        height: 2rem;
+    }
+
+    .mobile-separator-3 {
+        height: 3rem;
+    }
+
+    .mobile-separator-4 {
+        height: 4rem;
+    }
 }
 
 .separator {
