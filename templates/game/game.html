@@ -15,6 +15,17 @@
         {% csrf_token %}
         <input type="text" id="game-id" value="{{ id }}" hidden>
 
+        <div class="band transition hidden">
+            <div class="center flex-column">
+                <div>
+                    <div class="center flex-column">
+                        <p class="big">XXX a gagné la partie !</p>
+                        <p>YYYY (Player1) vs ZZZZ (Player2)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="separator"></div>
 
         <div class="row align-self-left">
