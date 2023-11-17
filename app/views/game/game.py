@@ -111,11 +111,11 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
                 ]
                 for y, row in enumerate(board.raw)
             ],
-            'can_play': 'can-play' * int(can_play),
+            'can_play': 'can-play' * int(can_play and not board.ended),
             'player1': game.game_participate.player1.username,
             'player2': game.game_participate.player2.username if game.game_participate.player2 else '???',
             'code': game.code,
-            'action_buttons_class': '' if can_play else 'hidden',
+            'action_buttons_class': '' if can_play and not board.ended else 'hidden',
             # 'player_id': player_id,
         }
     )
