@@ -224,6 +224,28 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     height: fit-content;
 }
 
+.width-max-content {
+    width: max-content;
+}
+
+.height-max-content {
+    height: max-content;
+}
+
+.margin-auto {
+    margin: auto;
+}
+
+.margin-auto-x {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.margin-auto-y {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 @media screen and (max-width: 720px) {
     .row.dynamic-row {
         flex-direction: column;
@@ -486,4 +508,9 @@ input:checked + .slider:before {
 
 .hidden {
     transform: scaleY(0);
+}
+
+.overflow-auto-x {
+    overflow-x: overlay;
+    position: sticky;
 }

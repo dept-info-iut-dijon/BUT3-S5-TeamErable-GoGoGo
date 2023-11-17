@@ -2,7 +2,6 @@ table.board {
     border-collapse: collapse;
     margin: 0 auto;
     border-spacing: 0;
-    overflow-x: auto;
 }
 
 table.board > tbody > tr > td {
@@ -154,6 +153,7 @@ table.board > tbody > tr:last-child > td::after {
     height: -webkit-fill-available;
     z-index: 2;
     background-color: rgba(0, 0, 0, 0.5);
+    outline: 100vh solid rgba(0, 0, 0, 0.5);
 }
 
 .band div.center {

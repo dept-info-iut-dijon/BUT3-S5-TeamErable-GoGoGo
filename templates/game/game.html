@@ -49,20 +49,22 @@
             <div class="mobile-separator"></div>
     
             <div>
-                <div class="center">
-                    <table class="board {{ can_play }}" cellspacing="0">
-                        {% for row in board %}
-                        <tr>
-                            {% for cell in row %}
-                            <td class="cell">
-                                <div class="inside">
-                                    <div class="stone {{ cell.tile }}" x="{{ cell.x }}" y="{{ cell.y }}"></div>
-                                </div>
-                            </td>
+                <div class="overflow-auto-x">
+                    <div class="width-max-content margin-auto-x">
+                        <table class="board {{ can_play }}" cellspacing="0">
+                            {% for row in board %}
+                            <tr>
+                                {% for cell in row %}
+                                <td class="cell">
+                                    <div class="inside">
+                                        <div class="stone {{ cell.tile }}" x="{{ cell.x }}" y="{{ cell.y }}"></div>
+                                    </div>
+                                </td>
+                                {% endfor %}
+                            </tr>
                             {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </table>
+                        </table>
+                    </div>
                 </div>
         
                 <div class="center transition {{ action_buttons_class }}" id="action-buttons">
