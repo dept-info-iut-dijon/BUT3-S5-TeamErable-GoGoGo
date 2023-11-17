@@ -85,8 +85,14 @@ function receivedPlay(data) {
 }
 
 function receivedCanPlay(data) {
-    if (data === true) board.classList.add("can-play");
-    else board.classList.remove("can-play");
+    if (data === true) {
+        board.classList.add("can-play");
+        action_buttons.classList.remove("hidden");
+    }
+    else {
+        board.classList.remove("can-play");
+        action_buttons.classList.add("hidden");
+    }
 }
 
 
@@ -98,6 +104,7 @@ document.querySelectorAll(".stone").forEach((element) => {
 });
 
 const board = document.querySelector(".board");
+const action_buttons = document.querySelector("#action-buttons");
 
 function play(element) {
     if (board.classList.contains("can-play")) {
