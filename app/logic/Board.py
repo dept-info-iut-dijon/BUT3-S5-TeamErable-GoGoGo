@@ -22,7 +22,7 @@ class Board:
 
 
     @overload
-    def __init__(self, size: int, rule_cls: type[RuleBase]) -> None:
+    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase]) -> None:
         '''Initialise un plateau de jeu.
 
         Args:
@@ -36,6 +36,8 @@ class Board:
         self._eaten_tiles = {}
         for tile in Tile:
             self._eaten_tiles[tile] = 0
+
+        self._komi = komi
 
         self._ended: bool = False
         self._skip_list: list[Tile] = []
@@ -422,6 +424,7 @@ class Board:
             for k, v in data['eaten-tiles'].items()
         }
         self._rule = RuleFactory().get(data['rule'])
+        self._komi = data['komi']
         self._ended = data['ended']
         self._skip_list = [Tile.from_value(t) for t in data['skip-list']]
 
@@ -448,6 +451,7 @@ class Board:
                 for tile in Tile
             },
             'rule': self._rule.key,
+            'komi': self._komi,
             'ended': self._ended,
             'skip-list': [str(tile) for tile in self._skip_list],
             # 'history': [],
@@ -465,4 +469,8 @@ class Board:
         b._board = [row.copy() for row in self._board]
         b._current_player = self._current_player
         b._eaten_tiles = self._eaten_tiles.copy()
+        b._ended = self._ended
+        b._skip_list = self._skip_list.copy()
+        b._komi = self._komi
+
         return b

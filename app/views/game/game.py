@@ -85,7 +85,7 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
         HttpResponse: La réponse HTTP à la requête de la partie
     '''
 
-    board = Board(game.game_configuration.map_size, RuleFactory().get(game.game_configuration.counting_method))
+    board = Board(game.game_configuration.map_size,game.game_configuration.komi, RuleFactory().get(game.game_configuration.counting_method))
     with open(game.move_list.path, 'r') as f:
         board.load(json.load(f))
 
