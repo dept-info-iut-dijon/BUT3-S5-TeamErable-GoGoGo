@@ -28,38 +28,49 @@
 
         <div class="separator-2"></div>
 
-        <div class="row">
-            {{ player1_html | safe }}
+        <div class="flex flex-column mobile-flex-reverse">
+            <div class="flex flex-row row mobile-flex-direction">
+                {{ player1_html | safe }}
 
-            <div class="row code-block">
-                <p>Code:</p>
-                <p class="pcode opacity-0" id="code" data-content="{{ code }}">{{ code }}</p>
-                <switchbutton name="show-code" id="show-code" onclick="toggleCodeVisibility()"></switchbutton>
+                <div class="mobile-separator"></div>
+    
+                <div class="row code-block">
+                    <p>Code:</p>
+                    <p class="pcode opacity-0" id="code" data-content="{{ code }}">{{ code }}</p>
+                    <switchbutton name="show-code" id="show-code" onclick="toggleCodeVisibility()"></switchbutton>
+                </div>
+
+                <div class="mobile-separator"></div>
+    
+                {{ player2_html | safe }}
             </div>
-
-            {{ player2_html | safe }}
-        </div>
-
-        <div class="center">
-            <table class="board {{ can_play }}" cellspacing="0">
-                {% for row in board %}
-                <tr>
-                    {% for cell in row %}
-                    <td class="cell">
-                        <div class="inside">
-                            <div class="stone {{ cell.tile }}" x="{{ cell.x }}" y="{{ cell.y }}"></div>
-                        </div>
-                    </td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-
-        <div class="center transition {{ action_buttons_class }}" id="action-buttons">
-            <div class="row width-fit-content">
-                <button class="margin-side" id="skip-button">Passer le Tour</button>
-                <button class="margin-side" id="give-up-button">Déclarer Forfait</button>
+    
+            <div class="separator"></div>
+            <div class="mobile-separator"></div>
+    
+            <div>
+                <div class="center">
+                    <table class="board {{ can_play }}" cellspacing="0">
+                        {% for row in board %}
+                        <tr>
+                            {% for cell in row %}
+                            <td class="cell">
+                                <div class="inside">
+                                    <div class="stone {{ cell.tile }}" x="{{ cell.x }}" y="{{ cell.y }}"></div>
+                                </div>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+        
+                <div class="center transition {{ action_buttons_class }}" id="action-buttons">
+                    <div class="row width-fit-content">
+                        <button class="margin-side" id="skip-button">Passer le Tour</button>
+                        <button class="margin-side" id="give-up-button">Déclarer Forfait</button>
+                    </div>
+                </div>
             </div>
         </div>
 
