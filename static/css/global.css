@@ -45,6 +45,11 @@ footer {
     margin-top: 2rem;
 }
 
+.margin-side {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
 .no-margin {
     margin: 0;
 }
@@ -235,6 +240,7 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
 .center {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .flex-row {
