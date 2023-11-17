@@ -192,6 +192,7 @@ class Board:
 
     def end_game(self) -> None:
         '''Termine la partie.'''
+        if self._ended: raise InvalidMoveException('La partie est déjà terminée.')
         self._ended = True
 
 
