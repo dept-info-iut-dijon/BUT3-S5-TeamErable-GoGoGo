@@ -1,6 +1,6 @@
 from ..RuleBase import RuleBase, Board, Tile
 from ..RuleFactory import RuleFactory
-from .rules import JapaneseRule
+from .JapaneseRule import JapaneseRule
 
 class ChineseRule(RuleBase):
     '''Règle chinoise.'''
