@@ -59,6 +59,10 @@ class Board:
     def ended(self) -> bool:
         return self._ended
 
+    @property
+    def komi(self) -> float:
+        return self._komi
+
 
     @property
     def raw(self) -> list[list[Tile | None]]:
