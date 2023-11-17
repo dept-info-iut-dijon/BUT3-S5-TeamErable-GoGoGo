@@ -27,6 +27,8 @@ class Board:
 
         Args:
             size (int): Taille du plateau.
+            komi (float): Komi.
+            rule_cls (type[RuleBase]): Classe de la règle.
         '''
         self._size = Vector2(size, size)
         self._rule: RuleBase = rule_cls(self)

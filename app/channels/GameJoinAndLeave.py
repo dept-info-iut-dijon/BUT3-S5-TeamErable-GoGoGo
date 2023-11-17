@@ -76,7 +76,7 @@ class GameJoinAndLeave(WebsocketConsumer):
     def _get_game_board(self) -> tuple[Game, Board, Tile]:
         game = Game.objects.get(id_game = self._game_id)
 
-        board = Board(game.game_configuration.map_size, RuleFactory().get(game.game_configuration.counting_method))
+        board = Board(game.game_configuration.map_size, game.game_configuration.komi, RuleFactory().get(game.game_configuration.counting_method))
         with open(game.move_list.path, 'r') as f:
             board.load(json.load(f))
 

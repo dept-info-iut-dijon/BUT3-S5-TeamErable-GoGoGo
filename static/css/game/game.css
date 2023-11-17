@@ -74,30 +74,50 @@ table.board > tbody > tr:last-child > td::after {
     cursor: pointer;
 }
 
-.stone.black {
+.stone-fixed .little-stone {
+    position: absolute;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    box-sizing: border-box;
+    outline: 1px solid transparent;
+    transform: translate(150%, -100%);
+}
+
+.stone.black, .little-stone.black {
     background-color: #000;
     border-color: #fff;
+    outline-color: #fff;
 }
 
-.stone.white {
+.stone.white, .little-stone.white {
     background-color: #fff;
     border-color: #000;
+    outline-color: #000;
 }
 
-.stone-fixed .stone {
-    width: 2rem;
-    height: 2rem;
-}
 
 .stone-fixed .name {
     margin-left: 1rem;
     font-size: 1.25rem;
     font-weight: bold;
-    color: #000;
+    color: var(--font-color);
     text-align: center;
     vertical-align: middle;
-    line-height: 2.5rem;
+    justify-content: center;
+    margin-top: auto;
+    margin-bottom: auto;
 }
+
+.stone-fixed img.pfp {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+    object-fit: cover;
+}
+
 
 .code-block p {
     margin-top: 0;
@@ -113,6 +133,8 @@ table.board > tbody > tr:last-child > td::after {
     vertical-align: middle;
     margin-right: 1rem;
     transition: all 0.2s ease-in-out;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .code-block .pcode {
@@ -123,6 +145,7 @@ table.board > tbody > tr:last-child > td::after {
     -webkit-text-security: disc;
     font-size: 2rem;
 }
+
 
 .band {
     position: absolute;
