@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path("favicon.ico", views.favicon, name="favicon"),
     path("header-pfp", views.header_pfp, name="header_pfp"),
+    path('get-pfp', views.get_pfp, name='get_pfp'),
     path("header-profile-name", views.header_profile_name, name="header_profile_name"),
     path("", views.index, name="index"),
     path("login", views.login_, name="login"),

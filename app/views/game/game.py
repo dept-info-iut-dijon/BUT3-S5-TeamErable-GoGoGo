@@ -92,8 +92,16 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
     tile = Tile.White if request.user == game.game_participate.player1 else Tile.Black
     can_play = board.is_player_turn(tile)
 
-    # player_id = 0 if game.game_participate.player1 == request.user else 1 if game.game_participate.player2 == request.user else -1
-    # if player_id == -1: return HttpResponseNotifError('Vous n\'êtes pas dans cette partie.')
+    players = [game.game_participate.player1, game.game_participate.player2]
+
+    player1 = request.user
+    player2 = players[1] if players[0] == player1 else players[0]
+
+    player1_color = Tile.White if player1 == game.game_participate.player1 else Tile.Black
+    player2_color = Tile.White if player2 == game.game_participate.player1 else Tile.Black
+
+    player1_html = render(request, 'reusable/game_player.html', {'player': player1, 'color': player1_color.value.color}).content.decode('utf-8')
+    player2_html = render(request, 'reusable/game_player.html', {'player': player2, 'color': player2_color.value.color}).content.decode('utf-8')
 
     return render(
         request,
@@ -112,8 +120,8 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
                 for y, row in enumerate(board.raw)
             ],
             'can_play': 'can-play' * int(can_play and not board.ended),
-            'player1': game.game_participate.player1.username,
-            'player2': game.game_participate.player2.username if game.game_participate.player2 else '???',
+            'player1_html': player1_html,
+            'player2_html': player2_html,
             'code': game.code,
             'action_buttons_class': '' if can_play and not board.ended else 'hidden',
             # 'player_id': player_id,

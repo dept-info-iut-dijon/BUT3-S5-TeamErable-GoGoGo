@@ -260,16 +260,24 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     height: 1rem;
 }
 
+.separator-2 {
+    height: 2rem;
+}
+
+.separator-3 {
+    height: 3rem;
+}
+
+.separator-4 {
+    height: 4rem;
+}
+
 .row > .separator {
     margin: 0 0.5rem;
 }
 
 .align-self-center {
     align-self: center;
-}
-
-align-self-left {
-    align-self: left;
 }
 
 .error {

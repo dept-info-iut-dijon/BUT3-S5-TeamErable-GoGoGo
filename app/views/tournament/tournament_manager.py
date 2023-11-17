@@ -31,7 +31,7 @@ def create_tournament_game(tournament, player1, player2):
     size = 6
     if not os.path.exists('dynamic/games'): os.makedirs('dynamic/games')
     with open(file, 'w') as f:
-        b = Board(size)
+        b = Board(size) # TODO: A corriger
         json.dump(b.export(), f)
     curr_game.move_list = file
     curr_game.save()

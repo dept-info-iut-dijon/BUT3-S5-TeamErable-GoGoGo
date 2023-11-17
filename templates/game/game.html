@@ -26,28 +26,18 @@
             </div>
         </div>
 
-        <div class="separator"></div>
+        <div class="separator-2"></div>
 
-        <div class="row align-self-left">
+        <div class="row">
+            {{ player1_html | safe }}
+
             <div class="row code-block">
                 <p>Code:</p>
                 <p class="pcode opacity-0" id="code" data-content="{{ code }}">{{ code }}</p>
                 <switchbutton name="show-code" id="show-code" onclick="toggleCodeVisibility()"></switchbutton>
             </div>
-            <div></div>
-        </div>
 
-        <div class="separator"></div>
-
-        <div class="row">
-            <div class="row stone-fixed">
-                <div class="stone white"></div>
-                <div class="name">{{ player1 }}</div>
-            </div>
-            <div class="row stone-fixed">
-                <div class="stone black"></div>
-                <div class="name">{{ player2 }}</div>
-            </div>
+            {{ player2_html | safe }}
         </div>
 
         <div class="center">
@@ -72,6 +62,8 @@
                 <button class="margin-side" id="give-up-button">Déclarer Forfait</button>
             </div>
         </div>
+
+        <div class="separator"></div>
 
         <div class="notify" id="notify"></div>
     </main>
