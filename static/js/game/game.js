@@ -108,6 +108,23 @@ function play(element) {
     }
 }
 
+function skip() {
+    websocket.send(JSON.stringify({
+        'type': 'skip',
+        'data': null
+    }));
+}
+
+function giveUp() {
+    websocket.send(JSON.stringify({
+        'type': 'give-up',
+        'data': null
+    }));
+}
+
+document.querySelector("#skip-button").addEventListener("click", skip);
+document.querySelector("#give-up-button").addEventListener("click", giveUp);
+
 
 
 const code = document.querySelector("#code");

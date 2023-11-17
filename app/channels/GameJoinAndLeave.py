@@ -35,8 +35,8 @@ class GameJoinAndLeave(WebsocketConsumer):
         '''
         try:
             data = json.loads(text_data)
-            assert data['type']
-            assert data['data']
+            assert 'type' in data.keys()
+            assert 'data' in data.keys()
 
             match data['type']:
                 case 'connect':
@@ -47,6 +47,12 @@ class GameJoinAndLeave(WebsocketConsumer):
 
                 case 'play':
                     self.receive_play(data)
+
+                case 'skip':
+                    self.receive_skip(data)
+
+                case _:
+                    raise ValueError('Une erreur est survenue.')
 
         except (InvalidMoveException, ValueError) as e:
             self.send(text_data = json.dumps({'type': 'error', 'data': str(e)}))
@@ -64,6 +70,21 @@ class GameJoinAndLeave(WebsocketConsumer):
         self.close()
 
 
+    def _get_game_board(self) -> tuple[Game, Board, Tile]:
+        game = Game.objects.get(id_game = self._game_id)
+
+        board = Board(game.game_configuration.map_size, RuleFactory().get(game.game_configuration.counting_method))
+        with open(game.move_list.path, 'r') as f:
+            board.load(json.load(f))
+
+        return game, board, Tile.White if self._player_id == 0 else Tile.Black
+    
+
+    def _save_game_board(self, game: Game, board: Board) -> None:
+        with open(game.move_list.path, 'w') as f:
+            json.dump(board.export(), f)
+
+
     def receive_play(self, event: dict) -> None:
         '''Reçoit le coup du joueur.
 
@@ -75,13 +96,8 @@ class GameJoinAndLeave(WebsocketConsumer):
         x, y = data.split(';')
         x = int(x); y = int(y)
 
-        game = Game.objects.get(id_game = self._game_id)
+        game, board, tile = self._get_game_board()
 
-        board = Board(game.game_configuration.map_size, RuleFactory().get(game.game_configuration.counting_method))
-        with open(game.move_list.path, 'r') as f:
-            board.load(json.load(f))
-
-        tile = Tile.White if self._player_id == 0 else Tile.Black
         ret = board.play(Vector2(x, y), tile)
         parsed_ret = {}
         for key, value in ret.items():
@@ -89,8 +105,7 @@ class GameJoinAndLeave(WebsocketConsumer):
             value = [f'{v.x};{v.y}' for v in value]
             parsed_ret[k] = '\n'.join(value)
 
-        with open(game.move_list.path, 'w') as f:
-            json.dump(board.export(), f)
+        self._save_game_board(game, board)
 
         new_event = {'type': 'send_play', 'data': json.dumps(parsed_ret)}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
@@ -117,6 +132,17 @@ class GameJoinAndLeave(WebsocketConsumer):
         '''
         new_event = {'type': 'can-play', 'data': event['data'] == self._player_id}
         self.send(text_data = json.dumps(new_event))
+
+
+    def receive_skip(self, event: dict) -> None:
+        game, board, tile = self._get_game_board()
+
+        board.play_skip(tile)
+
+        self._save_game_board(game, board)
+
+        new_event = {'type': 'send_can_play', 'data': 0 if board.current_player == Tile.White else 1}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
 
     def receive_connect(self, event: dict) -> None:
