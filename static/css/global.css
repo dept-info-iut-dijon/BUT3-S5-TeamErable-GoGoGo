@@ -261,6 +261,10 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     align-self: center;
 }
 
+align-self-left {
+    align-self: left;
+}
+
 .error {
     padding: 0.5rem 2rem;
     background-color: rgba(255, 0, 0, 0.2);

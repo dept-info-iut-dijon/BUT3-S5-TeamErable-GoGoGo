@@ -6,7 +6,14 @@ from ..logic import Board, Tile, RuleFactory, Vector2
 from ..exceptions import InvalidMoveException
 
 class GameJoinAndLeave(WebsocketConsumer):
+    '''Gère le websocket de la partie.
+
+    Args:
+        WebsocketConsumer (_type_): Classe de base du websocket.
+    '''
+
     def connect(self) -> None:
+        '''Connecte le joueur à la partie.'''
         self._user = self.scope['user']
         self._game_id = self.scope['url_route']['kwargs']['game_id']
 
@@ -20,6 +27,12 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def receive(self, text_data: str = None, bytes_data: bytes = None) -> None:
+        '''Reçoit les données du joueur.
+
+        Args:
+            text_data (str, optional): Données du joueur. Defaults to None.
+            bytes_data (bytes, optional): Données du joueur. Defaults to None.
+        '''
         try:
             data = json.loads(text_data)
             assert data['type']
@@ -42,11 +55,21 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def disconnect(self, code: int) -> None:
+        '''Déconnecte le joueur de la partie.
+
+        Args:
+            code (int): Code de déconnexion.
+        '''
         async_to_sync(self.channel_layer.group_discard)(f'game_{self._game_id}', self.channel_name)
         self.close()
 
 
     def receive_play(self, event: dict) -> None:
+        '''Reçoit le coup du joueur.
+
+        Args:
+            event (dict): Coup du joueur.
+        '''
         data: str = event['data']
 
         x, y = data.split(';')
@@ -77,21 +100,41 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def send_play(self, event: dict) -> None:
+        '''Envoie le coup du joueur.
+
+        Args:
+            event (dict): Coup du joueur.
+        '''
         new_event = {'type': 'play', 'data': event['data']}
         self.send(text_data = json.dumps(new_event))
 
 
     def send_can_play(self, event: dict) -> None:
+        '''Envoie si le joueur peut jouer.
+
+        Args:
+            event (dict): Si le joueur peut jouer.
+        '''
         new_event = {'type': 'can-play', 'data': event['data'] == self._player_id}
         self.send(text_data = json.dumps(new_event))
 
 
     def receive_connect(self, event: dict) -> None:
+        '''Reçoit la connexion du joueur.
+
+        Args:
+            event (dict): Connexion du joueur.
+        '''
         data: str = event['data']
         self.send(text_data = json.dumps(event))
 
 
     def receive_disconnect(self, event: dict) -> None:
+        '''Reçoit la déconnexion du joueur.
+
+        Args:
+            event (dict): Déconnexion du joueur.
+        '''
         data: str = event['data']
         print('disconnect', data)
         self.send(text_data = json.dumps(event))

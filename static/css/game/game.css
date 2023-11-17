@@ -83,3 +83,43 @@ table.board > tbody > tr:last-child > td::after {
     background-color: #fff;
     border-color: #000;
 }
+
+.stone-fixed .stone {
+    width: 2rem;
+    height: 2rem;
+}
+
+.stone-fixed .name {
+    margin-left: 1rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #000;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 2.5rem;
+}
+
+.code-block p {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 1.25rem;
+    vertical-align: middle;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.code-block > * {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.code-block .pcode {
+    -webkit-text-security: none;
+}
+
+.code-block .pcode.opacity-0 {
+    -webkit-text-security: disc;
+    font-size: 2rem;
+}
