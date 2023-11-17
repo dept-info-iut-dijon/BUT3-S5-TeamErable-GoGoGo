@@ -1,5 +1,6 @@
 :root {
     --main-color: #cc7f4e;
+    --main-color-transparent: #cc7e4edd;
     --main-color-hover: #b36e42;
     --main-color-light: #f5b38b;
     --gray-color: #ccc;
@@ -43,6 +44,11 @@ footer {
 
 .margin-top {
     margin-top: 2rem;
+}
+
+.margin-side {
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
 
 .no-margin {
@@ -235,6 +241,7 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
 .center {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .flex-row {
@@ -259,6 +266,10 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
 
 .align-self-center {
     align-self: center;
+}
+
+align-self-left {
+    align-self: left;
 }
 
 .error {
@@ -413,4 +424,12 @@ input:checked + .slider:before {
     margin: 0;
     cursor: pointer;
     outline: none;
+}
+
+.transition {
+    transition: all 0.2s ease-in-out;
+}
+
+.hidden {
+    transform: scaleY(0);
 }
