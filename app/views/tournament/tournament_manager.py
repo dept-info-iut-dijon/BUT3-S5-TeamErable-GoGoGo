@@ -7,6 +7,7 @@ import datetime, os, json
 from ...logic import Board
 from app.models import Game
 from app.models import CustomUser
+from ..decorators import login_required
 
 def has_game_happened(tournament_games, player1, player2):
     for game in tournament_games:
@@ -36,8 +37,8 @@ def create_tournament_game(tournament, player1, player2):
     curr_game.move_list = file
     curr_game.save()
 
+@login_required
 def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
     
     tournament = get_object_or_404(Tournament, id=id)
     try:
@@ -110,8 +111,8 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
 
     return render(request, 'tournament/tournament_manager.html', context)
 
+@login_required
 def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
 
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
@@ -132,8 +133,8 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
     else:
         return HttpResponseBadRequest('<p class="error">Vous participez deja au tournois</p>') 
 
+@login_required
 def tournament_player_list(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
 
     if request.method == 'GET':
         if (id_tournament := request.GET.get('id')) is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
