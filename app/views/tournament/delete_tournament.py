@@ -16,6 +16,8 @@ def delete_tournament(request: HttpRequest, id_tournament: int) -> HttpResponse:
     Returns:
         HttpResponse: La page de la liste des tournois ou erreur
     '''
+    ret: HttpResponse = HttpResponseBadRequest('Erreur lors de la suppression du tournoi')
+
     try:
         tournament = Tournament.objects.get(id=id_tournament)
         
@@ -23,7 +25,7 @@ def delete_tournament(request: HttpRequest, id_tournament: int) -> HttpResponse:
             configuration = tournament.game_configuration
             tournament.delete()
             configuration.delete()
-            ret = HttpResponseRedirect('/tournament')
+            ret = HttpResponse('/tournament')
 
         else:
             ret = HttpResponseNotifError('Vous ne pouvez pas supprimer ce tournoi')
