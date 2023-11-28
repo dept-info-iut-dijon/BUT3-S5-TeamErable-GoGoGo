@@ -204,16 +204,72 @@ class Board:
         self._ended = True
 
 
-    def get_neighbors(self, coords: Vector2) -> list[Vector2]:
+    def get_neighbors(self, coords: Vector2) -> tuple[Vector2]:
         '''Renvoie les coordonnées des voisins.
 
         Args:
             coords (Vector2): Coordonnées de la tuile.
 
         Returns:
-            list[Vector2]: Coordonnées des voisins.
+            tuple[Vector2]: Coordonnées des voisins.
         '''
-        return [coords + c for c in GoConstants.Neighbors if not self.is_outside(coords + c)]
+        return tuple(coords + c for c in GoConstants.Neighbors if not self.is_outside(coords + c))
+
+
+    def get_corner_points(self, coords: Vector2) -> tuple[Vector2]:
+        '''Renvoie les coordonnées des coins.
+
+        Args:
+            coords (Vector2): Coordonnées de la tuile.
+
+        Returns:
+            tuple[Vector2]: Coordonnées des coins.
+        '''
+        return tuple(coords + c for c in GoConstants.Corners if not self.is_outside(coords + c))
+
+
+    def get_group_and_neighbors(self, starting_point: Vector2) -> tuple[list[Vector2], list[Vector2]]:
+        '''Renvoie le groupe et les voisins de la tuile aux coordonnées spécifiées.
+
+        Args:
+            starting_point (Vector2): Coordonnées de la tuile.
+
+        Returns:
+            tuple[list[Vector2], list[Vector2]]: Groupe et voisins de la tuile.
+        '''
+        return self.get_group_and_neighbors_from_points([starting_point])
+
+
+    def get_group_and_neighbors_from_points(self, starting_points: list[Vector2]) -> tuple[list[Vector2], list[Vector2]]:
+        '''Renvoie le groupe et les voisins des tuiles aux coordonnées spécifiées.
+
+        Args:
+            starting_points (list[Vector2]): Coordonnées des tuiles.
+
+        Returns:
+            tuple[list[Vector2], list[Vector2]]: Groupe et voisins des tuiles.
+        '''
+        tocheck = starting_points.copy()
+        neighbors = []
+        visited = [[False for _ in range(self._size.x)] for _ in range(self._size.y)]
+        matching_value = self.get(starting_points[0])
+
+        group = []
+
+        while tocheck:
+            p = tocheck.pop(0)
+            if self.get(p) == matching_value:
+                group.append(p)
+                for neighbor in self.get_neighbors(p):
+                    if visited[neighbor.y][neighbor.x]: continue
+
+                    visited[neighbor.y][neighbor.x] = True
+                    tocheck.append(neighbor)
+
+            else:
+                neighbors.append(p)
+
+        return group, neighbors
 
 
     def get_islands(self) -> tuple[Island]:
@@ -435,6 +491,126 @@ class Board:
         self._skip_list = [Tile.from_value(t) for t in data['skip-list']]
 
 
+    def count_equal(self, group: list[Vector2], value: Tile | None) -> int:
+        '''Compte le nombre de tuiles égales à la valeur spécifiée.
+
+        Args:
+            group (list[Vector2]): Groupe de tuiles.
+            value (Tile | None): Valeur à comparer.
+
+        Returns:
+            int: Nombre de tuiles égales à la valeur spécifiée.
+        '''
+        ret = 0
+        for coords in group:
+            if self.get(coords) == value:
+                ret += 1
+
+        return ret
+
+
+    def all_equal_to(self, group: list[Vector2], value: Tile | None) -> bool:
+        '''Vérifie si toutes les tuiles du groupe sont égales à la valeur spécifiée.
+
+        Args:
+            group (list[Vector2]): Groupe de tuiles.
+            value (Tile | None): Valeur à comparer.
+
+        Returns:
+            bool: True si toutes les tuiles du groupe sont égales à la valeur spécifiée, False sinon.
+        '''
+        for coords in group:
+            if self.get(coords) != value:
+                return False
+
+        return True
+
+
+    def get_min_liberties_of_surrounding_groups(self, coords: Vector2) -> int:
+        '''Renvoie le nombre minimum de libertés des groupes entourant la tuile aux coordonnées spécifiées.
+
+        Args:
+            coords (Vector2): Coordonnées de la tuile.
+
+        Returns:
+            int: Nombre minimum de libertés des groupes entourant la tuile.
+        '''
+        neighbors = self.get_neighbors(coords)
+
+        ret = 99999
+
+        for neighbor in neighbors:
+            group, group_neighbors = self.get_group_and_neighbors(neighbor)
+
+            liberties = self.count_equal(group_neighbors, None)
+            ret = min(ret, liberties)
+
+        return ret
+
+
+    def get_false_eyes(self) -> tuple[Vector2]:
+        '''Renvoie les faux yeux.
+
+        Returns:
+            tuple[Vector2]: Faux yeux.
+        '''
+        false_eyes: list[Vector2] = []
+
+        for y in range(self._size.y):
+            for x in range(self._size.x):
+                coords = Vector2(x, y)
+                if self.get(coords) is not None: continue
+
+                neighbors = self.get_neighbors(coords)
+                corners = self.get_corner_points(coords)
+
+                if self.get_min_liberties_of_surrounding_groups(coords) > 1: continue
+
+                if self.all_equal_to(neighbors, Tile.Black) and self.count_equal(corners, Tile.White) >= (len(corners) >> 1):
+                    false_eyes.append(coords)
+
+                elif self.all_equal_to(neighbors, Tile.White) and self.count_equal(corners, Tile.Black) >= (len(corners) >> 1):
+                    false_eyes.append(coords)
+
+        return false_eyes
+
+
+    def match(self, group: list[Vector2], value: Tile | None) -> list[Vector2]:
+        '''Renvoie les tuiles du groupe égales à la valeur spécifiée.
+
+        Args:
+            group (list[Vector2]): Groupe de tuiles.
+            value (Tile | None): Valeur à comparer.
+
+        Returns:
+            list[Vector2]: Tuiles du groupe égales à la valeur spécifiée.
+        '''
+        ret = []
+        for coords in group:
+            if self.get(coords) == value:
+                ret.append(coords)
+
+        return ret
+
+
+    def not_match(self, group: list[Vector2], value: Tile | None) -> list[Vector2]:
+        '''Renvoie les tuiles du groupe différentes de la valeur spécifiée.
+
+        Args:
+            group (list[Vector2]): Groupe de tuiles.
+            value (Tile | None): Valeur à comparer.
+
+        Returns:
+            list[Vector2]: Tuiles du groupe différentes de la valeur spécifiée.
+        '''
+        ret = []
+        for coords in group:
+            if self.get(coords) != value:
+                ret.append(coords)
+
+        return ret
+
+
     def export(self) -> dict:
         '''Exporte le plateau de jeu.
 
@@ -462,100 +638,6 @@ class Board:
             'skip-list': [str(tile) for tile in self._skip_list],
             # 'history': [],
         }
-
-
-    def get_corner_points(self, coords: Vector2) -> list[Vector2]:
-        corners = []
-
-        if not self.is_outside(Vector2(coords.x - 1, coords.y - 1)): corners.append(Vector2(coords.x - 1, coords.y - 1))
-        if not self.is_outside(Vector2(coords.x + 1, coords.y - 1)): corners.append(Vector2(coords.x + 1, coords.y - 1))
-
-        if not self.is_outside(Vector2(coords.x - 1, coords.y + 1)): corners.append(Vector2(coords.x - 1, coords.y + 1))
-        if not self.is_outside(Vector2(coords.x + 1, coords.y + 1)): corners.append(Vector2(coords.x + 1, coords.y + 1))
-
-        return corners
-
-
-    def get_group_and_neighbors(self, starting_point: Vector2) -> tuple[list[Vector2], list[Vector2]]:
-        starting_points = [starting_point]
-        return self.get_group_and_neighbors_from_points(starting_points)
-
-
-    def get_group_and_neighbors_from_points(self, starting_points: list[Vector2]) -> tuple[list[Vector2], list[Vector2]]:
-        tocheck = starting_points.copy()
-        neighbors = []
-        visited = [[False for _ in range(self._size.x)] for _ in range(self._size.y)]
-        matching_value = self.get(starting_points[0])
-
-        group = []
-
-        while tocheck:
-            p = tocheck.pop(0)
-            if self.get(p) == matching_value:
-                group.append(p)
-                for neighbor in self.get_neighbors(p):
-                    if visited[neighbor.y][neighbor.x]: continue
-
-                    visited[neighbor.y][neighbor.x] = True
-                    tocheck.append(neighbor)
-
-            else:
-                neighbors.append(p)
-
-        return group, neighbors
-
-
-    def count_equal(self, group: list[Vector2], value: Tile | None) -> int:
-        ret = 0
-        for coords in group:
-            if self.get(coords) == value:
-                ret += 1
-
-        return ret
-
-
-    def all_equal_to(self, group: list[Vector2], value: Tile | None) -> bool:
-        for coords in group:
-            if self.get(coords) != value:
-                return False
-
-        return True
-
-
-    def get_min_liberties_of_surrounding_groups(self, coords: Vector2) -> int:
-        neighbors = self.get_neighbors(coords)
-
-        ret = 99999
-
-        for neighbor in neighbors:
-            group, group_neighbors = self.get_group_and_neighbors(neighbor)
-
-            liberties = self.count_equal(group_neighbors, None)
-            ret = min(ret, liberties)
-
-        return ret
-
-
-    def get_false_eyes(self) -> tuple[Vector2]:
-        false_eyes: list[Vector2] = []
-
-        for y in range(self._size.y):
-            for x in range(self._size.x):
-                coords = Vector2(x, y)
-                if self.get(coords) is not None: continue
-
-                neighbors = self.get_neighbors(coords)
-                corners = self.get_corner_points(coords)
-
-                if self.get_min_liberties_of_surrounding_groups(coords) > 1: continue
-
-                if self.all_equal_to(neighbors, Tile.Black) and self.count_equal(corners, Tile.White) >= (len(corners) >> 1):
-                    false_eyes.append(coords)
-
-                elif self.all_equal_to(neighbors, Tile.White) and self.count_equal(corners, Tile.Black) >= (len(corners) >> 1):
-                    false_eyes.append(coords)
-
-        return false_eyes
 
 
     def copy(self) -> 'Board':
