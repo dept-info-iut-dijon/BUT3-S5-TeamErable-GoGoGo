@@ -12,12 +12,47 @@
 TODO-DESCRIPTION
 
 
-## Requirements
-- TODO
+## Prérequis
+- Machine Window / Linux / MACOS ( avec python 3.11 ou plus )
+- Machine Linux ( ou WSL )
+
+## Installation
+
+Pour installer les dépendances du projet ( sur la Machine python ) vous pouvez executer la commande suivante a la racine du projet: 
+- ```python -m pip install -r requirements.txt```
+
+Pour installer redis ( sur la machine Linux ) vous pouvez executer la commande suivante : 
+- ```sudo apt-get install redis```
+
+### Dépendances python 
+#### ( si le l'installation des dépendances n'a pas fonctionné )
+
+- Asgrief
+- Django
+- Plum
+- Waitress
+- Daphne
+- Channels
+
+### Technologies utilisés
+
+- Python
+- Django  
+- Redis
+- HTMX
 
 
+## Lancer le serveur
 
-## Contributors
+Pour lancer le serveur redis, ouvrez un terminal ( sur la machine Linux ) et executer la commande suivante : 
+- ```sudo service redis-server start```
+
+Pour lancer le serveur, ouvrez un terminal ( sur la machine Python ) et executer la commande suivante a la racine du projet: 
+- ```python manage.py runserver```
+
+## Contributeurs
+
+John GAUDRY, Hugo MRULA, Matthieu THIVARD, Samuel MONTAGNA
 
 [//]: contributor-faces
 
