@@ -464,6 +464,100 @@ class Board:
         }
 
 
+    def get_corner_points(self, coords: Vector2) -> list[Vector2]:
+        corners = []
+
+        if not self.is_outside(Vector2(coords.x - 1, coords.y - 1)): corners.append(Vector2(coords.x - 1, coords.y - 1))
+        if not self.is_outside(Vector2(coords.x + 1, coords.y - 1)): corners.append(Vector2(coords.x + 1, coords.y - 1))
+
+        if not self.is_outside(Vector2(coords.x - 1, coords.y + 1)): corners.append(Vector2(coords.x - 1, coords.y + 1))
+        if not self.is_outside(Vector2(coords.x + 1, coords.y + 1)): corners.append(Vector2(coords.x + 1, coords.y + 1))
+
+        return corners
+
+
+    def get_group_and_neighbors(self, starting_point: Vector2) -> tuple[list[Vector2], list[Vector2]]:
+        starting_points = [starting_point]
+        return self.get_group_and_neighbors_from_points(starting_points)
+
+
+    def get_group_and_neighbors_from_points(self, starting_points: list[Vector2]) -> tuple[list[Vector2], list[Vector2]]:
+        tocheck = starting_points.copy()
+        neighbors = []
+        visited = [[False for _ in range(self._size.x)] for _ in range(self._size.y)]
+        matching_value = self.get(starting_points[0])
+
+        group = []
+
+        while tocheck:
+            p = tocheck.pop(0)
+            if self.get(p) == matching_value:
+                group.append(p)
+                for neighbor in self.get_neighbors(p):
+                    if visited[neighbor.y][neighbor.x]: continue
+
+                    visited[neighbor.y][neighbor.x] = True
+                    tocheck.append(neighbor)
+
+            else:
+                neighbors.append(p)
+
+        return group, neighbors
+
+
+    def count_equal(self, group: list[Vector2], value: Tile | None) -> int:
+        ret = 0
+        for coords in group:
+            if self.get(coords) == value:
+                ret += 1
+
+        return ret
+
+
+    def all_equal_to(self, group: list[Vector2], value: Tile | None) -> bool:
+        for coords in group:
+            if self.get(coords) != value:
+                return False
+
+        return True
+
+
+    def get_min_liberties_of_surrounding_groups(self, coords: Vector2) -> int:
+        neighbors = self.get_neighbors(coords)
+
+        ret = 99999
+
+        for neighbor in neighbors:
+            group, group_neighbors = self.get_group_and_neighbors(neighbor)
+
+            liberties = self.count_equal(group_neighbors, None)
+            ret = min(ret, liberties)
+
+        return ret
+
+
+    def get_false_eyes(self) -> tuple[Vector2]:
+        false_eyes: list[Vector2] = []
+
+        for y in range(self._size.y):
+            for x in range(self._size.x):
+                coords = Vector2(x, y)
+                if self.get(coords) is not None: continue
+
+                neighbors = self.get_neighbors(coords)
+                corners = self.get_corner_points(coords)
+
+                if self.get_min_liberties_of_surrounding_groups(coords) > 1: continue
+
+                if self.all_equal_to(neighbors, Tile.Black) and self.count_equal(corners, Tile.White) >= (len(corners) >> 1):
+                    false_eyes.append(coords)
+
+                elif self.all_equal_to(neighbors, Tile.White) and self.count_equal(corners, Tile.Black) >= (len(corners) >> 1):
+                    false_eyes.append(coords)
+
+        return false_eyes
+
+
     def copy(self) -> 'Board':
         '''Copie le plateau de jeu.
 
@@ -471,12 +565,11 @@ class Board:
             Board: Copie du plateau de jeu.
         '''
 
-        b = Board(self._size.x, self._rule.__class__)
+        b = Board(self._size.x, self._komi, self._rule.__class__)
         b._board = [row.copy() for row in self._board]
         b._current_player = self._current_player
         b._eaten_tiles = self._eaten_tiles.copy()
         b._ended = self._ended
         b._skip_list = self._skip_list.copy()
-        b._komi = self._komi
 
         return b
