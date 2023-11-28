@@ -9,6 +9,7 @@ from ...logic import Board, RuleFactory
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
 from ..code_manager import CodeManager
+from ...utils import verify_post, verify_get
 
 
 def _delete_current_games(user):
@@ -96,17 +97,21 @@ def create_game(request: HttpRequest) -> HttpResponse:
     '''
     ret: HttpResponse = HttpResponseNotifError('Erreur lors de la création de la partie')
     if request.method == RequestType.POST.value:
-        if (name := request.POST.get('game-name')) is None: ret = HttpResponseNotifError('Erreur : Le nom de la partie est vide')
-        elif (is_private := bool(request.POST.get('game-private', False))) is None: ret = HttpResponseNotifError('Erreur : Le statut de la partie n\'est pas défini')
-        elif (description := request.POST.get('game-desc')) is None: ret = HttpResponseNotifError('Erreur : La description de la partie est vide')
-        elif (map_size := request.POST.get('map-size')) is None: ret = HttpResponseNotifError('Erreur : La taille de la carte est vide')
-        elif (counting_method := request.POST.get('counting-method')) is None: ret = HttpResponseNotifError('Erreur : La methode de comptage est vide')
-        elif (byo_yomi := request.POST.get('byo-yomi')) is None: ret = HttpResponseNotifError('Erreur : Le byo-yomi est vide')
-        elif (clock_type := request.POST.get('clock-type')) is None: ret = HttpResponseNotifError('Erreur : Le temps de la partie est vide ')
-        elif (time_clock := request.POST.get('time-clock')) is None: ret = HttpResponseNotifError('Erreur : Le temps de la partie est vide')
-        elif (komi := request.POST.get('komi')) is None: ret = HttpResponseNotifError('Erreur : La valeur de komi est vide')
-        elif (handicap := request.POST.get('handicap')) is None: ret = HttpResponseNotifError('Erreur : La valeur de handicap est vide')
 
+        try:
+            name = verify_post(request, 'game-name', 'Le nom de la partie est vide.')
+            is_private = verify_post(request, 'game-private', 'Le statut de la partie n\'est pas défini.')
+            description = verify_post(request, 'game-desc', 'La description de la partie est vide.')
+            map_size = verify_post(request, 'map-size', 'La taille de la carte est vide.')
+            counting_method = verify_post(request, 'counting-method', 'La methode de comptage est vide.')
+            byo_yomi = verify_post(request, 'byo-yomi', 'Le byo-yomi est vide.')
+            clock_type = verify_post(request, 'clock-type', 'Le temps de la partie est vide.')
+            clock_value = verify_post(request, 'clock-value', 'Le temps de la partie est vide.')
+            komi = verify_post(request, 'komi', 'Le komi est vide.')
+            handicap = verify_post(request, 'handicap', 'Le handicap est vide.')
+        
+        except Exception as e:
+            return HttpResponseNotifError(str(e))
 
         else:
             try: 
@@ -121,7 +126,7 @@ def create_game(request: HttpRequest) -> HttpResponse:
 
             _delete_current_games(request.user)
             
-            game = _create_new_game(name, description, is_private, request.user, code, map_size, counting_method, byo_yomi, clock_type, time_clock, komi, handicap)
+            game = _create_new_game(name, description, is_private, request.user, code, map_size, counting_method, byo_yomi, clock_type, clock_value, komi, handicap)
             
             ret = HttpResponse(f'/game?id={game.id_game}')
                 
