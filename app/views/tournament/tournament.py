@@ -1,19 +1,20 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from ...models import Tournament
-from ...models import Participate
+from ...models import ParticipateTournament
 from datetime import datetime
 from django.db.models import Q
+from ..decorators import login_required
 
+@login_required
 def tournament(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
     
     return render(request, 'tournament/tournament.html')
 
 def search_tournament(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         query = request.POST.get('tournament_name','')
-        tournaments = Tournament.objects.exclude(participate__in = Participate.objects.filter(person = request.user)).filter(name__icontains = query).exclude(end_date__lt = datetime.now()).exclude(private = True).order_by('name')[:12]
+        tournaments = Tournament.objects.exclude(id__in = ParticipateTournament.objects.filter(person = request.user).values('tournament')).filter(name__icontains = query).exclude(end_date__lt = datetime.now()).exclude(private = True).order_by('name')[:12]
         return render(
             request,
             'reusable/tournament_list.html',
@@ -26,7 +27,7 @@ def search_tournament(request: HttpRequest) -> HttpResponse:
 def search_current_tournament(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         tournaments = (
-            Tournament.objects.filter(Q(participate__in = Participate.objects.filter(person = request.user)) | Q(creator = request.user)).exclude(end_date__lt = datetime.now()).order_by('name')[:12]
+            Tournament.objects.filter(Q(id__in = ParticipateTournament.objects.filter(person = request.user).values('tournament')) | Q(creator = request.user)).exclude(end_date__lt = datetime.now()).order_by('name')[:12]
         )
         return render(
             request,
@@ -37,15 +38,17 @@ def search_current_tournament(request: HttpRequest) -> HttpResponse:
 
     return HttpResponseBadRequest('')
 
+@login_required
 def tournament_code(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
-    if (tournament_code := request.POST.get('code')) is None: return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
+    ret = HttpResponseBadRequest('Erreur lors de la recherche du tournoi')
+    if (tournament_code := request.POST.get('code')) is None: ret = HttpResponseBadRequest('<p class="error">Le code est vide.</p>')
 
     try:
         tournament_inst = Tournament.objects.get(code = tournament_code, end_date__gt = datetime.now())
-        if not tournament_inst: return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
+        if not tournament_inst: ret = HttpResponseBadRequest('<p class="error">Code invalide.</p>')
 
     except:
         return HttpResponseBadRequest('<p class="error">Code invalide.</p>')
 
-    return HttpResponse(f'/tournament/{tournament_inst.id}/')
+    ret = HttpResponse(f'/tournament/{tournament_inst.id}/')
+    return ret

@@ -1,12 +1,13 @@
 from django.http import FileResponse, HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
-from ...models.tournament import Tournament, Participate
+from ...models.tournament import Tournament, ParticipateTournament
 from ...models.game import Game
 from django.contrib.auth import get_user_model
 import datetime, os, json
 from ...logic import Board
 from app.models import Game
 from app.models import CustomUser
+from ..decorators import login_required
 
 def has_game_happened(tournament_games, player1, player2):
     for game in tournament_games:
@@ -31,13 +32,13 @@ def create_tournament_game(tournament, player1, player2):
     size = 6
     if not os.path.exists('dynamic/games'): os.makedirs('dynamic/games')
     with open(file, 'w') as f:
-        b = Board(size)
+        b = Board(size) # TODO: A corriger
         json.dump(b.export(), f)
     curr_game.move_list = file
     curr_game.save()
 
+@login_required
 def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
     
     tournament = get_object_or_404(Tournament, id=id)
     try:
@@ -45,7 +46,7 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
     except get_user_model().DoesNotExist:
         user = None
     
-    participate = Participate.objects.filter(tournament=tournament)
+    participate = ParticipateTournament.objects.filter(tournament=tournament)
     participants = [entry.person for entry in participate]
     games = Game.objects.filter(tournament=tournament)
 
@@ -110,16 +111,16 @@ def tournament_manager(request: HttpRequest, id:int) -> HttpResponse:
 
     return render(request, 'tournament/tournament_manager.html', context)
 
+@login_required
 def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
 
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
     if tournament.ongoing() == True: 
         return HttpResponseBadRequest('<p class="error">Les inscription pour ce tournois sont terminees</p>') 
 
-    if len(Participate.objects.filter(person=request.user, tournament=tournament).all()) < 1:
-        link = Participate.objects.create(
+    if len(ParticipateTournament.objects.filter(person=request.user, tournament=tournament).all()) < 1:
+        link = ParticipateTournament.objects.create(
                 person = request.user,
                 tournament = tournament,
                 win = False,
@@ -132,14 +133,14 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
     else:
         return HttpResponseBadRequest('<p class="error">Vous participez deja au tournois</p>') 
 
+@login_required
 def tournament_player_list(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
 
     if request.method == 'GET':
         if (id_tournament := request.GET.get('id')) is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
         try:
             tournament = Tournament.objects.get(id = id_tournament)
-            listplayers = CustomUser.objects.filter(participate__tournament__id = id_tournament).all()
+            listplayers = CustomUser.objects.filter(participatetournament__tournament__id = id_tournament).all()
             return render(request, 'reusable/tournament_player_list.html', {'players': listplayers, 'tournament_unstarted': (not tournament.ongoing()) and tournament.creator.id == request.user.id})
         
         except: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')

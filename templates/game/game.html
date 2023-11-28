@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGoGo • Partie</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css//game/game.css">
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% include 'reusable/header.html' %}
+    <main>
+        {% csrf_token %}
+        <input type="text" id="game-id" value="{{ id }}" hidden>
+
+        <div class="band transition hidden">
+            <div class="center flex-column">
+                <div>
+                    <div class="center flex-column">
+                        <p class="big">XXX a gagné la partie !</p>
+                        <p>YYYY (Player1) vs ZZZZ (Player2)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator-2"></div>
+
+        <div class="flex flex-column mobile-flex-reverse">
+            <div class="flex flex-row row mobile-flex-direction">
+                {{ player1_html | safe }}
+
+                <div class="mobile-separator"></div>
+    
+                <div class="row code-block">
+                    <p>Code:</p>
+                    <p class="pcode opacity-0" id="code" data-content="{{ code }}">{{ code }}</p>
+                    <switchbutton name="show-code" id="show-code" onclick="toggleCodeVisibility()"></switchbutton>
+                </div>
+
+                <div class="mobile-separator"></div>
+    
+                {{ player2_html | safe }}
+            </div>
+    
+            <div class="separator"></div>
+            <div class="mobile-separator"></div>
+    
+            <div>
+                <div class="overflow-auto-x">
+                    <div class="width-max-content margin-auto-x">
+                        <table class="board {{ can_play }}" cellspacing="0">
+                            {% for row in board %}
+                            <tr>
+                                {% for cell in row %}
+                                <td class="cell">
+                                    <div class="inside">
+                                        <div class="stone {{ cell.tile }}" x="{{ cell.x }}" y="{{ cell.y }}"></div>
+                                    </div>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+        
+                <div class="center transition {{ action_buttons_class }}" id="action-buttons">
+                    <div class="row width-fit-content">
+                        <button class="margin-side" id="skip-button">Passer le Tour</button>
+                        <button class="margin-side" id="give-up-button">Déclarer Forfait</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="notify" id="notify"></div>
+    </main>
+
+    <script src="/static/js/game/game.js"></script>
+    <script src="/static/js/global.js"></script>
+    <script src="/static/js/notify.js"></script>
+</body>
+</html>
