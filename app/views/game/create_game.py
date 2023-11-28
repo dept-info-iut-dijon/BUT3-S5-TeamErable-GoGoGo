@@ -9,7 +9,7 @@ from ...logic import Board, RuleFactory
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
 from ..code_manager import CodeManager
-from ...utils import verify_post, verify_get
+from ...http import verify_post, verify_get
 
 
 def _delete_current_games(user):

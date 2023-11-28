@@ -4,7 +4,7 @@ from ...models.tournament import Tournament
 from datetime import datetime
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
-from ...utils import verify_tournament
+from ...http import verify_tournament
 
 
 @login_required

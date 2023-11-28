@@ -6,7 +6,7 @@ from datetime import datetime
 import random, string
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
-from ...utils import verify_tournament
+from ...http import verify_tournament
 from .tournament_struct import TournamentStruct
 
 def can_create_tournament(request: HttpRequest) -> bool :
