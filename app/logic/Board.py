@@ -170,18 +170,18 @@ class Board:
             if self.is_island_surronded(island):
                 has_eaten = True
                 for c in island.coords:
+                    self._eaten_tiles[self.get(c).next] += 1
                     self.set(c, None)
                     ret[None].append(c)
-                    self._eaten_tiles[tile.next] += 1
 
         if not has_eaten:
             island = self.get_island_from_coords(coords)
             if self.is_island_surronded(island):
                 if GoConstants.AllowPlayInDeadZones:
                     for c in island.coords:
+                        self._eaten_tiles[self.get(c)] += 1
                         self.set(c, None)
                         ret[None].append(c)
-                        self._eaten_tiles[tile.next] += 1
 
                 else:
                     self.set(coords, None)
