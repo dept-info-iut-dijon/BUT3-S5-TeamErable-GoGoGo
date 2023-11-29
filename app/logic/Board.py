@@ -153,6 +153,7 @@ class Board:
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
         if self.is_outside(coords): raise InvalidMoveException('Impossible de jouer ici, les coordonnées sont en dehors du plateau.')
         if self.get(coords) is not None: raise InvalidMoveException('Impossible de jouer ici, la case est déjà occupée.')
+        if any(coords == pos for pos in self._illegal_moves): raise InvalidMoveException('Impossible de jouer ici, la case s\'est déjà retrouvée entourée lors du dernier tour.')
 
         ret: dict[Tile, list[Vector2]] = {t: [] for t in Tile} | {None: []}
 
@@ -193,11 +194,11 @@ class Board:
         self._current_player = tile.next
         self._skip_list = []
 
-        # if len(ret) == 1: # todo: finish this
-        #     self._illegal_moves = [ret[0]]
+        if len(ret[None]) == 1:
+            self._illegal_moves = [ret[None][0]]
 
-        # else:
-        #     self._illegal_moves = []
+        else:
+            self._illegal_moves = []
 
         return ret
 
@@ -219,6 +220,7 @@ class Board:
 
         self._current_player = tile.next
         self._history.append(None)
+        self._illegal_moves = []
 
         if set(self._skip_list) == set(Tile):
             self.end_game()
@@ -635,7 +637,10 @@ class Board:
         self._komi = data.get('komi', 0.5)
         self._ended = data.get('ended', False)
         self._skip_list = [Tile.from_value(t) for t in data.get('skip-list', [])]
-        self._illegal_moves = data.get('illegal-moves', [])
+        self._illegal_moves = [
+            Vector2(*pos) if pos else None
+            for pos in data.get('illegal-moves', [])
+        ]
         self._history = [
             Vector2(*pos) if pos else None
             for pos in data.get('history', [])
@@ -667,7 +672,7 @@ class Board:
             'komi': self._komi,
             'ended': self._ended,
             'skip-list': [str(tile) for tile in self._skip_list],
-            'illegal-moves': self._illegal_moves,
+            'illegal-moves': [[pos.x, pos.y] if pos else None for pos in self._illegal_moves],
             'history': [[pos.x, pos.y] if pos else None for pos in self._history],
         }
 
@@ -685,7 +690,7 @@ class Board:
         b._eaten_tiles = self._eaten_tiles.copy()
         b._ended = self._ended
         b._skip_list = self._skip_list.copy()
-        b._illegal_moves = self._illegal_moves.copy()
+        b._illegal_moves = [pos.copy() for pos in self._illegal_moves]
         b._history = [pos.copy() for pos in self._history]
 
         return b
