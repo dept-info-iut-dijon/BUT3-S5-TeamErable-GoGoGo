@@ -5,7 +5,6 @@ from datetime import datetime
 import random, string
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
-from ...http import verify_tournament
 from ..code_manager import CodeManager
 from .tournament_struct import TournamentStruct
 from ..game.game_configuration import create_game_config
@@ -78,7 +77,7 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
     ret: HttpResponse = HttpResponseBadRequest('Erreur lors de la création du tournois')
     if request.method == RequestType.POST.value:
         
-        if (tournament_verif := verify_tournament(request)) and isinstance(tournament_verif, Exception):
+        if (tournament_verif := TournamentStruct.verify_tournament(request)) and isinstance(tournament_verif, Exception):
             ret = HttpResponseNotifError(tournament_verif)
         
         elif _can_create_tournament(request) is False:
