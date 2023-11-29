@@ -40,6 +40,10 @@ websocket.onmessage = function(event) {
             receivedCanPlay(data);
             break;
 
+        case 'eaten_tiles':
+            receivedEatenTiles(data);
+            break;
+
         case 'error':
             document.querySelector(".notify").innerHTML = '<p class="error">' + data + '</p>';
             break;
@@ -73,8 +77,6 @@ function receivedPlay(data) {
     parseReceivedPlayData(rm, (x, y) => {
         let stone = document.querySelector(`.stone[x="${x}"][y="${y}"]`);
 
-        console.log(stone.classList);
-
         if (stone.classList.contains("white")) {
             stone.classList.remove("white");
         }
@@ -86,13 +88,11 @@ function receivedPlay(data) {
     parseReceivedPlayData(white, (x, y) => {
         let stone = document.querySelector(`.stone[x="${x}"][y="${y}"]`);
         stone.classList.add("white");
-        console.log("added white");
     });
 
     parseReceivedPlayData(black, (x, y) => {
         let stone = document.querySelector(`.stone[x="${x}"][y="${y}"]`);
         stone.classList.add("black");
-        console.log("added black");
     });
 }
 
@@ -105,6 +105,12 @@ function receivedCanPlay(data) {
         board.classList.remove("can-play");
         action_buttons.classList.add("hidden");
     }
+}
+
+function receivedEatenTiles(data) {
+    let eaten = JSON.parse(data);
+    score_white.innerHTML = eaten.w;
+    score_black.innerHTML = eaten.b;
 }
 
 
