@@ -1,15 +1,22 @@
-<div class="row stone-fixed">
-    {% if player != None %}
-        <div>
-            <img class="pfp" src="/get-pfp?id={{ player.id }}" alt="">
-            <div class="little-stone {{ color }}"></div>
-        </div>
-        <p class="name">{{ player.username }}</p>
-    {% else %}
-        <div>
-            <img class="pfp" src="/static/icons/profile.png" alt="">
-            <div class="little-stone {{ color }}"></div>
-        </div>
-        <p class="name">???</p>
-    {% endif %}
+<div>
+    <div class="row stone-fixed">
+        {% if player != None %}
+            <div>
+                <img class="pfp" src="/get-pfp?id={{ player.id }}" alt="">
+                <div class="little-stone {{ color }}"></div>
+            </div>
+            <p class="name">{{ player.username }}</p>
+        {% else %}
+            <div>
+                <img class="pfp" src="/static/icons/profile.png" alt="">
+                <div class="little-stone {{ color }}"></div>
+            </div>
+            <p class="name">???</p>
+        {% endif %}
+    </div>
+    <div class="separator"></div>
+    <div class="row score-group">
+        <div class="little-stone {{ other_color }}"></div>
+        <p class="score {{ color }}">{{ score }}</p>
+    </div>
 </div>
