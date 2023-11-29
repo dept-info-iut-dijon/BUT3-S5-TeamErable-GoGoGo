@@ -62,26 +62,26 @@ def create_game_config(game_configuration : GameConfigurationStruct) -> GameConf
     return configuration
 
 def edit_game_config(game_configuration: GameConfiguration, game_configuration_struct: GameConfigurationStruct) -> GameConfiguration:
-        '''Modifier une configuration de jeu
+    '''Modifier une configuration de jeu
 
-        Args:
-            game_configuration (GameConfiguration): Configuration de la partie
-            game_configuration_struct (GameConfigurationStruct): Nouvelle configuration de la partie
+    Args:
+        game_configuration (GameConfiguration): Configuration de la partie
+        game_configuration_struct (GameConfigurationStruct): Nouvelle configuration de la partie
 
-        Returns:
-            GameConfiguration: Configuration de la partie
-        '''
-        convert_value = _convert(game_configuration_struct.map_size, game_configuration_struct.komi, game_configuration_struct.handicap)
+    Returns:
+        GameConfiguration: Configuration de la partie
+    '''
+    convert_value = _convert(game_configuration_struct.map_size, game_configuration_struct.komi, game_configuration_struct.handicap)
 
-        game_configuration.is_private = game_configuration_struct.is_private
-        game_configuration.ranked = game_configuration_struct.ranked
-        game_configuration.map_size = convert_value['map_size']
-        game_configuration.counting_method = game_configuration_struct.counting_method
-        game_configuration.byo_yomi = game_configuration_struct.byo_yomi
-        game_configuration.clock_type = game_configuration_struct.clock_type
-        game_configuration.time_clock = _split_value(game_configuration_struct.time_clock)
-        game_configuration.komi = convert_value['komi']
-        game_configuration.handicap = convert_value['handicap']
-        game_configuration.save()
+    game_configuration.is_private = game_configuration_struct.is_private
+    game_configuration.ranked = game_configuration_struct.ranked
+    game_configuration.map_size = convert_value['map_size']
+    game_configuration.counting_method = game_configuration_struct.counting_method
+    game_configuration.byo_yomi = game_configuration_struct.byo_yomi
+    game_configuration.clock_type = game_configuration_struct.clock_type
+    game_configuration.time_clock = _split_value(game_configuration_struct.time_clock)
+    game_configuration.komi = convert_value['komi']
+    game_configuration.handicap = convert_value['handicap']
+    game_configuration.save()
 
-        return game_configuration
+    return game_configuration
