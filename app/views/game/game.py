@@ -100,8 +100,28 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
     player1_color = Tile.White if player1 == game.game_participate.player1 else Tile.Black
     player2_color = Tile.White if player2 == game.game_participate.player1 else Tile.Black
 
-    player1_html = render(request, 'reusable/game_player.html', {'player': player1, 'color': player1_color.value.color}).content.decode('utf-8')
-    player2_html = render(request, 'reusable/game_player.html', {'player': player2, 'color': player2_color.value.color}).content.decode('utf-8')
+    player1_html = render(
+        request,
+        'reusable/game_player.html',
+        {
+            'id': 0,
+            'player': player1,
+            'color': player1_color.value.color,
+            'other_color': player2_color.value.color,
+            'score': board.get_eaten_tiles(player1_color),
+        }
+    ).content.decode('utf-8')
+    player2_html = render(
+        request,
+        'reusable/game_player.html',
+        {
+            'id': 1,
+            'player': player2,
+            'color': player2_color.value.color,
+            'other_color': player1_color.value.color,
+            'score': board.get_eaten_tiles(player2_color),
+        }
+    ).content.decode('utf-8')
 
     return render(
         request,
