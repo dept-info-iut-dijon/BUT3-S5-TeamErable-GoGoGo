@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from ...http import verify_post, verify_game_config
+from ...http import verify_post
 from django.http import HttpRequest
 from typing import Union
 from ..game.game_configuration_struct import GameConfigurationStruct
@@ -18,7 +18,7 @@ class TournamentStruct:
     def verify_tournament(cls, request: HttpRequest) -> Union["TournamentStruct", Exception]:
         ret = None
         try: 
-            game_config = verify_game_config(request)
+            game_config = GameConfigurationStruct.verify_game_config(request)
             ret = cls(
                 name = verify_post(request, 'tournament-name', 'Le nom du tournoi est vide.'),
                 start_date = verify_post(request, 'start-date', 'La date de début du tournoi est vide.'),
