@@ -73,13 +73,11 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: Réponse HTTP de redirection vers la page du tournoi créé ou erreur
     '''
-
     ret: HttpResponse = HttpResponseBadRequest('Erreur lors de la création du tournois')
     if request.method == RequestType.POST.value:
-        
         if (tournament_verif := TournamentStruct.verify_tournament(request)) and isinstance(tournament_verif, Exception):
             ret = HttpResponseNotifError(tournament_verif)
-        
+            
         elif _can_create_tournament(request) is False:
             ret = HttpResponseNotifError('Trop de tournois en cours. Attendez la fin de ceux-ci pour en creer un nouveau ou supprimez en un.')
 
@@ -88,5 +86,5 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
 
     elif request.method == RequestType.GET.value:
         ret = render(request, 'tournament/create_tournament.html')
-
+    
     return ret
