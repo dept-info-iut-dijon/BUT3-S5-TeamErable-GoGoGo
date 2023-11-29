@@ -5,6 +5,7 @@ from ...logic import Board, Tile, RuleFactory
 import json
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
+from ...storage import GameStorage
 
 @login_required
 @request_type(RequestType.GET)
@@ -85,9 +86,7 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
         HttpResponse: La réponse HTTP à la requête de la partie
     '''
 
-    board = Board(game.game_configuration.map_size,game.game_configuration.komi, RuleFactory().get(game.game_configuration.counting_method))
-    with open(game.move_list.path, 'r') as f:
-        board.load(json.load(f))
+    board = GameStorage.load_game(game.move_list.path)
 
     tile = Tile.White if request.user == game.game_participate.player1 else Tile.Black
     can_play = board.is_player_turn(tile)
@@ -104,7 +103,6 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
         request,
         'reusable/game_player.html',
         {
-            'id': 0,
             'player': player1,
             'color': player1_color.value.color,
             'other_color': player2_color.value.color,
@@ -115,7 +113,6 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
         request,
         'reusable/game_player.html',
         {
-            'id': 1,
             'player': player2,
             'color': player2_color.value.color,
             'other_color': player1_color.value.color,

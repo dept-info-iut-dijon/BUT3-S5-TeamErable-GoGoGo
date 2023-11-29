@@ -11,6 +11,7 @@ from ..code_manager import CodeManager
 from ...http import verify_game
 from .game_struct import GameStruct
 from .game_configuration import create_game_config
+from ...storage import GameStorage
 
 def _create_new_game(request : HttpRequest, game_struct: GameStruct) -> HttpRequest:
     '''Fonction permettant de creer une nouvelle partie
@@ -49,9 +50,8 @@ def _create_new_game(request : HttpRequest, game_struct: GameStruct) -> HttpRequ
 
     if not os.path.exists('dynamic/games'):
         os.makedirs('dynamic/games')
-    with open(file, 'w') as f:
-        b = Board(int(game_struct.game_configuration.map_size), float(game_struct.game_configuration.komi), RuleFactory().get(game_struct.game_configuration.counting_method))
-        json.dump(b.export(), f)
+    b = Board(int(game_struct.game_configuration.map_size), float(game_struct.game_configuration.komi), RuleFactory().get(game_struct.game_configuration.counting_method))
+    GameStorage.save_game(file, b)
 
     game.move_list = file
     game.save()
