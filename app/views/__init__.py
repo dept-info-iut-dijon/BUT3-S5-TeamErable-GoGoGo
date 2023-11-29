@@ -27,7 +27,7 @@ from .tournament.tournament import tournament
 from .tournament.tournament_manager import tournament_manager, tournament_join
 from .tournament.create_tournament import create_tournament
 from .tournament.edit_tournament import edit_tournament
-from .tournament.tournament_game import tournament_game
+from .tournament.tournament_game import create_tournament_game
 from .tournament.tournament import search_tournament, search_current_tournament, tournament_code
 from .tournament.tournament_struct import TournamentStruct
 from .tournament.delete_tournament import delete_tournament
