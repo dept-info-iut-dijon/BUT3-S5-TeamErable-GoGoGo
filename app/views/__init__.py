@@ -36,3 +36,6 @@ from .tournament.tournament_manager import tournament_player_list
 from .game.create_game import create_game
 from .game.join_game import join_game, search_game, search_current_game
 from .game.game import game, game_code
+from .game.game_struct import GameStruct
+from .game.game_configuration_struct import GameConfigurationStruct
+from .game.game_configuration import create_game_config
