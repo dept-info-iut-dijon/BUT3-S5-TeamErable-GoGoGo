@@ -77,3 +77,11 @@ class Vector2:
             int: Hash du vecteur.
         '''
         return hash((self._x, self._y))
+    
+    def copy(self) -> 'Vector2':
+        '''Copie un vecteur.
+
+        Returns:
+            Vector2: Copie du vecteur.
+        '''
+        return Vector2(self._x, self._y)

@@ -44,6 +44,7 @@ class Board:
         self._ended: bool = False
         self._skip_list: list[Tile] = []
         self._illegal_moves: list[Vector2] = []
+        self._history: list[Vector2] = []
 
 
     @property
@@ -60,9 +61,25 @@ class Board:
     def ended(self) -> bool:
         return self._ended
 
+
     @property
     def komi(self) -> float:
         return self._komi
+
+
+    @property
+    def history(self) -> list[Vector2]:
+        return self._history.copy()
+    
+
+    @property
+    def skip_list(self) -> list[Tile]:
+        return self._skip_list.copy()
+    
+
+    @property
+    def illegal_moves(self) -> list[Vector2]:
+        return self._illegal_moves.copy()
 
 
     @property
@@ -172,8 +189,15 @@ class Board:
         if self.get(coords) is not None:
             ret[tile].append(coords)
 
+        self._history.append(coords)
         self._current_player = tile.next
         self._skip_list = []
+
+        # if len(ret) == 1: # todo: finish this
+        #     self._illegal_moves = [ret[0]]
+
+        # else:
+        #     self._illegal_moves = []
 
         return ret
 
@@ -194,6 +218,7 @@ class Board:
         self._skip_list.append(tile)
 
         self._current_player = tile.next
+        self._history.append(None)
 
         if set(self._skip_list) == set(Tile):
             self.end_game()
@@ -611,6 +636,10 @@ class Board:
         self._ended = data.get('ended', False)
         self._skip_list = [Tile.from_value(t) for t in data.get('skip-list', [])]
         self._illegal_moves = data.get('illegal-moves', [])
+        self._history = [
+            Vector2(*pos) if pos else None
+            for pos in data.get('history', [])
+        ]
 
 
     def export(self) -> dict:
@@ -639,7 +668,7 @@ class Board:
             'ended': self._ended,
             'skip-list': [str(tile) for tile in self._skip_list],
             'illegal-moves': self._illegal_moves,
-            # 'history': [],
+            'history': [[pos.x, pos.y] if pos else None for pos in self._history],
         }
 
 
@@ -656,5 +685,7 @@ class Board:
         b._eaten_tiles = self._eaten_tiles.copy()
         b._ended = self._ended
         b._skip_list = self._skip_list.copy()
+        b._illegal_moves = self._illegal_moves.copy()
+        b._history = [pos.copy() for pos in self._history]
 
         return b
