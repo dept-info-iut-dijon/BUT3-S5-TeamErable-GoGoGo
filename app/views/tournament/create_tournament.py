@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from ...models.tournament import Tournament
+from ...models.game_configuration import GameConfiguration
 from datetime import datetime
 import random, string
 from ..decorators import login_required, request_type, RequestType
@@ -40,23 +41,7 @@ def _create_tournament_post(request: HttpRequest, tournament_struct: TournamentS
 
     ret: HttpResponse = HttpResponseBadRequest('Erreur lors de la création du tournois')
 
-    code = CodeManager().generate_tournament_code()
-
-    game_configuration = create_game_config(tournament_struct.game_configuration)
-
-    tournament = Tournament.objects.create(
-        name = tournament_struct.name,
-        description = tournament_struct.description,
-        start_date = tournament_struct.start_date,
-        private = private,
-        end_date = tournament_struct.end_date,
-        organisator = tournament_struct.organisator,
-        creator = request.user,
-        register_date = datetime.now().date(),
-        code = code,
-        player_min = tournament_struct.player_min,
-        game_configuration = game_configuration
-    )
+    tournament = construct_tournament(tournament_struct, private, request.user.id)
 
     ret = HttpResponse(f'/tournament?id={tournament.id}')
 
@@ -88,3 +73,24 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
         ret = render(request, 'tournament/create_tournament.html')
     
     return ret
+
+
+def construct_tournament(tournament_struct: TournamentStruct, private : bool, creator : int) -> Tournament:
+    code = CodeManager().generate_tournament_code()
+    game_configuration = create_game_config(tournament_struct.game_configuration)
+    
+    tournament = Tournament.objects.create(
+        name = tournament_struct.name,
+        description = tournament_struct.description,
+        start_date = tournament_struct.start_date,
+        private = private,
+        end_date = tournament_struct.end_date,
+        organisator = tournament_struct.organisator,
+        creator = creator,
+        register_date = datetime.now().date(),
+        code = code,
+        player_min = tournament_struct.player_min,
+        game_configuration = game_configuration
+    )
+
+    return tournament
