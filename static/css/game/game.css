@@ -74,14 +74,21 @@ table.board > tbody > tr:last-child > td::after {
     cursor: pointer;
 }
 
+.stone-fixed {
+    justify-content: center;
+}
+
 .stone-fixed .little-stone {
     position: absolute;
+    transform: translate(150%, -100%);
+}
+
+.little-stone {
     width: 1.25rem;
     height: 1.25rem;
     border-radius: 50%;
     box-sizing: border-box;
     outline: 1px solid transparent;
-    transform: translate(150%, -100%);
 }
 
 .stone.black, .little-stone.black {
@@ -96,6 +103,19 @@ table.board > tbody > tr:last-child > td::after {
     outline-color: #000;
 }
 
+.score-group {
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.score-group > * {
+    display: inline-block;
+    vertical-align: middle;
+    margin: auto 0.25rem;
+    transition: all 0.2s ease-in-out;
+}
 
 .stone-fixed .name {
     margin-left: 1rem;
