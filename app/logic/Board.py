@@ -6,7 +6,7 @@ from ..exceptions import InvalidMoveException
 from .GoConstants import GoConstants
 from .RuleBase import RuleBase
 from .RuleFactory import RuleFactory
-
+from .timer.TimerFactory import TimerFactory
 
 class Board:
     '''Plateau de jeu.'''
@@ -22,7 +22,7 @@ class Board:
 
 
     @overload
-    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase]) -> None:
+    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase], timer_data:dict) -> None:
         '''Initialise un plateau de jeu.
 
         Args:
@@ -45,6 +45,10 @@ class Board:
         self._skip_list: list[Tile] = []
         self._illegal_moves: list[Vector2] = []
         self._history: list[Vector2] = []
+
+        self._white_timer = TimerFactory.createTimer(timer_data)
+        self._black_timer = TimerFactory.createTimer(timer_data)
+
 
 
     @property
