@@ -53,21 +53,21 @@ def game_code(request: HttpRequest) -> HttpResponse:
     '''
     ret: HttpResponse = HttpResponseBadRequest()
 
-    if (game_code := request.POST.get('code')) is None: ret = HttpResponseNotifError('Code invalide.')
+    if (game_code := request.POST.get('code')) is None: ret = HttpResponseNotifError('Le code est vide.')
 
     else:
         try:
             game_inst = Game.objects.get(code = game_code, done = False)
-            if not game_inst: return HttpResponseNotifError('Code invalide.')
+            if not game_inst: return HttpResponseNotifError('Aucune partie avec ce code.')
 
         except:
-            return HttpResponseNotifError('Code invalide.')
+            return HttpResponseNotifError('Une erreur est survenue. Veuillez réessayer.')
 
         if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 is None:
             game_inst.game_participate.player2 = request.user
             game_inst.game_participate.save()
 
-        if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 != request.user: return HttpResponseNotifError('Code invalide.')
+        if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 != request.user: return HttpResponseNotifError('Vous n\'êtes pas autorisé à rejoindre la partie.')
 
         ret = HttpResponse(f'/game?id={game_inst.id_game}')
 
@@ -100,8 +100,28 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
     player1_color = Tile.White if player1 == game.game_participate.player1 else Tile.Black
     player2_color = Tile.White if player2 == game.game_participate.player1 else Tile.Black
 
-    player1_html = render(request, 'reusable/game_player.html', {'player': player1, 'color': player1_color.value.color}).content.decode('utf-8')
-    player2_html = render(request, 'reusable/game_player.html', {'player': player2, 'color': player2_color.value.color}).content.decode('utf-8')
+    player1_html = render(
+        request,
+        'reusable/game_player.html',
+        {
+            'id': 0,
+            'player': player1,
+            'color': player1_color.value.color,
+            'other_color': player2_color.value.color,
+            'score': board.get_eaten_tiles(player1_color),
+        }
+    ).content.decode('utf-8')
+    player2_html = render(
+        request,
+        'reusable/game_player.html',
+        {
+            'id': 1,
+            'player': player2,
+            'color': player2_color.value.color,
+            'other_color': player1_color.value.color,
+            'score': board.get_eaten_tiles(player2_color),
+        }
+    ).content.decode('utf-8')
 
     return render(
         request,
