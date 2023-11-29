@@ -4,6 +4,7 @@ import json
 from ..models import Game
 from ..logic import Board, Tile, RuleFactory, Vector2
 from ..exceptions import InvalidMoveException
+from ..storage import GameStorage
 
 class GameJoinAndLeave(WebsocketConsumer):
     '''Gère le websocket de la partie.
@@ -76,8 +77,7 @@ class GameJoinAndLeave(WebsocketConsumer):
     def _get_game_board(self) -> tuple[Game, Board, Tile]:
         game = Game.objects.get(id_game = self._game_id)
 
-        with open(game.move_list.path, 'r') as f:
-            board = Board(json.load(f))
+        board = GameStorage.load_game(game.move_list.path)
 
         return game, board, Tile.White if self._player_id == 0 else Tile.Black
 
@@ -90,8 +90,7 @@ class GameJoinAndLeave(WebsocketConsumer):
 
     def _save_game_board(self, game: Game, board: Board) -> None:
         self._update_game(game, board)
-        with open(game.move_list.path, 'w') as f:
-            json.dump(board.export(), f)
+        GameStorage.save_game(game.move_list.path, board)
 
 
     def _get_can_play(self, board: Board) -> int:
