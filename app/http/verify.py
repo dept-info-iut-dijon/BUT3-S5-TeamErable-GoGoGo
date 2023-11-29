@@ -16,7 +16,7 @@ def verify_get(request: HttpRequest, key : str, message : str) -> str:
 def verify_game(request: HttpRequest) -> GameStruct | Exception:
     ret = None
     try: 
-        game_config = _verify_game_config(request)
+        game_config = verify_game_config(request)
 
         ret = GameStruct(
             name = verify_post(request, 'game-name', 'Le nom de la partie est vide.'),
@@ -29,7 +29,7 @@ def verify_game(request: HttpRequest) -> GameStruct | Exception:
     
     return ret
 
-def _verify_game_config(request: HttpRequest) -> GameConfigurationStruct:
+def verify_game_config(request: HttpRequest) -> GameConfigurationStruct:
     ret = GameConfigurationStruct(
         is_private = bool(request.POST.get('game-private')),
         map_size = verify_post(request, 'map-size', 'La taille de la carte est vide.'),
