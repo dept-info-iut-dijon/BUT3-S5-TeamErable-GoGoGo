@@ -44,6 +44,15 @@ def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tourname
     return ret
 
 def construct_participate(id_player1: int, id_player2: int = None) -> GameParticipate:
+    '''Fonction permettant de construire un objet GameParticipate dans la BDD
+    
+    Args:
+        id_player1 (int): L'id du premier joueur
+        id_player2 (int): L'id du deuxième joueur ou None
+    
+    Returns:
+        GameParticipate: Un objet GameParticipate
+    '''
     participate = GameParticipate.objects.create(
         player1 = id_player1,
         player2 = id_player2,
@@ -53,6 +62,16 @@ def construct_participate(id_player1: int, id_player2: int = None) -> GamePartic
     return participate
 
 def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tournament: int = None) -> Game:
+    '''Fonction permettant de construire une nouvelle partie dans la BDD
+    
+    Args:
+        game_struct (GameStruct): La nouvelle partie
+        participate (GameParticipate): Les joueurs et les scores de la partie
+        id_tournament (int): L'id du tournoi ou None
+        
+    Returns:
+        Game: La nouvelle partie
+    '''
         
     code = CodeManager().generate_game_code()
 

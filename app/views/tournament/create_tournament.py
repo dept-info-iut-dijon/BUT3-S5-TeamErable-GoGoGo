@@ -76,6 +76,16 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
 
 
 def construct_tournament(tournament_struct: TournamentStruct, private : bool, creator : int) -> Tournament:
+    '''Fonction permettant de construire un tournoi dans la BDD
+    
+    Args:
+        tournament_struct (TournamentStruct): Le tournoi a créer
+        private (bool): True si le tournoi est privé, False sinon
+        creator (int): L'id de l'utilisateur qui a créé le tournoi
+
+    Returns:
+        Tournament: Le tournoi
+    '''
     code = CodeManager().generate_tournament_code()
     game_configuration = create_game_config(tournament_struct.game_configuration)
     
