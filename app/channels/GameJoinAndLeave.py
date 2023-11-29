@@ -127,6 +127,9 @@ class GameJoinAndLeave(WebsocketConsumer):
         new_event = {'type': 'send_can_play', 'data': self._get_can_play(board)}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
+        new_event = {'type': 'send_eaten_tiles', 'data': json.dumps({t.value.color[0]: board.get_eaten_tiles(t) for t in Tile})}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
 
     def send_play(self, event: dict) -> None:
         '''Envoie le coup du joueur.
@@ -145,6 +148,16 @@ class GameJoinAndLeave(WebsocketConsumer):
             event (dict): Si le joueur peut jouer.
         '''
         new_event = {'type': 'can-play', 'data': event['data'] == self._player_id}
+        self.send(text_data = json.dumps(new_event))
+
+
+    def send_eaten_tiles(self, event: dict) -> None:
+        '''Envoie les points du joueur.
+
+        Args:
+            event (dict): Les points du joueur.
+        '''
+        new_event = {'type': 'eaten_tiles', 'data': event['data']}
         self.send(text_data = json.dumps(new_event))
 
 

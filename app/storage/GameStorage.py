@@ -16,10 +16,8 @@ class GameStorage:
         Returns:
             Board: Le plateau de jeu
         '''
-        board = Board()
-
         with open(path, 'r', encoding = 'utf-8') as f:
-            board.load(json.load(f))
+            board = Board(json.load(f))
 
         return board
 
