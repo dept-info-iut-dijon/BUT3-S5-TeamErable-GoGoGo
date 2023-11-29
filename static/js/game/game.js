@@ -3,9 +3,6 @@ const base_url = window.location.hostname + ":" + window.location.port + "/";
 const game_id = document.querySelector("#game-id").value;
 const websocket = new WebSocket("ws://" + base_url + "game/" + game_id + "/");
 
-const score_white = document.querySelector(".score.white");
-const score_black = document.querySelector(".score.black");
-
 
 
 websocket.onopen = function(event) {
@@ -29,6 +26,9 @@ websocket.onmessage = function(event) {
 
     switch(type) {
         case 'connect':
+            receivedConnect(data);
+            break;
+
         case 'disconnect':
             break; // Ne fait rien pour l'instant, mais on pourrait afficher une notification
 
@@ -52,6 +52,30 @@ websocket.onmessage = function(event) {
             console.log("unknown message type: ", type);
             break;
     }
+}
+
+function receivedConnect(data) {
+    let user_id = data.id;
+    let color = data.color;
+
+    let formData = new FormData();
+    formData.append("game-id", game_id);
+    formData.append("user-id", user_id);
+    
+    let csrf_token = document.querySelector("input[name=csrfmiddlewaretoken]").value;
+
+    var request = new XMLHttpRequest();
+    request.open('POST', '/game-view-player');
+    request.setRequestHeader('X-CSRFToken', csrf_token);
+    request.onload = function() {
+        if (request.status === 200) {
+            document.querySelector("#container-" + color + "-player").innerHTML = request.responseText;
+        }
+        else {
+            console.log("error: ", request.responseText);
+        }
+    }
+    request.send(formData);
 }
 
 function parseReceivedPlayData(stringData, callback) {
@@ -109,6 +133,10 @@ function receivedCanPlay(data) {
 
 function receivedEatenTiles(data) {
     let eaten = JSON.parse(data);
+
+    let score_white = document.querySelector(".score.white");
+    let score_black = document.querySelector(".score.black");
+
     score_white.innerHTML = eaten.w;
     score_black.innerHTML = eaten.b;
 }

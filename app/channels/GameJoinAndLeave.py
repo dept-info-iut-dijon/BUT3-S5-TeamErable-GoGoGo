@@ -61,7 +61,8 @@ class GameJoinAndLeave(WebsocketConsumer):
         except (InvalidMoveException, ValueError) as e:
             self.send(text_data = json.dumps({'type': 'error', 'data': str(e)}))
 
-        except: pass
+        except Exception as e:
+            pass
 
 
     def disconnect(self, code: int) -> None:
@@ -111,6 +112,7 @@ class GameJoinAndLeave(WebsocketConsumer):
         x = int(x); y = int(y)
 
         game, board, tile = self._get_game_board()
+        if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
 
         ret = board.play(Vector2(x, y), tile)
         parsed_ret = {}
@@ -158,11 +160,13 @@ class GameJoinAndLeave(WebsocketConsumer):
             event (dict): Les points du joueur.
         '''
         new_event = {'type': 'eaten_tiles', 'data': event['data']}
+        print(self._user.username, 'send_play', new_event['data'])
         self.send(text_data = json.dumps(new_event))
 
 
     def receive_skip(self, event: dict) -> None:
         game, board, tile = self._get_game_board()
+        if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
 
         board.play_skip(tile)
 
@@ -189,8 +193,19 @@ class GameJoinAndLeave(WebsocketConsumer):
         Args:
             event (dict): Connexion du joueur.
         '''
-        data: str = event['data']
-        self.send(text_data = json.dumps(event))
+        new_event = {'type': 'send_connect', 'data': {'id': self._user.id, 'color': 'white' if self._player_id == 0 else 'black'}}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+
+    def send_connect(self, event: dict) -> None:
+        '''Envoie la connexion du joueur.
+
+        Args:
+            event (dict): Connexion du joueur.
+        '''
+        if self._user.id != event['data']['id']:
+            new_event = {'type': 'connect', 'data': event['data']}
+            self.send(text_data = json.dumps(new_event))
 
 
     def receive_disconnect(self, event: dict) -> None:
