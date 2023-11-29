@@ -4,7 +4,7 @@ from ...models.tournament import Tournament
 from datetime import datetime
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
-from ...http import verify_tournament
+from .tournament_struct import TournamentStruct
 from ..game.game_configuration import edit_game_config
 
 
@@ -32,7 +32,7 @@ def edit_tournament(request: HttpRequest, id_tournament: int) -> HttpResponse:
 
     if request.method == RequestType.POST.value:
 
-        if (tournament_verif := verify_tournament(request)) is Exception:
+        if (tournament_verif := TournamentStruct.verify_tournament(request)) is Exception:
             ret = HttpResponseNotifError(tournament_verif)
 
 
