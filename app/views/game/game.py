@@ -53,21 +53,21 @@ def game_code(request: HttpRequest) -> HttpResponse:
     '''
     ret: HttpResponse = HttpResponseBadRequest()
 
-    if (game_code := request.POST.get('code')) is None: ret = HttpResponseNotifError('Code invalide.')
+    if (game_code := request.POST.get('code')) is None: ret = HttpResponseNotifError('Le code est vide.')
 
     else:
         try:
             game_inst = Game.objects.get(code = game_code, done = False)
-            if not game_inst: return HttpResponseNotifError('Code invalide.')
+            if not game_inst: return HttpResponseNotifError('Aucune partie avec ce code.')
 
         except:
-            return HttpResponseNotifError('Code invalide.')
+            return HttpResponseNotifError('Une erreur est survenue. Veuillez réessayer.')
 
         if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 is None:
             game_inst.game_participate.player2 = request.user
             game_inst.game_participate.save()
 
-        if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 != request.user: return HttpResponseNotifError('Code invalide.')
+        if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 != request.user: return HttpResponseNotifError('Vous n\'êtes pas autorisé à rejoindre la partie.')
 
         ret = HttpResponse(f'/game?id={game_inst.id_game}')
 
