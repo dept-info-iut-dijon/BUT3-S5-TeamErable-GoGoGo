@@ -13,6 +13,7 @@ from ..code_manager import CodeManager
 from ...http import verify_game
 from .game_struct import GameStruct
 from .game_configuration import create_game_config
+from ...models.custom_user import CustomUser
 
 def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tournament: int) -> HttpRequest:
     '''Fonction permettant de creer une nouvelle partie
@@ -54,8 +55,8 @@ def construct_participate(id_player1: int, id_player2: int = None) -> GamePartic
         GameParticipate: Un objet GameParticipate
     '''
     participate = GameParticipate.objects.create(
-        player1 = id_player1,
-        player2 = id_player2,
+        player1 = CustomUser.objects.get(id=id_player1),
+        player2 = CustomUser.objects.get(id=id_player2) if id_player2 is not None else None,
         score_player1 = 0,
         score_player2 = 0
     )
