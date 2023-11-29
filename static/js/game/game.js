@@ -3,6 +3,9 @@ const base_url = window.location.hostname + ":" + window.location.port + "/";
 const game_id = document.querySelector("#game-id").value;
 const websocket = new WebSocket("ws://" + base_url + "game/" + game_id + "/");
 
+const score_white = document.querySelector(".score.white");
+const score_black = document.querySelector(".score.black");
+
 
 
 websocket.onopen = function(event) {
@@ -67,11 +70,31 @@ function receivedPlay(data) {
     let white = changes.w;
     let black = changes.b;
 
+    let score_white_value = parseInt(score_white.innerHTML);
+    let score_black_value = parseInt(score_black.innerHTML);
+    console.log(score_black_value, score_white_value);
+
     parseReceivedPlayData(rm, (x, y) => {
         let stone = document.querySelector(`.stone[x="${x}"][y="${y}"]`);
-        stone.classList.remove("white");
-        stone.classList.remove("black");
+
+        if (stone.classList.contains("white")) {
+            score_black_value++;
+            stone.classList.remove("white");
+            console.log("white");
+        }
+        else if (stone.classList.contains("black")) {
+            score_white_value++;
+            stone.classList.remove("black");
+            console.log("black");
+        }
+        else {
+            console.log(stone.classList);
+        }
+        console.log(score_black_value, score_white_value);
     });
+
+    score_white.innerHTML = score_white_value.toString();
+    score_black.innerHTML = score_black_value.toString();
 
     parseReceivedPlayData(white, (x, y) => {
         let stone = document.querySelector(`.stone[x="${x}"][y="${y}"]`);
