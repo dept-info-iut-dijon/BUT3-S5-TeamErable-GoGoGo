@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from ..game.game_configuration_struct import GameConfigurationStruct
 
 @dataclass
 class TournamentStruct:
@@ -8,10 +9,4 @@ class TournamentStruct:
     organisator : str
     description : str
     player_min : str
-    map_size : str
-    counting_method : str
-    byo_yomi : str
-    clock_type : str
-    time_clock : str
-    komi : str
-    handicap : str
+    game_configuration : GameConfigurationStruct
