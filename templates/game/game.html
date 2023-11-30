@@ -11,6 +11,8 @@
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
+
     <main>
         {% csrf_token %}
         <input type="text" id="game-id" value="{{ id }}" hidden>
@@ -77,12 +79,9 @@
         </div>
 
         <div class="separator"></div>
-
-        <div class="notify" id="notify"></div>
     </main>
 
     <script src="/static/js/game/game.js"></script>
     <script src="/static/js/global.js"></script>
-    <script src="/static/js/notify.js"></script>
 </body>
 </html>

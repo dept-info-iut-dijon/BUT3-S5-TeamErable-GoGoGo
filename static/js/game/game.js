@@ -45,7 +45,7 @@ websocket.onmessage = function(event) {
             break;
 
         case 'error':
-            document.querySelector(".notify").innerHTML = '<p class="error">' + data + '</p>';
+            notify('<p class="error">' + data + '</p>');
             break;
 
         default:

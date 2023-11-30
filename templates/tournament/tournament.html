@@ -12,6 +12,8 @@
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
+
     <main>
         <section class="upper-section">
             <div class="tournois-header-section">
@@ -103,12 +105,9 @@
                 </table>
             </div>
         </div>
-
-        <div class="notify" id="notify"></div>
     </main>
     {% include 'reusable/footer.html' %}
     <script src="/static/js/tournament/join_tournament.js"></script>
-    <script src="/static/js/notify.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
 </body>
 </html>

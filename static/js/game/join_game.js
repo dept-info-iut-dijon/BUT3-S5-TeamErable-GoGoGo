@@ -70,7 +70,7 @@ document.querySelector("form#join-by-code").addEventListener('submit', function(
     request.setRequestHeader('X-CSRFToken', csrf_token);
     request.onload = function() {
         if (request.status == 400) {
-            document.querySelector(".notify").innerHTML = request.responseText;
+            notify(request.responseText);
             event.target.querySelector("input[type='submit']").disabled = false;
         } else if (request.status == 200) {
             window.location.href = request.responseText;
