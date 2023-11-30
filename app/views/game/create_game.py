@@ -10,7 +10,6 @@ from ...logic import Board, RuleFactory
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
 from ..code_manager import CodeManager
-from ...http import verify_game
 from .game_struct import GameStruct
 from .game_configuration import create_game_config
 from ...models.custom_user import CustomUser
@@ -73,14 +72,7 @@ def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tou
     Returns:
         Game: La nouvelle partie
     '''
-        
     code = CodeManager().generate_game_code()
-
-    if id_tournament is None:
-        configuration = create_game_config(game_struct.game_configuration)
-    else:
-        configuration = Tournament.objects.get(id_tournament=id_tournament).game_configuration
-
     game = Game.objects.create(
         name = game_struct.name,
         description = game_struct.description,
@@ -89,7 +81,7 @@ def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tou
         duration = 0,
         done = False,
         tournament = id_tournament,
-        game_configuration = configuration,
+        game_configuration = game_struct.game_configuration,
         game_participate = participate
     )
 
@@ -112,7 +104,7 @@ def create_game(request: HttpRequest, id_tournament: int = None) -> HttpResponse
 
     if request.method == RequestType.POST.value:
 
-        if (game_verif := verify_game(request)) and isinstance(game_verif, Exception):
+        if (game_verif := GameStruct.verify_game(request)) and isinstance(game_verif, Exception):
             return HttpResponseNotifError(game_verif)
 
         elif _can_create_game(request) is False:
