@@ -114,6 +114,18 @@ class Board:
         self._grid.set(coords, tile)
 
 
+    def is_outside(self, coords: Vector2) -> bool:
+        '''Vérifie si les coordonnées sont en dehors du plateau.
+
+        Args:
+            coords (Vector2): Coordonnées.
+
+        Returns:
+            bool: True si les coordonnées sont en dehors du plateau, False sinon.
+        '''
+        return self._grid.is_outside(coords)
+
+
     def play(self, coords: Vector2, tile: Tile) -> dict[Tile, tuple[Vector2]]:
         '''Joue un coup.
 
@@ -262,7 +274,7 @@ class Board:
             Tile.from_value(k): v
             for k, v in data.get('eaten-tiles', {t.value.value: 0 for t in Tile}).items()
         }
-        self._rule = RuleFactory().get(data.get('rule', 'chinese'))
+        self._rule = RuleFactory().get(data.get('rule', 'chinese'))(self)
         self._komi = data.get('komi', 0.5)
         self._ended = data.get('ended', False)
         self._skip_list = [Tile.from_value(t) for t in data.get('skip-list', [])]
@@ -353,3 +365,12 @@ class Board:
             list[Vector2]: Voisins.
         '''
         return self._grid.get_neighbors(coords)
+
+
+    def get_points(self) -> dict[Tile, float]:
+        '''Renvoie les points des joueurs.
+
+        Returns:
+            dict[Tile, float]: Points.
+        '''
+        return self._rule.count_points()

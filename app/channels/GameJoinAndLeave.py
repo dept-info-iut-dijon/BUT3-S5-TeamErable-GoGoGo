@@ -62,7 +62,8 @@ class GameJoinAndLeave(WebsocketConsumer):
             self.send(text_data = json.dumps({'type': 'error', 'data': str(e)}))
 
         except Exception as e:
-            pass
+            import traceback
+            traceback.print_exc()
 
 
     def disconnect(self, code: int) -> None:
@@ -100,14 +101,14 @@ class GameJoinAndLeave(WebsocketConsumer):
         return can_play
 
 
-    def _check_end_game(self, game: Game, board: Board, forfeit: Tile = None) -> None:
+    def _check_end_game(self, game: Game, board: Board, looser: Tile = None) -> None:
         if board.ended:
-            points = {Tile.White: 0, Tile.Black: 0}
+            points = board.get_points()
 
-            forfeit_value = forfeit.value.color[0] if forfeit is not None else None
+            forfeit_value = looser.value.color[0] if looser is not None else None
 
             if forfeit_value:
-                winner = forfeit.next
+                winner = looser.next
 
             else:
                 winner, winner_points = None, 0
@@ -221,6 +222,7 @@ class GameJoinAndLeave(WebsocketConsumer):
 
     def receive_give_up(self, event: dict) -> None:
         game, board, tile = self._get_game_board()
+        if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
 
         board.end_game()
 

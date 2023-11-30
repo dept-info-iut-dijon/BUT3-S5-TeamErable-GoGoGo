@@ -1,7 +1,7 @@
 from .JapaneseByoyomi import JapaneseByoyomi
 from .ChineseByoyomi import ChineseByoyomi
 from .Timer import Timer
-from ...models.game_configuration import GameConfiguration
+# from ...models.game_configuration import GameConfiguration
 
 class TimerFactory:
 	@staticmethod

@@ -2,6 +2,7 @@ from .Tile import Tile
 from .Vector2 import Vector2
 from .Island import Island
 from .GoConstants import GoConstants
+import math
 
 class Grid:
     def __init__(self, size: int) -> None:
@@ -90,6 +91,20 @@ class Grid:
 
     def is_outside(self, coords: Vector2) -> bool:
         return coords.x < 0 or coords.x >= self.size.x or coords.y < 0 or coords.y >= self.size.y
+
+
+    def is_empty(self) -> bool:
+        '''Vérifie si la grille est vide.
+
+        Returns:
+            bool: True si la grille est vide, False sinon.
+        '''
+        for y in range(self.size.y):
+            for x in range(self.size.x):
+                if self._grid[y][x] is not None:
+                    return False
+
+        return True
 
 
     @staticmethod
@@ -336,7 +351,7 @@ class Grid:
         '''
         neighbors = self.get_neighbors(coords)
 
-        ret = 99999
+        ret = math.inf
 
         for neighbor in neighbors:
             group, group_neighbors = self.get_group_and_neighbors(neighbor)
@@ -437,8 +452,16 @@ class Grid:
         Returns:
             tuple[Island]: Territoires de tuiles.
         '''
+        if self.is_empty(): return {tile: tuple() for tile in Tile}
 
-        raw_territories: dict[Tile, tuple[Island]] = self.get_raw_territories()
+        false_eyes = self.get_false_eyes()
+        grid = self.copy()
+
+        for false_eye in false_eyes:
+            neighbor = grid.get_neighbors(false_eye)[0]
+            grid.set(false_eye, grid.get(neighbor))
+
+        raw_territories: dict[Tile, tuple[Island]] = grid.get_raw_territories()
         territories: dict[Tile, list[Island]] = {}
 
         for tile in Tile:
@@ -451,3 +474,15 @@ class Grid:
                         territories[tile.next].remove(other_territory)
 
         return {tile: tuple(territories[tile]) for tile in Tile}
+
+
+    def copy(self) -> 'Grid':
+        '''Copie la grille.
+
+        Returns:
+            Grid: Copie de la grille.
+        '''
+        g = Grid(self.size.x)
+        g._grid = [[self.get(Vector2(x, y)) for x in range(self.size.x)] for y in range(self.size.y)]
+
+        return g
