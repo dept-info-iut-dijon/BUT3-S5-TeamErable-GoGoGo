@@ -15,7 +15,7 @@ function validateForm() {
             window.location.href = '/';
         }
         else {
-            document.querySelector(".notify").innerHTML = request.responseText;
+            notify(request.responseText);
             document.querySelector('input[type="submit"]').disabled = false;
         }
     };

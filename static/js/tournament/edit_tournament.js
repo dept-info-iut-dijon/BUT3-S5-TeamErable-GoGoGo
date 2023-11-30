@@ -11,7 +11,7 @@ document.body.addEventListener("htmx:afterRequest", function(event) {
         }, 1000);
     }
     else {
-        document.querySelector(".notify").innerHTML = event.detail.xhr.responseText;
+        notify(event.detail.xhr.responseText);
         document.querySelector('form input[type="submit"]').disabled = false;
     }
 });

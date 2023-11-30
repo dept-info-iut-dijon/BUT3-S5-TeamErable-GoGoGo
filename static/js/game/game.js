@@ -3,9 +3,6 @@ const base_url = window.location.hostname + ":" + window.location.port + "/";
 const game_id = document.querySelector("#game-id").value;
 const websocket = new WebSocket("ws://" + base_url + "game/" + game_id + "/");
 
-const score_white = document.querySelector(".score.white");
-const score_black = document.querySelector(".score.black");
-
 
 
 websocket.onopen = function(event) {
@@ -29,6 +26,9 @@ websocket.onmessage = function(event) {
 
     switch(type) {
         case 'connect':
+            receivedConnect(data);
+            break;
+
         case 'disconnect':
             break; // Ne fait rien pour l'instant, mais on pourrait afficher une notification
 
@@ -40,14 +40,46 @@ websocket.onmessage = function(event) {
             receivedCanPlay(data);
             break;
 
+        case 'eaten-tiles':
+            receivedEatenTiles(data);
+            break;
+
+        case 'end-game':
+            receivedEndGame(data);
+            break;
+
         case 'error':
-            document.querySelector(".notify").innerHTML = '<p class="error">' + data + '</p>';
+            notify('<p class="error">' + data + '</p>');
             break;
 
         default:
             console.log("unknown message type: ", type);
             break;
     }
+}
+
+function receivedConnect(data) {
+    let user_id = data.id;
+    let color = data.color;
+
+    let formData = new FormData();
+    formData.append("game-id", game_id);
+    formData.append("user-id", user_id);
+    
+    let csrf_token = document.querySelector("input[name=csrfmiddlewaretoken]").value;
+
+    var request = new XMLHttpRequest();
+    request.open('POST', '/game-view-player');
+    request.setRequestHeader('X-CSRFToken', csrf_token);
+    request.onload = function() {
+        if (request.status === 200) {
+            document.querySelector("#container-" + color + "-player").innerHTML = request.responseText;
+        }
+        else {
+            console.log("error: ", request.responseText);
+        }
+    }
+    request.send(formData);
 }
 
 function parseReceivedPlayData(stringData, callback) {
@@ -70,31 +102,16 @@ function receivedPlay(data) {
     let white = changes.w;
     let black = changes.b;
 
-    let score_white_value = parseInt(score_white.innerHTML);
-    let score_black_value = parseInt(score_black.innerHTML);
-    console.log(score_black_value, score_white_value);
-
     parseReceivedPlayData(rm, (x, y) => {
         let stone = document.querySelector(`.stone[x="${x}"][y="${y}"]`);
 
         if (stone.classList.contains("white")) {
-            score_black_value++;
             stone.classList.remove("white");
-            console.log("white");
         }
         else if (stone.classList.contains("black")) {
-            score_white_value++;
             stone.classList.remove("black");
-            console.log("black");
         }
-        else {
-            console.log(stone.classList);
-        }
-        console.log(score_black_value, score_white_value);
     });
-
-    score_white.innerHTML = score_white_value.toString();
-    score_black.innerHTML = score_black_value.toString();
 
     parseReceivedPlayData(white, (x, y) => {
         let stone = document.querySelector(`.stone[x="${x}"][y="${y}"]`);
@@ -116,6 +133,43 @@ function receivedCanPlay(data) {
         board.classList.remove("can-play");
         action_buttons.classList.add("hidden");
     }
+}
+
+function receivedEatenTiles(data) {
+    let eaten = JSON.parse(data);
+
+    let score_white = document.querySelector(".score.white");
+    let score_black = document.querySelector(".score.black");
+
+    score_white.innerHTML = eaten.w;
+    score_black.innerHTML = eaten.b;
+}
+
+function receivedEndGame(data) {
+    let parsed_data = JSON.parse(data);
+
+    let winner = parsed_data.winner;
+    let points = parsed_data.points;
+
+    let end_game_modal = document.querySelector(".band");
+
+    let winner_text = end_game_modal.querySelector("#band-big-text");
+    let points_text = end_game_modal.querySelector("#band-small-text");
+
+    if (winner === "w") {
+        winner_text.innerHTML = `Les blancs (${points[winner].username}) ont gagné la partie !`;
+        points_text.innerHTML = `${points.w.count} (${points.w.username}) vs ${points.b.count} (${points.b.username})`;
+    }
+    else if (winner === "b") {
+        winner_text.innerHTML = `Les noirs (${points[winner].username}) ont gagné la partie !`;
+        points_text.innerHTML = `${points.b.count} (${points.b.username}) vs ${points.w.count} (${points.w.username})`;
+    }
+    else {
+        winner_text.innerHTML = "Égalité !";
+        points_text.innerHTML = `${points.w.count} (${points.w.username}) vs ${points.b.count} (${points.b.username})`;
+    }
+
+    end_game_modal.classList.remove("hidden");
 }
 
 

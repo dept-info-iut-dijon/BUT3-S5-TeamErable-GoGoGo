@@ -10,6 +10,7 @@
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
     <main>
         {% csrf_token %}
         <div class="container">
@@ -51,45 +52,45 @@
                     <h3>Configuration des parties du tournoi</h3>
                     <div class="center flex-wrap">
                         <div class="form-control">
-                            <label for="tournament-map-size">Taille de la carte</label>
-                            <select name="tournament-map-size" id="tournament-map-size">
+                            <label for="map-size">Taille de la carte</label>
+                            <select name="map-size" id="map-size">
                                 <option value="9">9x9</option>
                                 <option value="11">11x11</option>
                                 <option value="13">13x13</option>
                             </select>
                         </div>
                         <div class="form-control">
-                            <label for="tournament-counting-method">Regles de la partie</label>
-                            <select name="tournament-counting-method" id="tournament-counting-method">
+                            <label for="counting-method">Regles de la partie</label>
+                            <select name="counting-method" id="counting-method">
                                 <option value="japanese">Japonaise</option>
                                 <option value="chinese">Chinoise</option>
                             </select>
                         </div>
                         <div class="form-control">
-                            <label for="tournament-byo_yomi">Byo-yomi</label>
-                            <input type="number" name="tournament-byo_yomi" id="tournament-byo_yomi" min="0" max="60" value="30" placeholder="byo-yomi de la partie">
+                            <label for="byo_yomi">Byo-yomi</label>
+                            <input type="number" name="byo-yomi" id="byo-yomi" min="0" max="60" value="30" placeholder="byo-yomi de la partie">
                         </div>
                         <div class="form-control">
-                            <label for="tournament-clock-type">Type d'horloge</label>
-                            <select name="tournament-clock-type" id="tournament-clock-type">
+                            <label for="clock-type">Type d'horloge</label>
+                            <select name="clock-type" id="clock-type">
                                 <option value="japanese">Byo-yomi Japonais</option>
                                 <option value="chinese">Byo-yomi Chinois</option>
                             </select>
                         </div>
                         <div class="form-control">
-                            <label for="tournament-time-clock">Temps attribué (Heures : Minutes : Secondes)</label>
-                            <input type="text" name="tournament-time-clock" id="tournament-time-clock" class="duration-picker" value="01:00:00" data-duration-min="00:00:00" data-duration-max="10:00:00">
+                            <label for="time-clock">Temps attribué (Heures : Minutes : Secondes)</label>
+                            <input type="text" name="time-clock" id="time-clock" class="duration-picker" value="01:00:00" data-duration-min="00:00:00" data-duration-max="10:00:00">
                         </div>
                         <div class="form-control">
-                            <label for="tournament-komi">Valeur donnée au Komi</label>
-                            <input type="number" name="tournament-komi" id="tournament-komi" min="3.5" max="25.5" value="6.5" placeholder="Valeur donnée au Komi">
+                            <label for="komi">Valeur donnée au Komi</label>
+                            <input type="number" name="komi" id="komi" min="3.5" max="25.5" value="6.5" placeholder="Valeur donnée au Komi">
                         </div>
                         <div class="form-control">
-                            <label for="tournament-is-handicap">Handicap ?</label>
-                            <switchbutton name="tournament-is-handicap" id="tournament-is-handicap" onclick="toggleHandicap()"></switchbutton>
+                            <label for="is-handicap">Handicap ?</label>
+                            <switchbutton name="is-handicap" id="is-handicap" onclick="toggleHandicap()"></switchbutton>
                         <div id="handicap-form" class="form-control" hidden>
-                            <label for="tournament-handicap">Handicap</label>
-                            <input type="number" name="tournament-handicap" id="tournament-handicap" min="0" max="9" value="0" placeholder="Handicap">
+                            <label for="handicap">Handicap</label>
+                            <input type="number" name="handicap" id="handicap" min="0" max="9" value="0" placeholder="Handicap">
                         </div>
                         <div class="form-control">
                             <label for="game-private">Privée ?</label>
@@ -104,11 +105,9 @@
             </div>
         </div>
 
-        <div class="notify" id="notify"></div>
     </main>
     {% include 'reusable/footer.html' %}
     <script src="/static/js/global.js"></script>
-    <script src="/static/js/notify.js"></script>
     <script src="/static/js/tournament/date_validation.js"></script>
     <script src="/static/js/tournament/edit_tournament.js"></script>
 </body>

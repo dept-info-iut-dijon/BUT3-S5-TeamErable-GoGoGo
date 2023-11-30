@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, HttpR
 from ...forms.SignUpForm import SignUpForm
 from ...models import CustomUser, Statistic
 from ..decorators import logout_required, request_type, RequestType
+from ...http import HttpResponseNotifError
 
 def _create_user(form: SignUpForm) -> CustomUser:
     '''Fonction qui cree un utilisateur a partir du formulaire
@@ -57,8 +58,8 @@ def register(request: HttpRequest) -> HttpResponse:
             ret = HttpResponseRedirect('/login')
         
         else:
-            if form.errors.get('username'): ret = HttpResponseBadRequest('<p class="error">Ce nom d\'utilisateur est déjà pris.</p>')
-            elif form.errors.get('email'): ret = HttpResponseBadRequest('<p class="error">Cette adresse email est déjà utilisée.</p>')
-            elif form.errors.get('password2'): ret = HttpResponseBadRequest('<p class="error">Le mot de passe est trop commun.</p>')
+            if form.errors.get('username'): ret = HttpResponseNotifError('Ce nom d\'utilisateur est déjà pris.')
+            elif form.errors.get('email'): ret = HttpResponseNotifError('Cette adresse email est déjà utilisée.')
+            elif form.errors.get('password2'): ret = HttpResponseNotifError('Le mot de passe est trop commun.')
 
     return ret

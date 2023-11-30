@@ -8,7 +8,7 @@ function readURL(input) {
         request.open('POST', '/change-pfp');
         request.setRequestHeader('X-CSRFToken', csrf_token);
         request.onload = function() {
-            document.querySelector(".notify").innerHTML = request.responseText;
+            notify(request.responseText);
 
             if (request.status == 200) {
                 var reader = new FileReader();
@@ -64,10 +64,10 @@ document.querySelector("#change-pwd").addEventListener('submit', function(event)
     request.setRequestHeader('X-CSRFToken', csrf_token);
     request.onload = function() {
         if (request.status == 400) {
-            document.querySelector(".notify").innerHTML = request.responseText;
+            notify(request.responseText);
             document.querySelector('form#change-pwd input[type="submit"]').disabled = false;
         } else if (request.status == 200) {
-            document.querySelector(".notify").innerHTML = request.responseText;
+            notify(request.responseText);
             setTimeout(function() {
                 window.location.reload();
             }, 1000);
@@ -107,7 +107,7 @@ document.body.addEventListener("htmx:afterRequest", function(event) {
                 (event.detail.xhr.responseURL.startsWith(window.location.origin + "/delete-friend"))
             )
         ) return;
-        document.querySelector(".notify").innerHTML = event.detail.xhr.responseText;
+        notify(event.detail.xhr.responseText);
 
         document.querySelector("#search-input").dispatchEvent(new KeyboardEvent('keyup', {key: 'a'}));
 
@@ -140,14 +140,38 @@ document.querySelector("#delete-account").addEventListener('submit', function(ev
     request.setRequestHeader('X-CSRFToken', csrf_token);
     request.onload = function() {
         if (request.status == 400) {
-            document.querySelector(".notify").innerHTML = request.responseText;
+            notify(request.responseText);
             document.querySelector('form#delete-account input[type="submit"]').disabled = false;
         } else if (request.status == 200) {
-            document.querySelector(".notify").innerHTML = request.responseText;
+            notify(request.responseText);
             setTimeout(function() {
                 window.location.href = "/login";
             }, 1000);
         }
     }
+    request.send(formData);
+});
+
+
+document.querySelector("#change-user-info").addEventListener('submit', function(event) {
+    event.preventDefault();
+    document.querySelector('form#change-user-info input[type="submit"]').disabled = true;
+
+    var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+    var formData = new FormData();
+    formData.append('username', document.querySelector('input[name="username"]').value);
+    formData.append('email', document.querySelector('input[name="email"]').value);
+
+    var request = new XMLHttpRequest();
+    request.open('POST', '/change-user-info');
+    request.setRequestHeader('X-CSRFToken', csrf_token);
+    request.onload = function() {
+        if (request.status == 200 || request.status == 400) {
+            notify(request.responseText);
+            document.querySelector('form#change-user-info input[type="submit"]').disabled = false;
+        }
+    }
+
     request.send(formData);
 });
