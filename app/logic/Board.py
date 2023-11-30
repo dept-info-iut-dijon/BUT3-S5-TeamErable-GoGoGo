@@ -6,8 +6,8 @@ from ..exceptions import InvalidMoveException
 from .GoConstants import GoConstants
 from .RuleBase import RuleBase
 from .RuleFactory import RuleFactory
+from .timer.TimerFactory import TimerFactory
 from .Grid import Grid
-
 
 class Board:
     '''Plateau de jeu.'''
@@ -20,10 +20,10 @@ class Board:
             data (dict): Données du plateau.
         '''
         self.load(data)
-
+        self._timer = TimerFactory.createTimer(self._timer_data)
 
     @overload
-    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase]) -> None:
+    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase], timer_data:dict) -> None:
         '''Initialise un plateau de jeu.
 
         Args:
@@ -46,6 +46,10 @@ class Board:
         self._illegal_moves: list[Vector2] = []
         self._history: list[Vector2] = []
 
+        self._timer_data = timer_data
+        self._timer = TimerFactory.createTimer(timer_data)
+
+
 
     @property
     def size(self) -> Vector2:
@@ -62,6 +66,10 @@ class Board:
     @property
     def grid(self) -> Grid:
         return self._grid
+
+    @property
+    def raw(self) -> list[list[Tile]]:
+        return self._grid.raw
 
     @property
     def current_player(self) -> Tile:
@@ -123,6 +131,7 @@ class Board:
             InvalidMoveException: Si la case est déjà occupée.
             InvalidMoveException: Si l'île serait entourée (Si le joueur n'est pas autorisé à jouer dans les zones mortes).
         '''
+        self._timer.set_move()
         if self._ended: raise InvalidMoveException('La partie est terminée.')
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
         if self._grid.is_outside(coords): raise InvalidMoveException('Impossible de jouer ici, les coordonnées sont en dehors du plateau.')
@@ -164,10 +173,20 @@ class Board:
         if self.get(coords) is not None:
             ret[tile].append(coords)
 
+        game_over = self._timer.make_move(self._current_player)
+        self._timer_data['initial_time'] = self._timer.get_initial_time()
+        self._timer_data['separate_timer'] = self._timer.get_separate_timers()
         self._history.append(coords)
         self._current_player = tile.next
         self._skip_list = []
 
+        # Mets fin a la partie si le timer est fini
+        if game_over:
+            self.end_game()
+
+
+        # if len(ret) == 1: # todo: finish this
+        #     self._illegal_moves = [ret[0]]
         if len(ret[None]) == 1:
             self._illegal_moves = [ret[None][0]]
 
@@ -245,13 +264,13 @@ class Board:
         '''
 
         b = data['board']
-        self.size = Vector2(*data.get('size', [len(b[0]), len(b)])[:2])
+        size = Vector2(*data.get('size', [len(b[0]), len(b)])[:2])
         self._grid = Grid.from_list([
             [
                 Tile.from_value(b[y][x]) if b[y][x] else None
-                for x in range(self.size.x)
+                for x in range(size.x)
             ]
-            for y in range(self.size.y)
+            for y in range(size.y)
         ])
         self._current_player = Tile.from_value(data.get('current-player', Tile.White))
         self._eaten_tiles = {
@@ -270,6 +289,7 @@ class Board:
             Vector2(*pos) if pos else None
             for pos in data.get('history', [])
         ]
+        self._timer_data = data.get('timer_data', {})
 
 
     def export(self) -> dict:
@@ -299,6 +319,7 @@ class Board:
             'skip-list': [str(tile) for tile in self._skip_list],
             'illegal-moves': [[pos.x, pos.y] if pos else None for pos in self._illegal_moves],
             'history': [[pos.x, pos.y] if pos else None for pos in self._history],
+            'timer_data': self._timer_data
         }
 
 
@@ -309,7 +330,7 @@ class Board:
             Board: Copie du plateau de jeu.
         '''
 
-        b = Board(self.size.x, self._komi, self._rule.__class__)
+        b = Board(self.size.x, self._komi, self._rule.__class__, self._timer_data)
         b._grid = Grid.from_list([row.copy() for row in self._grid])
         b._current_player = self._current_player
         b._eaten_tiles = self._eaten_tiles.copy()
