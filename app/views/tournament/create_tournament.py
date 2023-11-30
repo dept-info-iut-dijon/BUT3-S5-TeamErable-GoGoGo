@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from ...models.tournament import Tournament
 from ...models.game_configuration import GameConfiguration
+from ...models.custom_user import CustomUser
 from datetime import datetime
 import random, string
 from ..decorators import login_required, request_type, RequestType
@@ -11,7 +12,7 @@ from .tournament_struct import TournamentStruct
 from ..game.game_configuration import create_game_config
 
 def _can_create_tournament(request: HttpRequest) -> bool :
-    '''Fonction permettant de savoir si il est possible de creer un tournoi
+    '''Fonction permettant de savoir s'il est possible de creer un tournoi
 
     Args:
         request (HttpRequest): Requête HTTP
@@ -38,13 +39,9 @@ def _create_tournament_post(request: HttpRequest, tournament_struct: TournamentS
         HttpResponse: Réponse HTTP de redirection vers la page du tournoi créé ou erreur
     '''
     private = bool(request.POST.get('tournament-private'))
-
     ret: HttpResponse = HttpResponseBadRequest('Erreur lors de la création du tournois')
-
-    tournament = construct_tournament(tournament_struct, private, request.user.id)
-
+    tournament = construct_tournament(tournament_struct, private, request.user)
     ret = HttpResponse(f'/tournament?id={tournament.id}')
-
     return ret
 
 @login_required
@@ -75,7 +72,7 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
     return ret
 
 
-def construct_tournament(tournament_struct: TournamentStruct, private : bool, creator : int) -> Tournament:
+def construct_tournament(tournament_struct: TournamentStruct, private : bool, creator : CustomUser) -> Tournament:
     '''Fonction permettant de construire un tournoi dans la BDD
     
     Args:
