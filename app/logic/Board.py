@@ -64,6 +64,10 @@ class Board:
         return self._grid
 
     @property
+    def raw(self) -> list[list[Tile]]:
+        return self._grid.raw
+
+    @property
     def current_player(self) -> Tile:
         return self._current_player
 
@@ -245,13 +249,13 @@ class Board:
         '''
 
         b = data['board']
-        self.size = Vector2(*data.get('size', [len(b[0]), len(b)])[:2])
+        size = Vector2(*data.get('size', [len(b[0]), len(b)])[:2])
         self._grid = Grid.from_list([
             [
                 Tile.from_value(b[y][x]) if b[y][x] else None
-                for x in range(self.size.x)
+                for x in range(size.x)
             ]
-            for y in range(self.size.y)
+            for y in range(size.y)
         ])
         self._current_player = Tile.from_value(data.get('current-player', Tile.White))
         self._eaten_tiles = {
