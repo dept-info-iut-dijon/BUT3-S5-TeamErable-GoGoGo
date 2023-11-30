@@ -50,7 +50,12 @@ def _create_new_game(request : HttpRequest, game_struct: GameStruct) -> HttpRequ
     if not os.path.exists('dynamic/games'):
         os.makedirs('dynamic/games')
     with open(file, 'w') as f:
-        b = Board(int(game_struct.game_configuration.map_size), float(game_struct.game_configuration.komi), RuleFactory().get(game_struct.game_configuration.counting_method))
+        timer_data = {
+            'type': game.game_configuration.clock_type,
+            'clock_value': game.game_configuration.clock_value,
+            'byo_yomi':game.game_configuration.byo_yomi
+        }
+        b = Board(int(game_struct.game_configuration.map_size), float(game_struct.game_configuration.komi), RuleFactory().get(game_struct.game_configuration.counting_method), timer_data)
         json.dump(b.export(), f)
 
     game.move_list = file
