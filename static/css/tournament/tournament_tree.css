@@ -1,0 +1,74 @@
+#arbre-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tournament-tree {
+    gap: 20px;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 3rem;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.tour-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.match {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px 0;
+    position: relative;
+}
+
+.team {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--main-color-light);
+    border-bottom-right-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    position: relative;
+}
+
+.winner {
+    background-color: #c1e4c1;
+}
+
+/* Style pour les lignes reliant les équipes */
+.team::before {
+    content: "";
+    position: absolute;
+    width: 2px; 
+    height: 100%;
+    background-color: #000;
+    top: 50%;
+    left: -2px;
+    transform: translateY(-50%);
+    z-index: -1; 
+}
+
+/* Style pour les lignes indiquant le passage au tour suivant */
+.match::after {
+    content: "";
+    position: absolute;
+    width: 20px; 
+    height: 2px;
+    background-color: #000;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+}

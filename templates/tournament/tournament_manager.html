@@ -8,6 +8,7 @@
     <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}">
     <link rel="stylesheet" href="/static/css/global.css">
     <link rel="stylesheet" href="/static/css/tournament/tournament.css">
+    <link rel="stylesheet" href="/static/css/tournament/tournament_tree.css">
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
@@ -65,22 +66,23 @@
             </div>
         </section>
         <section id="arbre-section">
-            <div class="tournament">
-                {% for round in tree %}
-                <div class="round">
-                    {% for match in round %}
-                    {% if not match.0.1 and not match.1.1 and match.2.id_game %}
-                    <a href="{% url 'game' %}?id={{ match.2.id_game }}">
-                        {% endif %}
-                        <div class="match">
-                            <div class="team{% if match.0.1 %} winner{% endif %}">{{ match.0.0.username }}</div>
-                            <div class="team{% if match.1.1 %} winner{% endif %}">{{ match.1.0.username }}</div>
-                        </div>
-                        {% if not match.0.1 and not match.1.1 %}
-                    </a>
-                    {% endif %}
-                    {% endfor %}
-                </div>
+            <div class="tournament-tree row">
+                {% for match_round in tree %}
+                    <div class="column">
+                        <div class="tour-label">Tour {{ forloop.counter }}</div>
+                        {% for match in match_round %}
+                            {% if not match.0.1 and not match.1.1 and match.2.id_game %}
+                                <a href="{% url 'game' %}?id={{ match.2.id_game }}">
+                            {% endif %}
+                            <div class="match">
+                                <div class="team{% if match.0.1 %} winner{% endif %}">{{ match.0.0.username }}</div>
+                                <div class="team{% if match.1.1 %} winner{% endif %}">{{ match.1.0.username }}</div>
+                            </div>
+                            {% if not match.0.1 and not match.1.1 %}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 {% endfor %}
             </div>
         </section>
