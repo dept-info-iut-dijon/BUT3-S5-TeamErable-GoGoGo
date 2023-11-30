@@ -34,12 +34,12 @@ var check = function() {
 
 function validateForm() {
     if (!checkLength()) {
-        document.querySelector(".notify").innerHTML = '<p class="error">Le mot de passe doit être de 8 caractères minimum.</p>';
+        notify('<p class="error">Le mot de passe doit être de 8 caractères minimum.</p>');
         return false;
     }
 
     if (!checkSame()) {
-        document.querySelector(".notify").innerHTML = '<p class="error">Les mots de passe ne correspondent pas.</p>';
+        notify('<p class="error">Les mots de passe ne correspondent pas.</p>');
         return false;
     }
 
@@ -61,7 +61,7 @@ function validateForm() {
             window.location.href = '/login';
         }
         else {
-            document.querySelector(".notify").innerHTML = request.responseText;
+            notify(request.responseText);
             document.querySelector('input[type="submit"]').disabled = false;
         }
     };
