@@ -195,6 +195,7 @@ table.board > tbody > tr:last-child > td::after {
     font-size: 1.5rem;
     vertical-align: middle;
     color: var(--font-color-light);
+    text-align: center;
 }
 
 .band p.big {

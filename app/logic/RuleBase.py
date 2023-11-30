@@ -17,8 +17,18 @@ class RuleBase(ABC):
         self._board = board
 
 
+    @property
+    def board(self) -> Board:
+        '''Plateau de jeu.
+
+        Returns:
+            Board: Plateau de jeu.
+        '''
+        return self._board
+
+
     @abstractmethod
-    def count_points(self) -> dict[Tile, int]:
+    def count_points(self) -> dict[Tile, float]:
         '''Compte les points.
 
         Returns:
