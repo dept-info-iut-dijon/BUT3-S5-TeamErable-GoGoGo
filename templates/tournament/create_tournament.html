@@ -10,6 +10,8 @@
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
+
     <main>
         {% csrf_token %}
         <div class="container">
@@ -103,12 +105,9 @@
                 </form>
             </div>
         </div>
-
-        <div class="notify" id="notify"></div>
     </main>
     {% include 'reusable/footer.html' %}
     <script src="/static/js/global.js"></script>
-    <script src="/static/js/notify.js"></script>
     <script src="/static/js/tournament/date_validation.js"></script>
     <script src="/static/js/tournament/create_tournament.js"></script>
 </body>

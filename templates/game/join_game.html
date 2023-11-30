@@ -44,7 +44,7 @@
             <div id="game-list" hx-post="/search-game" hx-swap="innerHTML" hx-trigger="load"></div>
         </div>
 
-        <div class="notify" id="notify"></div>
+        {% include 'reusable/notify.html' %}
     </main>
     {% include 'reusable/footer.html' %}
     <script src="/static/js/game/join_game.js"></script>
