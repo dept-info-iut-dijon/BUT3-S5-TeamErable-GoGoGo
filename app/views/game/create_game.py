@@ -81,7 +81,7 @@ def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tou
         duration = 0,
         done = False,
         tournament = id_tournament,
-        game_configuration = game_struct.game_configuration,
+        game_configuration = create_game_config(game_struct.game_configuration),
         game_participate = participate
     )
 
