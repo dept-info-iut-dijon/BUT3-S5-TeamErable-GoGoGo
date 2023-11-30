@@ -100,6 +100,36 @@ class GameJoinAndLeave(WebsocketConsumer):
         return can_play
 
 
+    def _check_end_game(self, game: Game, board: Board, forfeit: Tile = None) -> None:
+        if board.ended:
+            points = {Tile.White: 0, Tile.Black: 0}
+
+            forfeit_value = forfeit.value.color[0] if forfeit is not None else None
+
+            if forfeit_value:
+                winner = forfeit.next
+
+            else:
+                winner, winner_points = None, 0
+                for t in Tile:
+                    if points[t] > winner_points: winner, winner_points = t, points[t]
+
+
+            new_event = {
+                'type': 'send_end_game',
+                'data': json.dumps({
+                    'winner': winner.value.color[0] if winner is not None else None,
+                    'forfeit': forfeit_value,
+                    'points': {
+                        t.value.color[0]: {
+                            'count': points[t], 'username': game.game_participate.player1.username if t == Tile.White else game.game_participate.player2.username
+                        } for t in Tile
+                    }
+                })
+            }
+            async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+
     def receive_play(self, event: dict) -> None:
         '''Reçoit le coup du joueur.
 
@@ -117,7 +147,7 @@ class GameJoinAndLeave(WebsocketConsumer):
         ret = board.play(Vector2(x, y), tile)
         parsed_ret = {}
         for key, value in ret.items():
-            k = 'w' if key == Tile.White else 'b' if key == Tile.Black else 'r'
+            k = 'r' if not key else key.value.color[0]
             value = [f'{v.x};{v.y}' for v in value]
             parsed_ret[k] = '\n'.join(value)
 
@@ -131,6 +161,8 @@ class GameJoinAndLeave(WebsocketConsumer):
 
         new_event = {'type': 'send_eaten_tiles', 'data': json.dumps({t.value.color[0]: board.get_eaten_tiles(t) for t in Tile})}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+        self._check_end_game(game, board)
 
 
     def send_play(self, event: dict) -> None:
@@ -159,8 +191,17 @@ class GameJoinAndLeave(WebsocketConsumer):
         Args:
             event (dict): Les points du joueur.
         '''
-        new_event = {'type': 'eaten_tiles', 'data': event['data']}
-        print(self._user.username, 'send_play', new_event['data'])
+        new_event = {'type': 'eaten-tiles', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))
+
+
+    def send_end_game(self, event: dict) -> None:
+        '''Envoie la fin de la partie.
+
+        Args:
+            event (dict): La fin de la partie.
+        '''
+        new_event = {'type': 'end-game', 'data': event['data']}
         self.send(text_data = json.dumps(new_event))
 
 
@@ -175,6 +216,8 @@ class GameJoinAndLeave(WebsocketConsumer):
         new_event = {'type': 'send_can_play', 'data': self._get_can_play(board)}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
+        self._check_end_game(game, board)
+
 
     def receive_give_up(self, event: dict) -> None:
         game, board, tile = self._get_game_board()
@@ -185,6 +228,8 @@ class GameJoinAndLeave(WebsocketConsumer):
 
         new_event = {'type': 'send_can_play', 'data': self._get_can_play(board)}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+        self._check_end_game(game, board, tile)
 
 
     def receive_connect(self, event: dict) -> None:

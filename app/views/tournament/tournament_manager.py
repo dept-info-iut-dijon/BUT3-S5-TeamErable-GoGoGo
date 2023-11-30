@@ -8,6 +8,7 @@ from ...logic import Board
 from app.models import Game
 from app.models import CustomUser
 from ..decorators import login_required
+from ...http import HttpResponseNotifError
 
 def has_game_happened(tournament_games, player1, player2):
     for game in tournament_games:
@@ -117,7 +118,7 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
     if tournament.ongoing() == True: 
-        return HttpResponseBadRequest('<p class="error">Les inscription pour ce tournois sont terminees</p>') 
+        return HttpResponseNotifError('Les inscription pour ce tournois sont terminees')
 
     if len(ParticipateTournament.objects.filter(person=request.user, tournament=tournament).all()) < 1:
         link = ParticipateTournament.objects.create(
@@ -131,18 +132,18 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
             </script>
             ''')
     else:
-        return HttpResponseBadRequest('<p class="error">Vous participez deja au tournois</p>') 
+        return HttpResponseNotifError('Vous participez deja au tournois')
 
 @login_required
 def tournament_player_list(request: HttpRequest) -> HttpResponse:
 
     if request.method == 'GET':
-        if (id_tournament := request.GET.get('id')) is None: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+        if (id_tournament := request.GET.get('id')) is None: return HttpResponseNotifError('Une erreur est survenue')
         try:
             tournament = Tournament.objects.get(id = id_tournament)
             listplayers = CustomUser.objects.filter(participatetournament__tournament__id = id_tournament).all()
             return render(request, 'reusable/tournament_player_list.html', {'players': listplayers, 'tournament_unstarted': (not tournament.ongoing()) and tournament.creator.id == request.user.id})
         
-        except: return HttpResponseBadRequest('<p class="error">Une erreur est survenue.</p>')
+        except: return HttpResponseNotifError('Une erreur est survenue')
 
     return HttpResponseBadRequest()
