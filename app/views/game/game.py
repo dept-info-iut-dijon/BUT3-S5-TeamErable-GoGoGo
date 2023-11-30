@@ -84,8 +84,12 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête de la partie
     '''
-
-    board = Board(game.game_configuration.map_size,game.game_configuration.komi, RuleFactory().get(game.game_configuration.counting_method))
+    timer_data = {
+        'type': game.game_configuration.clock_type,
+        'clock_value': game.game_configuration.clock_value,
+        'byo_yomi':game.game_configuration.byo_yomi
+    }
+    board = Board(game.game_configuration.map_size,game.game_configuration.komi, RuleFactory().get(game.game_configuration.counting_method), timer_data)
     with open(game.move_list.path, 'r') as f:
         board.load(json.load(f))
 
