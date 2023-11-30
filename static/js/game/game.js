@@ -40,8 +40,12 @@ websocket.onmessage = function(event) {
             receivedCanPlay(data);
             break;
 
-        case 'eaten_tiles':
+        case 'eaten-tiles':
             receivedEatenTiles(data);
+            break;
+
+        case 'end-game':
+            receivedEndGame(data);
             break;
 
         case 'error':
@@ -139,6 +143,33 @@ function receivedEatenTiles(data) {
 
     score_white.innerHTML = eaten.w;
     score_black.innerHTML = eaten.b;
+}
+
+function receivedEndGame(data) {
+    let parsed_data = JSON.parse(data);
+
+    let winner = parsed_data.winner;
+    let points = parsed_data.points;
+
+    let end_game_modal = document.querySelector(".band");
+
+    let winner_text = end_game_modal.querySelector("#band-big-text");
+    let points_text = end_game_modal.querySelector("#band-small-text");
+
+    if (winner === "w") {
+        winner_text.innerHTML = `Les blancs (${points[winner].username}) ont gagné la partie !`;
+        points_text.innerHTML = `${points.w.count} (${points.w.username}) vs ${points.b.count} (${points.b.username})`;
+    }
+    else if (winner === "b") {
+        winner_text.innerHTML = `Les noirs (${points[winner].username}) ont gagné la partie !`;
+        points_text.innerHTML = `${points.b.count} (${points.b.username}) vs ${points.w.count} (${points.w.username})`;
+    }
+    else {
+        winner_text.innerHTML = "Égalité !";
+        points_text.innerHTML = `${points.w.count} (${points.w.username}) vs ${points.b.count} (${points.b.username})`;
+    }
+
+    end_game_modal.classList.remove("hidden");
 }
 
 

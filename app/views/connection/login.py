@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpRes
 from django.contrib.auth import authenticate, login, logout
 from ...forms.ConnectForm import ConnectForm
 from ..decorators import login_required, logout_required, request_type, RequestType
+from ...http import HttpResponseNotifError
 
 
 @logout_required
@@ -17,7 +18,7 @@ def login_(request: HttpRequest) -> HttpResponse:
         HttpResponse: La réponse HTTP à la requête de connexion
     '''
 
-    ret: HttpResponse = HttpResponseBadRequest()
+    ret: HttpResponse = HttpResponseNotifError('Le mot de passe ou le nom d\'utilisateur est incorrect.')
 
     if request.method == RequestType.GET.value:
         ret = render(request, 'connection/login.html')
@@ -29,8 +30,6 @@ def login_(request: HttpRequest) -> HttpResponse:
             if user:
                 login(request, user)
                 ret = HttpResponseRedirect('/')
-
-        else: ret = HttpResponseBadRequest('<p class="error">Le mot de passe ou le nom d\'utilisateur est incorrect.</p>')
         
     return ret
 

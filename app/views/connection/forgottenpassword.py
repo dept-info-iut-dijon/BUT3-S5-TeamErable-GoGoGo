@@ -9,6 +9,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.conf import settings
 from ..decorators import logout_required, request_type, RequestType
+from ...http import HttpResponseNotifError
 
 
 def send_password_reset_email(user: CustomUser, token: bytes | str) -> None:
@@ -46,7 +47,7 @@ def forgotten_password(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La reponse HTTP a la requete de recuperation de mot de passe
     '''
-    ret = HttpResponseBadRequest('<p class="error">L''email n''a pas pu etre envoye</p>')
+    ret = HttpResponseNotifError('L''email n''a pas pu etre envoye')
     if request.method == RequestType.GET.value:
         form = ForgottenPassForm()
         ret = render(request, 'connection/forgottenpassword.html', {'form':form})
@@ -65,6 +66,6 @@ def forgotten_password(request: HttpRequest) -> HttpResponse:
                 ret = render(request, 'password_reset_request_success.html')
             except CustomUser.DoesNotExist:
                 # Handle the case where the email is not found
-                ret = HttpResponseBadRequest('<p class="error">Utilisateur introuvable</p>')
+                ret = HttpResponseNotifError('Utilisateur introuvable')
 
     return ret 
