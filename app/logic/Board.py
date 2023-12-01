@@ -7,7 +7,7 @@ from .GoConstants import GoConstants
 from .rules import RuleBase, RuleFactory
 from .timer import TimerBase, TimerFactory
 from .Grid import Grid
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 class Board:
     '''Plateau de jeu.'''
@@ -22,7 +22,17 @@ class Board:
         self.load(data)
 
     @overload
-    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase], byo_yomi: int, time: timedelta, player_time: dict[Tile, timedelta] | None, timer_cls: type[TimerBase]) -> None:
+    def __init__(
+        self,
+        size: int,
+        komi: float,
+        rule_cls: type[RuleBase],
+        byo_yomi: int,
+        time: timedelta,
+        player_time: dict[Tile, timedelta] | None,
+        timer_cls: type[TimerBase],
+        last_action_time: datetime | None,
+    ) -> None:
         '''Initialise un plateau de jeu.
 
         Args:
@@ -43,7 +53,7 @@ class Board:
         self._illegal_moves: list[Vector2] = []
         self._history: list[Vector2] = []
 
-        self._timer = timer_cls(self, byo_yomi, time, player_time)
+        self._timer = timer_cls(self, byo_yomi, time, player_time, last_action_time)
 
 
 
@@ -89,7 +99,10 @@ class Board:
 
     @property
     def player_time(self) -> dict[Tile, timedelta]:
-        return self._timer.player_time
+        return (
+            {t: v - self._timer.last_action_time_diff for t, v in self._timer.player_time.items() if self.is_player_turn(t)} |
+            {t: v for t, v in self._timer.player_time.items() if not self.is_player_turn(t)}
+        )
 
     @property
     def history(self) -> list[Vector2]:
@@ -155,7 +168,6 @@ class Board:
             InvalidMoveException: Si la case est déjà occupée.
             InvalidMoveException: Si l'île serait entourée (Si le joueur n'est pas autorisé à jouer dans les zones mortes).
         '''
-        self._timer.set_move()
         if self._ended: raise InvalidMoveException('La partie est terminée.')
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
         if self._grid.is_outside(coords): raise InvalidMoveException('Impossible de jouer ici, les coordonnées sont en dehors du plateau.')
@@ -199,16 +211,9 @@ class Board:
         if self.get(coords) is not None:
             ret[tile].append(coords)
 
-        game_over = self._timer.make_move(self._current_player)
-        self._timer_data['initial_time'] = self._timer.get_initial_time()
-        self._timer_data['separate_timer'] = self._timer.get_separate_timers()
         self._history.append(coords)
         self._current_player = tile.next
         self._skip_list = []
-
-        # Mets fin a la partie si le timer est fini
-        if game_over:
-            self.end_game()
 
         # Définie les coups illégaux si un seul pion est mangé
         if len(ret[None]) == 1:
@@ -216,6 +221,8 @@ class Board:
 
         else:
             self._illegal_moves = []
+
+        self._timer.play(tile)
 
         return ret
 
@@ -238,6 +245,8 @@ class Board:
         self._current_player = tile.next
         self._history.append(None)
         self._illegal_moves = []
+
+        self._timer.play(tile)
 
         if set(self._skip_list) == set(Tile):
             self.end_game()
@@ -319,14 +328,24 @@ class Board:
             for pos in data.get('history', [])
         ]
 
-        timer_data = data.get('timer', {'key': 'chinese', 'time': 3600, 'byo_yomi': 30})
+        timer_data = data.get('timer', {
+            'key': 'chinese',
+            'byo-yomi': 30,
+            'initial-time': 3600.0,
+            'player-time': {
+                Tile.White.value.value: 3600.0,
+                Tile.Black.value.value: 3600.0
+            },
+            'last-action-time': 0.0
+        })
         self._timer = TimerFactory().get(timer_data.get('key', 'chinese'))(
             self,
-            timer_data.get('byo_yomi', 30),
+            timer_data.get('byo-yomi', 30),
             timedelta(seconds = timer_data.get('time', 3600)),
             {
-                Tile.from_value(k): timedelta(seconds = v) for k, v in timer_data.get('player_time', {}).items()
-            }
+                Tile.from_value(k): timedelta(seconds = v) for k, v in timer_data.get('player-time', {}).items()
+            },
+            datetime.fromtimestamp(timer_data.get('last-action-time', datetime.now().timestamp())),
         )
 
 
@@ -374,7 +393,8 @@ class Board:
             self.byo_yomi,
             timedelta(seconds = self.time.total_seconds()),
             {k: timedelta(seconds = v.total_seconds()) for k, v in self.player_time.items()},
-            self._timer.__class__
+            self._timer.__class__,
+            datetime.fromtimestamp(self._timer.last_action_time.timestamp()) if self._timer.last_action_time is not None else None,
         )
         b._grid = Grid.from_list([row.copy() for row in self._grid])
         b._current_player = self._current_player
