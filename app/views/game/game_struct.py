@@ -12,6 +12,14 @@ class GameStruct:
 
     @classmethod
     def verify_game(cls, request: HttpRequest) -> Union["GameStruct", Exception]:
+        '''Fonction permettant de valider les informations de la partie et de la renvoyer
+
+        Args:
+            request (HttpRequest): Requête HTTP
+
+        Returns:
+            GameStruct: La partie ou l'exception
+        '''
         ret = None
         try: 
             game_config = GameConfigurationStruct.verify_game_config(request)

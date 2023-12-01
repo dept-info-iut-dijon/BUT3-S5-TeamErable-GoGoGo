@@ -1,24 +1,28 @@
-from .JapaneseByoyomi import JapaneseByoyomi
-from .ChineseByoyomi import ChineseByoyomi
-from .Timer import Timer
+from .TimerBase import TimerBase
+from ...utils import Singleton
 
-class TimerFactory:
-	@staticmethod
-	def create_timer(timer_data: dict):
-		ret = None
-		match timer_data['type']:
-			case "japanese":
-				ret = TimerFactory.create_japanese_byoyomi(timer_data)
-			case "chinese":
-				ret = TimerFactory.create_chinese_byoyomi(timer_data)
-			case _:
-				pass
-		return ret
+class TimerFactory(metaclass = Singleton):
+    '''Fabrique de timer.'''
 
-	@staticmethod
-	def create_japanese_byoyomi(timer_data: dict)->JapaneseByoyomi:
-		return JapaneseByoyomi(timer_data)
+    def __init__(self) -> None:
+        '''Initialise la fabrique de timer.'''
+        self._timers = {}
 
-	@staticmethod
-	def create_chinese_byoyomi(timer_data: dict)->ChineseByoyomi:
-		return ChineseByoyomi(timer_data)
+    def register(self, timer_cls: type[TimerBase]) -> None:
+        '''Enregistre un timer.
+
+        Args:
+            timer_cls (type[TimerBase]): Classe du timer.
+        '''
+        self._timers[timer_cls.key] = timer_cls
+
+    def get(self, key: str) -> type[TimerBase]:
+        '''Renvoie un timer.
+
+        Args:
+            key (str): Clé du timer.
+
+        Returns:
+            type[TimerBase]: Classe du timer.
+        '''
+        return self._timers[key]

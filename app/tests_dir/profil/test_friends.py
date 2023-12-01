@@ -8,7 +8,9 @@ import os
 from django.conf import settings
 
 class FriendsTest(TestCase):
+    '''Classe permettant de tester la fonction Friends'''
     def setUp(self):
+        '''Fonction permettant de preparer le jeu de test'''
         self.client = Client()
         # Creation d'un utilisateur test
         self.statistic = Statistic.objects.create(
@@ -38,13 +40,13 @@ class FriendsTest(TestCase):
         # Connexion de l'utilisateur
         self.client.login(username='testuser', password='testpass')
 
-    # Test du listage des amis
     def test_list_friends(self):
+        '''Fonction permettant de tester la liste des amis'''
         response = self.client.get('/friend-list')
         self.assertEqual(response.status_code, 200)
 
-    # Test de la recherche de nouveau amis
     def test_search_not_friend(self):
+        '''Fonction permettant de tester la recherche de nouveaux amis'''
         random_user = CustomUser.objects.create_user(
             username='user1',
             password='userpass',
@@ -57,8 +59,8 @@ class FriendsTest(TestCase):
         users_in_context = [user for user in response.context['users']]
         self.assertIn(random_user, users_in_context)
 
-    # Test de l'ajout d'ami
     def test_add_friend(self):
+        '''Fonction permettant de tester l'ajout d'un nouvel ami'''
         friend = CustomUser.objects.create_user(
             username='newfriend',
             password='friendpass',
@@ -73,8 +75,8 @@ class FriendsTest(TestCase):
         # Verification de la modification de donnee
         self.assertTrue(self.user.friends.filter(id=friend.id).exists())
 
-    # Test de la suppresion d'ami
     def test_remove_friend(self):
+        '''Fonction permettant de tester la suppression d'un ami'''
         response = self.client.get('/delete-friend', {'id': self.friend.id})
         # Verification code status
         self.assertEqual(response.status_code, 200)
