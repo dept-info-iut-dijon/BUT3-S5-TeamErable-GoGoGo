@@ -4,6 +4,7 @@ from .game_configuration import GameConfiguration
 import datetime
 
 class Tournament(models.Model):
+    '''Classe permettant de creer un tournoi'''
     name = models.CharField(max_length=255)
     register_date = models.DateField()
     start_date = models.DateField()
@@ -26,6 +27,7 @@ class Tournament(models.Model):
         return self.name
 
 class ParticipateTournament(models.Model):
+    '''Classe permettant de creer une table qui répertorie les joueurs dans un tournoi'''
     person = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     win = models.BooleanField(default=False)

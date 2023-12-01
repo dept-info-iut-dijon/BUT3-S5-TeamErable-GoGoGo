@@ -8,7 +8,9 @@ import os
 from django.conf import settings
 
 class ProfileViewTest(TestCase):
+    '''Classe permettant de tester la vue profil'''
     def setUp(self):
+        '''Fonction permettant de preparer le jeu de test'''
         self.client = Client()
         # Creation d'un utilisateur test
         self.statistic = Statistic.objects.create(
@@ -27,8 +29,8 @@ class ProfileViewTest(TestCase):
         # Connexion de l'utilisateur
         self.client.login(username='testuser', password='testpass')
 
-    # Test du chargement de la vue profil
     def test_profile_view(self):
+        '''Fonction permettant de tester le chargement de la vue profil'''
         response = self.client.get('/profile')
         # Verification du code status
         self.assertEqual(response.status_code, 200)
@@ -37,8 +39,8 @@ class ProfileViewTest(TestCase):
         # Verification de la validite des donnees
         self.assertEqual(response.context['user'], self.user)
 
-    # Test du changement des informations utilisateur
     def test_change_user_info(self):
+        '''Fonction permettant de tester le changement des informations utilisateur'''
         new_username = 'newusername'
         new_email = 'newuser@example.com'
 
@@ -53,8 +55,8 @@ class ProfileViewTest(TestCase):
         self.assertEqual(updated_user.username, new_username)
         self.assertEqual(updated_user.email, new_email)
 
-    # Test du changement de photo de profil
     def test_change_pfp(self):
+        '''Fonction permettant de tester le changement de photo de profil'''
         self.client.login(username='testuser', password='testpass')
         new_pfp_path = os.path.join(settings.BASE_DIR, 'static/test', 'test.png')
 

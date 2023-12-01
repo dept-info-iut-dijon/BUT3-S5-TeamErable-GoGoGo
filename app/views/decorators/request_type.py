@@ -4,7 +4,7 @@ from typing import Callable
 from enum import StrEnum
 
 class RequestType(StrEnum):
-    '''Enum of request types'''
+    '''Enum des types de requetes'''
 
     GET = 'GET'
     POST = 'POST'
@@ -18,13 +18,13 @@ class RequestType(StrEnum):
 
 
 def request_type(*request_types: RequestType) -> Callable:
-    '''Decorator to restrict the request type
+    '''Décorateur permettant de valider si la requête est de certains types
 
     Args:
-        request_types (RequestType): Request types (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, TRACE, CONNECT)
+        *request_types (RequestType): Les types de requête
 
     Returns:
-        Callable: Decorated function
+        Callable: Fonction décorée
     '''
 
     rtypes = [rt.value for rt in request_types]

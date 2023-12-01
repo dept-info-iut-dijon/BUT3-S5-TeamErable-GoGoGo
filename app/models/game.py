@@ -4,6 +4,7 @@ from .tournament import Tournament
 from .game_configuration import GameConfiguration
 
 class Game(models.Model):
+    '''Classe permettant de creer une partie'''
     id_game = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)

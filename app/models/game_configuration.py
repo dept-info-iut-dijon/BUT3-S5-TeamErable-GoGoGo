@@ -1,6 +1,7 @@
 from django.db import models
 
 class GameConfiguration(models.Model):
+    '''Classe permettant de creer une configuration de jeu'''
     id_game_config = models.AutoField(primary_key=True)
     is_private = models.BooleanField(default=False)
     ranked = models.BooleanField(default=False)

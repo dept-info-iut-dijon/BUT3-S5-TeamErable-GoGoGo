@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from ..models.custom_user import CustomUser
 
 class SignUpForm(UserCreationForm):
+	'''Classe permettant de creer un formulaire de creation d'utilisateur'''
 	class Meta:
 		model = CustomUser
 		fields = ['username', 'email', 'password1', 'password2'] 
