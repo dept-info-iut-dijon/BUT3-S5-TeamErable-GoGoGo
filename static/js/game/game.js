@@ -343,8 +343,8 @@ function askUnpause() {
 
 document.querySelector("#skip-button").addEventListener("click", skip);
 document.querySelector("#give-up-button").addEventListener("click", giveUp);
-// document.querySelector("#pause-button").addEventListener("click", askPause);
-// document.querySelector("#unpause-button").addEventListener("click", askUnpause);
+// document.querySelector("#pause-button").addEventListener("click", askPause); // TODO: Ajouter la pause au sprint 5
+// document.querySelector("#unpause-button").addEventListener("click", askUnpause); // TODO: Ajouter la pause au sprint 5
 
 
 /**
