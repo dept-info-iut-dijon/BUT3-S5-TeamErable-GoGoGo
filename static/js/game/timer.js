@@ -43,7 +43,7 @@ function formatTime(time) {
 
 // Exécuter la fonction updateCountdown toutes les secondes
 setInterval( function() {
-    if (!game_ended) {
+    if (!game_ended && has_second_player_element.value != "False") {
         let timed_out = getTimerElement(getCanPlay() ? player_color : getOpponentColor());
         if (timed_out) checkState();
     }

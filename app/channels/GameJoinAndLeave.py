@@ -194,7 +194,8 @@ class GameJoinAndLeave(WebsocketConsumer):
         new_event = {'type': 'send_eaten_tiles', 'data': json.dumps({t.value.color[0]: board.get_eaten_tiles(t) for t in Tile})}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
-        new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
+        game_started = game.game_participate.player2 is not None
+        new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v if game_started else board.initial_time) for t, v in board.player_time.items()})}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
         self._check_end_game(game, board)
@@ -296,8 +297,6 @@ class GameJoinAndLeave(WebsocketConsumer):
 
     def receive_connect(self, event: dict) -> None:
         '''Reçoit la connexion du joueur.'''
-        game, board, tile = self._get_game_board()
-
         new_event = {'type': 'send_connect', 'data': {'id': self._user.id, 'color': 'white' if self._player_id == 0 else 'black'}}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 

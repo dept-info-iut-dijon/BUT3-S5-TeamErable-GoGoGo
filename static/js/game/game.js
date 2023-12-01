@@ -4,6 +4,7 @@ const game_id = document.querySelector("#game-id").value;
 const websocket = new WebSocket("ws://" + base_url + "game/" + game_id + "/");
 const player_color = document.querySelector("#player-color").value;
 const game_ended = document.querySelector("#game-ended").value === "True" ? true : false;
+const has_second_player_element = document.querySelector("#has-second-player");
 
 
 
@@ -65,6 +66,8 @@ websocket.onmessage = function(event) {
 }
 
 function receivedConnect(data) {
+    has_second_player_element.value = "True";
+
     let user_id = data.id;
     let color = data.color;
 

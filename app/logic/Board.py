@@ -95,7 +95,7 @@ class Board:
 
     @property
     def time(self) -> timedelta:
-        return self._timer.time
+        return self._timer.initial_time
 
     @property
     def player_time(self) -> dict[Tile, timedelta]:
@@ -119,6 +119,10 @@ class Board:
     @property
     def timer(self) -> TimerBase:
         return self._timer
+
+    @property
+    def initial_time(self) -> timedelta:
+        return self._timer.initial_time
 
 
     def get(self, coords: Vector2) -> Tile:
@@ -153,6 +157,11 @@ class Board:
             bool: True si les coordonnées sont en dehors du plateau, False sinon.
         '''
         return self._grid.is_outside(coords)
+
+
+    def init_start(self) -> None:
+        '''Initialise le début de la partie.'''
+        self._timer.update_last_action_time()
 
 
     def play(self, coords: Vector2, tile: Tile) -> dict[Tile, tuple[Vector2]]:
@@ -358,7 +367,7 @@ class Board:
         self._timer = TimerFactory().get(timer_data.get('key', 'chinese'))(
             self,
             timer_data.get('byo-yomi', 30),
-            timedelta(seconds = timer_data.get('time', 3600)),
+            timedelta(seconds = timer_data.get('initial-time', 3600)),
             {
                 Tile.from_value(k): timedelta(seconds = v) for k, v in timer_data.get('player-time', {}).items()
             },
