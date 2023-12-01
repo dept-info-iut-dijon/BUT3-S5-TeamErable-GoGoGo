@@ -13,6 +13,8 @@ from ..code_manager import CodeManager
 from .game_struct import GameStruct
 from .game_configuration import create_game_config
 from ...models.custom_user import CustomUser
+from datetime import timedelta
+from ...logic.timer.TimerFactory import TimerFactory
 
 def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tournament: int) -> HttpRequest:
     '''Fonction permettant de creer une nouvelle partie
@@ -33,12 +35,15 @@ def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tourname
     if not os.path.exists('dynamic/games'):
         os.makedirs('dynamic/games')
     with open(file, 'w') as f:
-        timer_data = {
-            'type': game.game_configuration.clock_type,
-            'clock_value': game.game_configuration.clock_value,
-            'byo_yomi':game.game_configuration.byo_yomi
-        }
-        b = Board(int(game_struct.game_configuration.map_size), float(game_struct.game_configuration.komi), RuleFactory().get(game_struct.game_configuration.counting_method), timer_data)
+        b = Board(
+            int(game_struct.game_configuration.map_size),
+            float(game_struct.game_configuration.komi),
+            RuleFactory().get(game_struct.game_configuration.counting_method),
+            int(game_struct.game_configuration.byo_yomi),
+            timedelta(seconds = game.game_configuration.clock_value),
+            None,
+            TimerFactory().get(game.game_configuration.clock_type),
+        )
         json.dump(b.export(), f)
 
     game.move_list = file

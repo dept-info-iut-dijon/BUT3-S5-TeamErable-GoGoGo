@@ -28,11 +28,10 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def receive(self, text_data: str = None, bytes_data: bytes = None) -> None:
-        '''Reçoit les données du joueur.
+        '''Reçoit les décisions du joueur.
 
         Args:
-            text_data (str, optional): Données du joueur. Defaults to None.
-            bytes_data (bytes, optional): Données du joueur. Defaults to None.
+            text_data (str, optional): Décision du joueur. Défaut à None.
         '''
         try:
             data = json.loads(text_data)
@@ -67,16 +66,17 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def disconnect(self, code: int) -> None:
-        '''Déconnecte le joueur de la partie.
-
-        Args:
-            code (int): Code de déconnexion.
-        '''
+        '''Enlève le joueur de la salle s'il n'est plus connecté.'''
         async_to_sync(self.channel_layer.group_discard)(f'game_{self._game_id}', self.channel_name)
         self.close()
 
 
     def _get_game_board(self) -> tuple[Game, Board, Tile]:
+        '''Renvoie le jeu, la partie et le joueur.
+
+        Returns:
+            tuple[Game, Board, Tile]: Le jeu, la partie et le joueur.
+        '''
         game = Game.objects.get(id_game = self._game_id)
 
         board = GameStorage.load_game(game.move_list.path)
@@ -85,23 +85,50 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def _update_game(self, game: Game, board: Board) -> None:
+        '''Mettre a jour le jeu.
+        
+        Args:
+            game (Game): Le jeu
+            board (Board): La partie
+        '''
         if board.ended != game.done:
             game.done = board.ended
             game.save()
 
 
     def _save_game_board(self, game: Game, board: Board) -> None:
+        '''Sauvegarde la partie.
+
+        Args:
+            game (Game): Le jeu
+            board (Board): La partie
+        '''
         self._update_game(game, board)
         GameStorage.save_game(game.move_list.path, board)
 
 
     def _get_can_play(self, board: Board) -> int:
+        '''Renvoie si le joueur peut jouer.
+
+        Args:
+            board (Board): La partie
+        
+        Returns:
+            int: 1 si le joueur peut bouger, 0 sinon, -1 si la partie est finie.
+        '''
         can_play = 0 if board.current_player == Tile.White else 1
         can_play = -1 if board.ended else can_play
         return can_play
 
 
     def _check_end_game(self, game: Game, board: Board, looser: Tile = None) -> None:
+        '''Verifie si la partie est finie.
+
+        Args:
+            game (Game): Le jeu
+            board (Board): La partie
+            looser (Tile, optional): Le joueur qui a perdu. Défaut à None.
+        '''
         if board.ended:
             points = board.get_points()
 
@@ -167,7 +194,7 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def send_play(self, event: dict) -> None:
-        '''Envoie le coup du joueur.
+        '''Envoie la modification du plateau dû au coup du joueur.
 
         Args:
             event (dict): Coup du joueur.
@@ -187,7 +214,7 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def send_eaten_tiles(self, event: dict) -> None:
-        '''Envoie les points du joueur.
+        '''Envoie les pions mangés.
 
         Args:
             event (dict): Les points du joueur.
@@ -207,6 +234,7 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def receive_skip(self, event: dict) -> None:
+        '''Recoit quand le joueur passe le tour.'''
         game, board, tile = self._get_game_board()
         if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
 
@@ -221,6 +249,7 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def receive_give_up(self, event: dict) -> None:
+        '''Recoit l'abandon du joueur.'''
         game, board, tile = self._get_game_board()
         if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
 
@@ -235,11 +264,7 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def receive_connect(self, event: dict) -> None:
-        '''Reçoit la connexion du joueur.
-
-        Args:
-            event (dict): Connexion du joueur.
-        '''
+        '''Reçoit la connexion du joueur.'''
         new_event = {'type': 'send_connect', 'data': {'id': self._user.id, 'color': 'white' if self._player_id == 0 else 'black'}}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
