@@ -174,6 +174,11 @@ class Board:
         if self.get(coords) is not None: raise InvalidMoveException('Impossible de jouer ici, la case est déjà occupée.')
         if any(coords == pos for pos in self._illegal_moves): raise InvalidMoveException('Impossible de jouer ici, la case s\'est déjà retrouvée entourée lors du dernier tour.')
 
+        self._timer.play(tile)
+        if self._timer.timed_out is not None:
+            self.end_game()
+            return {}
+
         ret: dict[Tile, list[Vector2]] = {t: [] for t in Tile} | {None: []}
 
         self.set(coords, tile)
@@ -222,8 +227,6 @@ class Board:
         else:
             self._illegal_moves = []
 
-        self._timer.play(tile)
-
         return ret
 
 
@@ -240,16 +243,30 @@ class Board:
         if self._ended: raise InvalidMoveException('La partie est terminée.')
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
 
+        if self._timer.timed_out is not None:
+            self.end_game()
+            return
+
         self._skip_list.append(tile)
 
         self._current_player = tile.next
         self._history.append(None)
         self._illegal_moves = []
 
-        self._timer.play(tile)
-
         if set(self._skip_list) == set(Tile):
             self.end_game()
+
+
+    def update_game_state(self) -> Tile | None:
+        '''Met à jour l'état de la partie.
+
+        Returns:
+            Tile | None: Couleur du joueur qui a perdu, None si aucun joueur n'a perdu.
+        '''
+        if (ret := self._timer.timed_out) is not None and not self._ended:
+            self.end_game()
+
+        return ret
 
 
     def end_game(self) -> None:

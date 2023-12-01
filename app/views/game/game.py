@@ -7,7 +7,7 @@ from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
 from ...storage import GameStorage
 from ...models import CustomUser
-from datetime import timedelta
+from ...utils import time2str
 
 @login_required
 @request_type(RequestType.GET)
@@ -102,7 +102,7 @@ def game_view_players(request: HttpRequest, game: Game, board: Board, players: l
             'color': player1_color.value.color,
             'other_color': player2_color.value.color,
             'score': board.get_eaten_tiles(player1_color),
-            'timer': timetostr(board.player_time[player1_color]),
+            'timer': time2str(board.player_time[player1_color]),
         }
     ).content.decode('utf-8')
 
@@ -114,7 +114,7 @@ def game_view_players(request: HttpRequest, game: Game, board: Board, players: l
             'color': player2_color.value.color,
             'other_color': player1_color.value.color,
             'score': board.get_eaten_tiles(player2_color),
-            'timer': timetostr(board.player_time[player2_color]),
+            'timer': time2str(board.player_time[player2_color]),
         }
     ).content.decode('utf-8')
 
@@ -148,11 +148,15 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
         ]
     )
 
+    color = Tile.White if request.user == game.game_participate.player1 else Tile.Black
+
     return render(
         request,
         'game/game.html',
         {
             'id': game.id_game,
+            'color': color.value.color,
+            'game_ended': board.ended,
             'board': [
                 [
                     {
@@ -212,6 +216,3 @@ def game_view_player(request: HttpRequest) -> HttpResponse:
         ret = HttpResponse(player1_html if user_inst == game_inst.game_participate.player1 else player2_html)
 
     return ret
-
-def timetostr(t: timedelta) -> str:
-    return f"{t.seconds // 3600:02d}:{(t.seconds // 60) % 60:02d}:{t.seconds % 60:02d}"
