@@ -11,7 +11,7 @@ from app.models import CustomUser
 from ..decorators import login_required
 from ...http import HttpResponseNotifError
 
-def has_game_happened(tournament_games:list[Game], player1:CustomUser, player2:CustomUser)->GameParticipate:
+def _has_game_happened(tournament_games:list[Game], player1:CustomUser, player2:CustomUser)->GameParticipate:
     '''
         Verifie si la partie a eut lieu
         Args:
@@ -34,36 +34,8 @@ def has_game_happened(tournament_games:list[Game], player1:CustomUser, player2:C
             ret = game_participate
             break
 
-    if(player1 != None and player2 != None):
-        print(player1.username + " VS " + player2.username + ":")
-        print(game_participate)
-        #print(str(player1.username) + " VS " str(player2.username) + " : " + str(ret))
     return ret
 
-"""def create_tournament_game(tournament, player1, player2):
-    '''
-        Cree une partie liee au tournois
-    '''
-    curr_game = Game.objects.create(
-        name = str(player1[0]) + " VS " + str(player2[0]),
-        description = "Match du tournois " + str(tournament.name) + " oposant " + str(player1[0]) + " et " + str(player2[0]),
-        start_date = datetime.datetime.now(),
-        duration = 0,
-        done = False,
-        tournament = tournament,
-        player1 = player1[0],
-        player2 = player2[0],
-        code = tournament.code,
-        is_private = False,
-    )
-    file = f'dynamic/games/{curr_game.id_game:X}.json'
-    size = 6
-    if not os.path.exists('dynamic/games'): os.makedirs('dynamic/games')
-    with open(file, 'w') as f:
-        b = Board(size) # TODO: A corriger
-        json.dump(b.export(), f)
-    curr_game.move_list = file
-    curr_game.save()"""
 
 @login_required
 def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
@@ -78,11 +50,10 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
             HttpResponse: Reponse Http de la page demandee
     '''
     tournament = get_object_or_404(Tournament, id=id)
-    user = get_organisator_user(tournament)
-    participants = get_tournament_participants(tournament)
+    user = _get_organisator_user(tournament)
+    participants = _get_tournament_participants(tournament)
     games = Game.objects.filter(tournament=tournament)
-    tournament_games = generate_tournament_tree(participants, games)
-    print(tournament_games)
+    tournament_games = _generate_tournament_tree(participants, games)
     context = {
         'tournament': tournament,
         'organisator': user,
@@ -93,7 +64,7 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
 
     return render(request, 'tournament/tournament_manager.html', context)
 
-def get_organisator_user(tournament: Tournament)->CustomUser:
+def _get_organisator_user(tournament: Tournament)->CustomUser:
     '''
         Permet d'obtenir l'organisateur du tournois
         Args:
@@ -108,7 +79,7 @@ def get_organisator_user(tournament: Tournament)->CustomUser:
         user = None
     return user
 
-def get_tournament_participants(tournament:Tournament)->list[CustomUser]:
+def _get_tournament_participants(tournament:Tournament)->list[CustomUser]:
     '''
         Permet d'obtenir la liste des participants du tournois
         Args:
@@ -121,7 +92,7 @@ def get_tournament_participants(tournament:Tournament)->list[CustomUser]:
     participants = [entry.person for entry in participate]
     return participants
 
-def generate_tournament_tree(participants:list[CustomUser], games:list[Game])->list[list]:
+def _generate_tournament_tree(participants:list[CustomUser], games:list[Game])->list[list]:
     '''
         Genere l'arbre de tournois
         Args:
@@ -133,28 +104,30 @@ def generate_tournament_tree(participants:list[CustomUser], games:list[Game])->l
     '''
     tournament_games = []
     current_round = [(participants[i - 1], participants[i]) for i in range(1, len(participants), 2)]
-    lone_member = get_lone_member(participants)
+    lone_member = _get_lone_member(participants)
     round_iter = 0
 
     while len(current_round) != 0:
         tournament_games.append([])
         next_round = []
+        if lone_member != None:
+            next_round.append(lone_member)
 
         for match in current_round:
-            curr_game_participate = has_game_happened(games, match[0], match[1])
-            winner = get_winner(match[0], match[1], curr_game_participate)
+            curr_game_participate = _has_game_happened(games, match[0], match[1])
+            winner = _get_winner(match[0], match[1], curr_game_participate)
             if winner != None : 
                 next_round.append(match[winner])
             else:
                 next_round.append(None)
             tournament_games[round_iter].append((match[0], match[1], winner))
 
-        lone_member = handle_lone_member(lone_member, next_round, current_round)
-        current_round = create_next_round(next_round, lone_member)
+        lone_member = _get_lone_member(next_round)
+        current_round = _create_next_round(next_round)
         round_iter += 1
     return tournament_games
 
-def get_lone_member(participants:list[CustomUser])->CustomUser:
+def _get_lone_member(participants:list[CustomUser])->CustomUser:
     '''
         Permet d'obtenir un eventuel participant impaire
 
@@ -169,47 +142,23 @@ def get_lone_member(participants:list[CustomUser])->CustomUser:
         lone_member = participants[-1]
     return lone_member
 
-def handle_lone_member(lone_member:CustomUser, next_round:list[CustomUser], current_round:list)->CustomUser:
-    '''
-        Fait la gestion du membre impaire
-        
-        Args:
-            lone_member (CustomUser): l'utilisateur impaire
-            next_round (list[CustomUser]): liste des utilisateur du round suivant
-            current_round (list): liste des matchs du round actuel
-
-        Returns:
-            CustomUser: l'utilisateur impaire
-    '''
-    if lone_member:
-        if len(current_round) == 1:
-            current_round = [(lone_member, next_round[0])]
-            lone_member = None
-        else:
-            current_round = [(next_round[i - 1], next_round[i]) for i in range(3, len(next_round), 2)]
-            current_round.insert(0, (lone_member, next_round[0]))
-            lone_member = next_round[1]
-    return lone_member
-
-def create_next_round(next_round:list[CustomUser], lone_member:CustomUser)->list:
+def _create_next_round(next_round:list[CustomUser])->list:
     '''
         Cree la liste des mathcs du prochain round
 
         Args:
             next_round (list[CustomUser]): liste de gagnants du round
-            lone_member (CustomUser): l'utilisateur impaire
 
         Returns:
             list: liste des matchs du prochain round
 
     '''
-    if lone_member:
-        current_round = [(next_round[i - 1], next_round[i]) for i in range(1, len(next_round), 2)]
-    else:
-        current_round = [(next_round[i - 1], next_round[i]) for i in range(1, len(next_round), 2)]
+
+    current_round = [(next_round[i - 1], next_round[i]) for i in range(1, len(next_round), 2)]
+        
     return current_round
 
-def get_winner(player1:CustomUser, player2:CustomUser, curr_game_participate:GameParticipate)-> bool:
+def _get_winner(player1:CustomUser, player2:CustomUser, curr_game_participate:GameParticipate)-> int:
     '''
         Permet d'obtenir le gagnant d'une partie
 
@@ -219,7 +168,7 @@ def get_winner(player1:CustomUser, player2:CustomUser, curr_game_participate:Gam
             curr_game (Game): le lien de participation a la partie 
         
         Returns:
-            bool: status des joueurs 1 et 2
+            int: position du gagnant dans l'association (0 ou 1)
     '''
     winner=None
 
@@ -237,7 +186,16 @@ def get_winner(player1:CustomUser, player2:CustomUser, curr_game_participate:Gam
 
 @login_required
 def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
+    '''
+        Permet de rejoindre un tournois
 
+        Args:
+            request (HttpRequest): Requete Http
+            id_tournament (int): id du tournois
+
+        Returns:
+            HttpResponse: Reponse Http confirmant ou non que l'on a rejoint le tournois
+    '''
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
     if tournament.ongoing() == True: 
@@ -259,14 +217,23 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
 
 @login_required
 def tournament_player_list(request: HttpRequest) -> HttpResponse:
+    '''
+        Permet de lister les joueurs du tournois
 
+        Args:
+            request (HttpRequest): Requete Http
+
+        Returns:
+            HttpResponse: Reponse Http contenant la liste
+    '''
+    ret = HttpResponseBadRequest()
     if request.method == 'GET':
         if (id_tournament := request.GET.get('id')) is None: return HttpResponseNotifError('Une erreur est survenue')
         try:
             tournament = Tournament.objects.get(id = id_tournament)
             listplayers = CustomUser.objects.filter(participatetournament__tournament__id = id_tournament).all()
-            return render(request, 'reusable/tournament_player_list.html', {'players': listplayers, 'tournament_unstarted': (not tournament.ongoing()) and tournament.creator.id == request.user.id})
+            ret = render(request, 'reusable/tournament_player_list.html', {'players': listplayers, 'tournament_unstarted': (not tournament.ongoing()) and tournament.creator.id == request.user.id})
         
-        except: return HttpResponseNotifError('Une erreur est survenue')
+        except: ret = HttpResponseNotifError('Une erreur est survenue')
 
-    return HttpResponseBadRequest()
+    return ret
