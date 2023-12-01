@@ -72,8 +72,8 @@
                         <div class="tour-label">Tour {{ forloop.counter }}</div>
                         {% for match in match_round %}
                             <div class="match">
-                                <div class="team{% if match.0.1 %} winner{% endif %}">{{ match.0.0.username }}</div>
-                                <div class="team{% if match.1.1 %} winner{% endif %}">{{ match.1.0.username }}</div>
+                                <div class="team{% if match.2 == 0 %} winner{% endif %}">{{ match.0.username }}</div>
+                                <div class="team{% if match.2 == 1 %} winner{% endif %}">{{ match.1.username }}</div>
                             </div>
                         {% endfor %}
                     </div>
