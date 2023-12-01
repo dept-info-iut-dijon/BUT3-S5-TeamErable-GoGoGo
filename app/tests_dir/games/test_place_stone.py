@@ -3,8 +3,11 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from channels.testing import WebsocketCommunicator
 from ...models import Statistic, GameConfiguration, GameParticipate, Game
-from ...logic import Tile
+from ...logic import Tile, Board
+from ...logic.rules import RuleFactory
+from ...logic.timer import TimerFactory
 from ...channels import GameJoinAndLeave
+from datetime import timedelta, datetime
 import json
 
 class PlaceStoneTestCase(TestCase):
@@ -32,14 +35,19 @@ class PlaceStoneTestCase(TestCase):
                                         move_list='dynamic/games/999.json', game_configuration=game_config,
                                         game_participate=game_participate)
         #Reinitialisation du json de la partie de test
-        json.dump(
-            {
-                "board": [[None]*9 for _ in range(9)], 
-                "size": [9, 9], 
-                "current-player": "\u26aa", 
-                "eaten-tiles": {"\u26aa": 0, "\u26ab": 0}, 
-                "rule": "japanese"
-            }, open('dynamic/games/999.json', 'w'))
+
+        with open('dynamic/games/999.json', 'w') as f:
+            b = Board(
+                game_config.map_size,
+                game_config.komi,
+                RuleFactory().get(game_config.counting_method),
+                game_config.byo_yomi,
+                timedelta(seconds = game_config.clock_value),
+                None,
+                TimerFactory().get(game_config.counting_method),
+                None,
+            )
+            json.dump(b.export(), f)
 
 
     async def connect(self, communicator, game_id, user):
