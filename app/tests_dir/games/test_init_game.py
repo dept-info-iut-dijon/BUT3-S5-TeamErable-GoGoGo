@@ -30,7 +30,7 @@ class InitGameTestCase(TestCase):
             'map-size': 9,
             'counting-method': 'japanese',
             'byo-yomi':30,
-            'clock-type': 'Byo-yomi',
+            'clock-type': 'japanese',
             'time-clock':'01:00:00',
             'komi':6.5,
             'handicap': 2

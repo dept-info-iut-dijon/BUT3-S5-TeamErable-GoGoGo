@@ -3,8 +3,11 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from channels.testing import WebsocketCommunicator
 from ...models import Statistic, GameConfiguration, GameParticipate, Game
-from ...logic import Tile, Board, RuleFactory, TimeFactory
+from ...logic import Tile, Board
+from ...logic.rules import RuleFactory
+from ...logic.timer import TimerFactory
 from ...channels import GameJoinAndLeave
+from datetime import timedelta, datetime
 import json
 
 class PlaceStoneTestCase(TestCase):
@@ -41,7 +44,7 @@ class PlaceStoneTestCase(TestCase):
                 game_config.byo_yomi,
                 timedelta(seconds = game_config.clock_value),
                 None,
-                TimerFactory().get(game_config.clock_type),
+                TimerFactory().get(game_config.counting_method),
                 None,
             )
             json.dump(b.export(), f)
