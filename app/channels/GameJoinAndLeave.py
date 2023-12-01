@@ -58,6 +58,10 @@ class GameJoinAndLeave(WebsocketConsumer):
                 case 'check-state':
                     self.receive_check_state(data)
 
+                case 'pause': pass # TODO: Faire la pause au Sprint 5
+
+                case 'unpause': pass # TODO: Faire la pause au Sprint 5
+
                 case _:
                     raise ValueError('Une erreur est survenue.')
 
@@ -65,8 +69,7 @@ class GameJoinAndLeave(WebsocketConsumer):
             self.send(text_data = json.dumps({'type': 'error', 'data': str(e)}))
 
         except Exception as e:
-            import traceback
-            traceback.print_exc()
+            pass
 
 
     def disconnect(self, code: int) -> None:
