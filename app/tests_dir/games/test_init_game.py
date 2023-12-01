@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from ...logic import Board, Vector2
 from ...models.custom_user import CustomUser
 from ...models import Statistic, GameConfiguration, GameParticipate, Game
+import json
 
 class InitGameTestCase(TestCase):
     '''Classe permettant de tester la creation de partie'''
@@ -54,11 +55,10 @@ class InitGameTestCase(TestCase):
         game = Game.objects.get(name='Test Game')
         #actual_board = Board(9)
         with open(game.move_list.path, 'r') as f:
-            actual_board = Board(f)
+            actual_board = Board(json.load(f))
             #actual_board.load(json.load(f))
         # Verification de la taille du plateau
-        print(actual_board.size())
-        self.assertEqual(Vector2(9, 9), actual_board.size())
+        self.assertEqual(Vector2(9, 9), actual_board.size)
         # Verification que le plateau est vide
         #self.assertEqual(expected_board, actual_board.raw())
 
