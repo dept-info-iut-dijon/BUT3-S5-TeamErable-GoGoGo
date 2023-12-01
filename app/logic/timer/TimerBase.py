@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 from ..Tile import Tile
 from .. import Board
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 class TimerBase(ABC):
     '''Classe abstraite pour le minuteur'''
 
     key: str = 'base'
 
-    def __init__(self, board: Board, byo_yomi: int, time: timedelta, player_time: dict[Tile, timedelta] | None) -> None:
+    def __init__(self, board: Board, byo_yomi: int, initial_time: timedelta, player_time: dict[Tile, timedelta] | None, last_action_time: datetime | None) -> None:
         '''
         Methode du constructeur pour le minuteur
 
@@ -17,8 +17,9 @@ class TimerBase(ABC):
         '''
         self._board = board
         self._byo_yomi = byo_yomi
-        self._time = time
-        self._player_time = player_time if player_time is not None else {t: timedelta(seconds = time.total_seconds()) for t in Tile}
+        self._initial_time = initial_time
+        self._player_time = player_time if player_time is not None else {t: timedelta(seconds = initial_time.total_seconds()) for t in Tile}
+        self._last_action_time = last_action_time if last_action_time is not None else datetime.now()
 
 
     @property
@@ -46,7 +47,7 @@ class TimerBase(ABC):
         Returns:
             timedelta: Temps total.
         '''
-        return self._time
+        return self._initial_time
 
     @property
     def player_time(self) -> dict[Tile, timedelta]:
@@ -58,44 +59,38 @@ class TimerBase(ABC):
         return self._player_time
 
 
-    @abstractmethod
-    def set_move(self) -> None:
-        '''Sauvegarde le temps du nouveau placement'''
-        pass
+    @property
+    def last_action_time(self) -> datetime:
+        '''Temps du dernier placement.
 
-
-    @abstractmethod
-    def make_move(self, player: Tile) -> bool:
+        Returns:
+            datetime: Temps du dernier placement.
         '''
-        Gere le calcul du temps pour chaque coup.
+        return self._last_action_time
 
-        Args :
-            player (Tile): Le joueur effectuant le coup (Noir ou Blanc).
 
-        Returns :
-            bool: True si la partie est terminee, False sinon.
+    @property
+    def last_action_time_diff(self) -> timedelta:
+        '''Temps depuis le dernier placement.
+
+        Returns:
+            timedelta: Temps depuis le dernier placement.
         '''
-        pass
+        return datetime.now() - self._last_action_time
 
-    @abstractmethod
-    def get_initial_time(self) -> float:
-        '''
-            Permet d'obtenir le temps depuis le dernier coup
 
-            Returns:
-                float: le temps depuis le dernier coup
-        '''
-        pass
+    @property
+    def timed_out(self) -> Tile | None:
+        for t in Tile:
+            if self._player_time[t] <= timedelta():
+                return t
+        return None
 
-    @abstractmethod
-    def get_separate_timers(self) -> tuple[int, int]:
-        '''
-            Permet d'obtenir l'etat des timers separes
 
-            Returns:
-                (int, int): Tuple contenant l'etat des timers blanc et noir
-        '''
-        pass
+    def update_last_action_time(self) -> None:
+        '''Met a jour le temps du dernier placement.'''
+        self._last_action_time = datetime.now()
+
 
     def export(self) -> dict:
         '''Exporte les données du minuteur.
@@ -105,7 +100,38 @@ class TimerBase(ABC):
         '''
         return {
             'key': self.key,
-            'byo_yomi': self._byo_yomi,
-            'time': self._time.total_seconds(),
-            'player_time': {key.value.value: value.total_seconds() for key, value in self._player_time.items()}
+            'byo-yomi': self._byo_yomi,
+            'initial-time': self._initial_time.total_seconds(),
+            'player-time': {key.value.value: value.total_seconds() for key, value in self._player_time.items()},
+            'last-action-time': self._last_action_time.timestamp(),
         }
+
+
+    @abstractmethod
+    def copy(self) -> 'TimerBase':
+        '''Copie le minuteur.
+
+        Returns:
+            TimerBase: Copie du minuteur.
+        '''
+        pass
+
+
+    @abstractmethod
+    def play(self, tile: Tile) -> None:
+        '''Joue un coup.
+
+        Args:
+            tile (Tile): Couleur du joueur.
+        '''
+        pass
+
+
+    def add_time(self, tile: Tile, time: timedelta) -> None:
+        '''Ajoute du temps a un joueur.
+
+        Args:
+            tile (Tile): Couleur du joueur.
+            time (timedelta): Temps a ajouter.
+        '''
+        self._player_time[tile] += time

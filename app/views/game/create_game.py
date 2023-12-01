@@ -43,6 +43,7 @@ def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tourname
             timedelta(seconds = game.game_configuration.clock_value),
             None,
             TimerFactory().get(game.game_configuration.clock_type),
+            None,
         )
         json.dump(b.export(), f)
 
