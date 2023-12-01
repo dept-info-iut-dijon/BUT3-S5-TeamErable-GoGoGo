@@ -7,8 +7,10 @@ class Tile(Enum):
     White = TileColor('⚪', 'white')
     Black = TileColor('⚫', 'black')
 
+
     def __str__(self) -> str:
         return str(self.value)
+
 
     @staticmethod
     def from_value(value: str) -> 'Tile | None':
@@ -25,6 +27,7 @@ class Tile(Enum):
                 return tile
         return None
 
+
     @staticmethod
     def from_color(color: str) -> 'Tile | None':
         '''Convertit une couleur en une tuile.
@@ -39,6 +42,7 @@ class Tile(Enum):
             if tile.value.color == color:
                 return tile
         return None
+
 
     @property
     def next(self) -> 'Tile':

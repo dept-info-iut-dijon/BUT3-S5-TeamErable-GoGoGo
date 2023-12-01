@@ -13,8 +13,11 @@
 
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
+
     <main>
         {% csrf_token %}
+
         <div class="container align-row no-padding">
             <div class="sidebar">
                 <div class="sidebar-item">
@@ -35,7 +38,7 @@
                 <section id="info" class="active">
                     <h2>Profil Public</h2>
                     <div class="row dynamic-row-reverse no-spacing">
-                        <form hx-post="/change-user-info" hx-trigger="submit" hx-target="#notify" hx-swap="innerHTML">
+                        <form id="change-user-info">
                             <div class="form-control">
                                 <label for="username">Nom d'utilisateur</label>
                                 <input type="text" name="username" id="username" value="{{ user.username }}" required>
@@ -116,12 +119,9 @@
                 </section> {% endcomment %}
             </div>
         </div>
-
-        <div class="notify" id="notify"></div>
     </main>
 
     <script src="/static/js//profil/profile.js"></script>
-    <script src="/static/js/notify.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
 </body>
 </html>

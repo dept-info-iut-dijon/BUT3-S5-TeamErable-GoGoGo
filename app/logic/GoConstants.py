@@ -9,4 +9,11 @@ class GoConstants:
         Vector2(0, -1),
     ]
 
+    Corners = [
+        Vector2(1, 1),
+        Vector2(-1, 1),
+        Vector2(1, -1),
+        Vector2(-1, -1),
+    ]
+
     AllowPlayInDeadZones = False
