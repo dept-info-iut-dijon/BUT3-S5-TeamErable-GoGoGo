@@ -5,7 +5,7 @@ from ..Tile import Tile
 class Timer(ABC):
 
     @abstractmethod
-    def __init__(self, timer_data: dict):
+    def __init__(self, timer_data: dict) -> None:
         '''
         Methode du constructeur pour le minuteur
 
@@ -16,13 +16,13 @@ class Timer(ABC):
     
 
     @abstractmethod
-    def set_move(self):
+    def set_move(self) -> None:
         '''Sauvegarde le temps du nouveau placement'''
         pass
 
 
     @abstractmethod
-    def make_move(self, player: Tile):
+    def make_move(self, player: Tile) -> bool:
         '''
         Gere le calcul du temps pour chaque coup.
 
@@ -35,7 +35,7 @@ class Timer(ABC):
         pass
 
     @abstractmethod
-    def get_initial_time(self)->float:
+    def get_initial_time(self) -> float:
         '''
             Permet d'obtenir le temps depuis le dernier coup
 
@@ -45,7 +45,7 @@ class Timer(ABC):
         pass
 
     @abstractmethod
-    def get_separate_timers(self)->(int, int):
+    def get_separate_timers(self) -> tuple[int, int]:
         '''
             Permet d'obtenir l'etat des timers separes
 

@@ -4,7 +4,7 @@ from datetime import datetime
 import math
 
 class JapaneseByoyomi(Timer):
-	def __init__(self, timer_data: dict):
+	def __init__(self, timer_data: dict) -> None:
 		self._initialize_separate_timer(timer_data)
 		self.byo_yomi = timer_data['byo_yomi']
 		self.new_time = None
@@ -12,7 +12,7 @@ class JapaneseByoyomi(Timer):
 		if 'initial_time' in timer_data.keys():
 			self.initial_time = timer_data['initial_time']
 
-	def _initialize_separate_timer(self, timer_data:dict):
+	def _initialize_separate_timer(self, timer_data: dict) -> None:
 		'''
         Methode auxiliaire pour initialiser les minuteurs separes.
 
@@ -27,13 +27,13 @@ class JapaneseByoyomi(Timer):
 			self.main_time_white = timer_data['clock_value']
 		
 
-	def set_move(self):
+	def set_move(self) -> None:
 		'''Definit le timestamp du coup pour le calcul du temps.'''
 		self.new_time = datetime.now().timestamp()
 		if self.initial_time == None:
 			self.initial_time = self.new_time
 
-	def make_move(self, player:Tile)->bool:
+	def make_move(self, player:Tile) -> bool:
 		is_game_over = False
 		if self.main_time_black <= 0 and player == Tile.Black:
 			is_game_over = self._evaluate_byoyomi()
@@ -46,7 +46,7 @@ class JapaneseByoyomi(Timer):
 		print("Black"+str(self.main_time_black))
 		return is_game_over
 
-	def _evaluate_byoyomi(self)->bool:
+	def _evaluate_byoyomi(self) -> bool:
 		'''
         Evalue si la periode de byo-yomi est ecoulee.
 
@@ -72,9 +72,9 @@ class JapaneseByoyomi(Timer):
 			self.main_time_black -= self.new_time - self.initial_time
 		
 
-	def get_initial_time(self)->float:
+	def get_initial_time(self) -> float:
 		return self.initial_time
 
-	def get_separate_timers(self)->(int, int):
+	def get_separate_timers(self) -> tuple[int, int]:
 		return (self.main_time_black, self.main_time_white)
 	
