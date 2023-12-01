@@ -4,13 +4,13 @@ from functools import wraps
 from typing import Callable
 
 def login_required(f: Callable) -> Callable:
-    '''Decorator to check if the user is logged in
+    '''Décorateur permettant de valider si l'utilisateur est connecté
 
     Args:
-        f (Callable): Function to decorate
+        f (Callable): Fonction à décorer
 
     Returns:
-        Callable: Decorated function
+        Callable: Fonction décorée
     '''
     @wraps(f)
     def wrapper(request: HttpRequest, *args, **kwargs) -> Callable:
@@ -19,13 +19,13 @@ def login_required(f: Callable) -> Callable:
 
 
 def logout_required(f: Callable) -> Callable:
-    '''Decorator to check if the user is logged out
+    '''Décorateur permettant de valider si l'utilisateur est connecté
 
     Args:
-        f (Callable): Function to decorate
+        f (Callable): Fonction à décorer
 
     Returns:
-        Callable: Decorated function
+        Callable: Fonction décorée
     '''
     @wraps(f)
     def wrapper(request: HttpRequest, *args, **kwargs) -> Callable:

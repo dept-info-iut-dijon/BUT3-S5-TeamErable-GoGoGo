@@ -7,7 +7,7 @@ urlpatterns = [
     path("header-pfp", views.header_pfp, name="header_pfp"),
     path('get-pfp', views.get_pfp, name='get_pfp'),
     path("header-profile-name", views.header_profile_name, name="header_profile_name"),
-    path("", views.index, name="index"),
+    path("", views.join_game, name="index"),
     path("login", views.login_, name="login"),
     path("logout", views.logout_, name="logout"),
     path("register", views.register, name="register"),
@@ -48,6 +48,7 @@ urlpatterns = [
     path("search-current-game", views.search_current_game, name="search_current_game"),
     path("game", views.game, name="game"),
     path("game-code", views.game_code, name="game_code"),
+    path("game-view-player", views.game_view_player, name="game_view_player"),
 
 
 ]

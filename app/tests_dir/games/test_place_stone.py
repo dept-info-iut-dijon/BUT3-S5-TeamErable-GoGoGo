@@ -3,12 +3,17 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from channels.testing import WebsocketCommunicator
 from ...models import Statistic, GameConfiguration, GameParticipate, Game
-from ...logic import Tile
+from ...logic import Tile, Board
+from ...logic.rules import RuleFactory
+from ...logic.timer import TimerFactory
 from ...channels import GameJoinAndLeave
+from datetime import timedelta, datetime
 import json
 
 class PlaceStoneTestCase(TestCase):
+    '''Classe permettant de tester la creation de partie'''
     def setUp(self):
+        '''Fonction permettant de preparer le jeu de test'''
         self.client = Client()
         self.statistic = Statistic.objects.create(
             game_win=0,
@@ -30,30 +35,35 @@ class PlaceStoneTestCase(TestCase):
                                         move_list='dynamic/games/999.json', game_configuration=game_config,
                                         game_participate=game_participate)
         #Reinitialisation du json de la partie de test
-        json.dump(
-            {
-                "board": [[None]*9 for _ in range(9)], 
-                "size": [9, 9], 
-                "current-player": "\u26aa", 
-                "eaten-tiles": {"\u26aa": 0, "\u26ab": 0}, 
-                "rule": "japanese"
-            }, open('dynamic/games/999.json', 'w'))
+
+        with open('dynamic/games/999.json', 'w') as f:
+            b = Board(
+                game_config.map_size,
+                game_config.komi,
+                RuleFactory().get(game_config.counting_method),
+                game_config.byo_yomi,
+                timedelta(seconds = game_config.clock_value),
+                None,
+                TimerFactory().get(game_config.counting_method),
+                None,
+            )
+            json.dump(b.export(), f)
 
 
-    # Fonction pour creer et tester la connection a une partie
     async def connect(self, communicator, game_id, user):
+        '''Fonction pour creer et tester la connection a une partie'''
         communicator.scope['user'] = user
         communicator.scope['url_route']={'kwargs':{'game_id':game_id}}
         connected, _ = await communicator.connect()
         self.assertTrue(connected)
 
-    # Fonction pour se deconnecter et tester la deconnection d'une partie
     async def disconnect(self, communicator):
+        '''Fonction pour se deconnecter et tester la deconnection d'une partie'''
         await communicator.send_json_to({'type': 'disconnect'})
         await communicator.disconnect()
 
-    # Test du placement d'une pierre sur la grille
     async def test_placement(self):
+        '''Fonction permettant de tester le placement d\'une pierre sur le terrain'''
         game_id = self.game.id_game
         communicator = WebsocketCommunicator(GameJoinAndLeave.as_asgi(), f'/ws/game/{game_id}/')
 
@@ -72,8 +82,8 @@ class PlaceStoneTestCase(TestCase):
         # Disconnect user
         await self.disconnect(communicator)
 
-    # Test du placement alterne entre blanc et noir
     async def test_alternate_placement(self):
+        '''Fonction test du placement alterne entre blanc et noir'''
         game_id = self.game.id_game
         communicator = WebsocketCommunicator(GameJoinAndLeave.as_asgi(), f'/ws/game/{game_id}/')
         # Connection de l'utilisateur
@@ -99,5 +109,5 @@ class PlaceStoneTestCase(TestCase):
 
 
     def test_illegal(self):
-        # Implement your illegal move test logic here
+        '''Fonction permettant de tester les coups illégaux'''
         pass

@@ -1,137 +1,147 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from ...models.game import Game
-from ...models.game_configuration import GameConfiguration
+from ...models.tournament import Tournament
 from ...models.game_participate import GameParticipate
+from ...models.game_configuration import GameConfiguration
 from datetime import datetime
 import random, string, os, json
 from ...logic import Board, RuleFactory
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
 from ..code_manager import CodeManager
-from ...utils import verify_post, verify_get
+from .game_struct import GameStruct
+from .game_configuration import create_game_config
+from ...models.custom_user import CustomUser
+from datetime import timedelta
+from ...logic.timer.TimerFactory import TimerFactory
 
-
-def _delete_current_games(user):
-    '''Fonction supprimant les parties en cours d'un utilisateur
-    
-    Args:
-        user (CustomUser): l'utilisateur concerné
-    '''
-    current_games = Game.objects.filter(game_participate__in = GameParticipate.objects.filter(player1 = user)).filter(done=False).all()
-    for game in current_games:
-        if game.move_list:
-            try:
-                os.remove(game.move_list.path)
-            except:
-                pass
-        game.delete()
-
-def _create_new_game(name, description, is_private, user, code, map_size, counting_method, byo_yomi, clock_type, clock_value, komi, handicap):
+def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tournament: int) -> HttpRequest:
     '''Fonction permettant de creer une nouvelle partie
     
     Args:
-        name (str): le nom de la partie
-        description (str): la description de la partie
-        is_private (bool): boolean indiquant si la partie est privee
-        user (CustomUser): l'utilisateur concerné
+        request (HttpRequest): Requête HTTP
+        game_srtuct (GameStruct): La nouvelle partie
+        id_tournament (int): L'id du tournoi
+
+    Returns:
+        HttpRequest: La requête HTTP
     '''
+    partcipate = construct_participate(request.user.id)
+    game = construct_game(game_struct, partcipate, id_tournament)
 
-    list_str = clock_value.split(':')
-    clock_value = int(list_str[0]) * 3600 + int(list_str[1]) * 60 + int(list_str[2])
-
-    configuration = GameConfiguration.objects.create(
-        is_private = is_private,
-        map_size = map_size,
-        komi = komi,
-        counting_method = counting_method,
-        clock_type = clock_type,
-        clock_value = clock_value,
-        byo_yomi = byo_yomi,
-        handicap = handicap,
-    )
-
-    participate = GameParticipate.objects.create(
-        player1 = user,
-        player2 = None,
-        score_player1 = 0,
-        score_player2 = 0
-    )
-    
-    game = Game.objects.create(
-        name = name,
-        description = description,
-        code = code,
-        start_date = datetime.now(),
-        duration = 0,
-        done = False,
-        tournament = None,
-        game_configuration = configuration,
-        game_participate = participate,
-        )
-    
     file = f'dynamic/games/{game.id_game:X}.json'
 
     if not os.path.exists('dynamic/games'):
         os.makedirs('dynamic/games')
     with open(file, 'w') as f:
-        b = Board(map_size,komi,RuleFactory().get(counting_method))
+        b = Board(
+            int(game_struct.game_configuration.map_size),
+            float(game_struct.game_configuration.komi),
+            RuleFactory().get(game_struct.game_configuration.counting_method),
+            int(game_struct.game_configuration.byo_yomi),
+            timedelta(seconds = game.game_configuration.clock_value),
+            None,
+            TimerFactory().get(game.game_configuration.clock_type),
+            None,
+        )
         json.dump(b.export(), f)
 
     game.move_list = file
     game.save()
+
+    ret = HttpResponse(f'/game?id={game.id_game}')
+
+    return ret
+
+def construct_participate(id_player1: int, id_player2: int = None) -> GameParticipate:
+    '''Fonction permettant de construire un objet GameParticipate dans la BDD
+    
+    Args:
+        id_player1 (int): L'id du premier joueur
+        id_player2 (int): L'id du deuxième joueur ou None
+    
+    Returns:
+        GameParticipate: Un objet GameParticipate
+    '''
+    participate = GameParticipate.objects.create(
+        player1 = CustomUser.objects.get(id=id_player1),
+        player2 = CustomUser.objects.get(id=id_player2) if id_player2 is not None else None,
+        score_player1 = 0,
+        score_player2 = 0
+    )
+    return participate
+
+def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tournament: int = None) -> Game:
+    '''Fonction permettant de construire une nouvelle partie dans la BDD
+    
+    Args:
+        game_struct (GameStruct): La nouvelle partie
+        participate (GameParticipate): Les joueurs et les scores de la partie
+        id_tournament (int): L'id du tournoi ou None
+        
+    Returns:
+        Game: La nouvelle partie
+    '''
+    code = CodeManager().generate_game_code()
+    game = Game.objects.create(
+        name = game_struct.name,
+        description = game_struct.description,
+        code = code,
+        start_date = datetime.now(),
+        duration = 0,
+        done = False,
+        tournament = id_tournament,
+        game_configuration = create_game_config(game_struct.game_configuration),
+        game_participate = participate
+    )
 
     return game
 
 
 @login_required
 @request_type(RequestType.GET, RequestType.POST)
-def create_game(request: HttpRequest) -> HttpResponse:
+def create_game(request: HttpRequest, id_tournament: int = None) -> HttpResponse:
     '''Controlleur de la page de création de partie
 
     Args:
         request (HttpRequest): La requête HTTP
+        id_tournament (int): L'id du tournoi ou None
 
     Returns:
         HttpResponse: La réponse HTTP à la requête de création de partie
     '''
     ret: HttpResponse = HttpResponseNotifError('Erreur lors de la création de la partie')
+
     if request.method == RequestType.POST.value:
 
-        try:
-            name = verify_post(request, 'game-name', 'Le nom de la partie est vide.')
-            is_private = verify_post(request, 'game-private', 'Le statut de la partie n\'est pas défini.')
-            description = verify_post(request, 'game-desc', 'La description de la partie est vide.')
-            map_size = verify_post(request, 'map-size', 'La taille de la carte est vide.')
-            counting_method = verify_post(request, 'counting-method', 'La methode de comptage est vide.')
-            byo_yomi = verify_post(request, 'byo-yomi', 'Le byo-yomi est vide.')
-            clock_type = verify_post(request, 'clock-type', 'Le temps de la partie est vide.')
-            clock_value = verify_post(request, 'clock-value', 'Le temps de la partie est vide.')
-            komi = verify_post(request, 'komi', 'Le komi est vide.')
-            handicap = verify_post(request, 'handicap', 'Le handicap est vide.')
+        if (game_verif := GameStruct.verify_game(request)) and isinstance(game_verif, Exception):
+            return HttpResponseNotifError(game_verif)
+
+        elif _can_create_game(request) is False:
+            ret = HttpResponseNotifError('Trop de parties en cours. Attendez la fin de ceux-ci pour en creer une nouvelle.')
         
-        except Exception as e:
-            return HttpResponseNotifError(str(e))
-
         else:
-            try: 
-                map_size = int(map_size)
-                komi = float(komi)
-                handicap = int(handicap)
-            except:
-                return HttpResponseNotifError('Erreur : Valeur invalide')
-            
-            code_manager = CodeManager()
-            code = code_manager.generate_unique_code()
-
-            _delete_current_games(request.user)
-            
-            game = _create_new_game(name, description, is_private, request.user, code, map_size, counting_method, byo_yomi, clock_type, clock_value, komi, handicap)
-            
-            ret = HttpResponse(f'/game?id={game.id_game}')
-                
+            ret = _create_new_game(request, game_verif, id_tournament)
 
     elif request.method == RequestType.GET.value:
         ret = render(request, 'game/create_game.html')
 
     return ret
+
+def _can_create_game(request : HttpRequest) -> bool:
+    '''Fonction permettant de savoir si l'utilisateur peut creer une partie
+    
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        bool: True si l'utilisateur peut creer une partie, False sinon
+    '''
+    current_games = Game.objects.filter(game_participate__in = GameParticipate.objects.filter(player1 = request.user)).filter(done=False).all()
+
+    can_create = False
+
+    if current_games.count() < 5:
+        can_create = True
+    return can_create

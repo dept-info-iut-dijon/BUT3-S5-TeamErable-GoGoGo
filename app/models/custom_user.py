@@ -4,6 +4,7 @@ from django.db import models
 from .statistic import Statistic
 
 class CustomUser(AbstractUser):
+    '''Classe permettant de creer un utilisateur'''
     profile_picture = models.ImageField( null=True,upload_to='static/profile_pictures', blank=True)
     stat = models.ForeignKey(Statistic, on_delete=models.CASCADE, null=False)
     friends = models.ManyToManyField('self', blank=True)

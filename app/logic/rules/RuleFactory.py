@@ -1,5 +1,5 @@
 from .RuleBase import RuleBase
-from ..utils import Singleton
+from ...utils import Singleton
 
 class RuleFactory(metaclass = Singleton):
     '''Fabrique de règles de jeu.'''

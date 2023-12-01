@@ -7,20 +7,40 @@
     <title>GoGoGo • Partie</title>
     <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
     <link rel="stylesheet" href="/static/css/global.css">
-    <link rel="stylesheet" href="/static/css//game/game.css">
+    <link rel="stylesheet" href="/static/css/game/game.css">
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
+
     <main>
         {% csrf_token %}
         <input type="text" id="game-id" value="{{ id }}" hidden>
+        <input type="text" id="player-color" value="{{ color }}" hidden>
+        <input type="text" id="game-ended" value="{{ game_ended }}" hidden>
+        <input type="text" id="has-second-player" value="{{ has_second_player }}" hidden>
 
-        <div class="band transition hidden">
+        <div class="band transition hidden" id="band-win">
             <div class="center flex-column">
                 <div>
                     <div class="center flex-column">
-                        <p class="big">XXX a gagné la partie !</p>
-                        <p>YYYY (Player1) vs ZZZZ (Player2)</p>
+                        <p class="big" id="band-win-big-text">XXX a gagné la partie !</p>
+                        <p id="band-win-small-text">YYYY (Player1) vs ZZZZ (Player2)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="band transition hidden" id="band-pause">
+            <div class="center flex-column">
+                <div>
+                    <div class="center flex-column">
+                        <p class="big" id="band-pause-big-text">Partie en pause</p>
+                        <div class="row">
+                            <button class="big secondary" id="unpause-button">Reprendre la partie</button>
+                            <div class="separator"></div>
+                            <p><span id="band-pause-count">0</span> / 2</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -71,18 +91,20 @@
                     <div class="row width-fit-content">
                         <button class="margin-side" id="skip-button">Passer le Tour</button>
                         <button class="margin-side" id="give-up-button">Déclarer Forfait</button>
+                        <!-- <div class="margin-side row">
+                            <button id="pause-button">Mettre en pause</button>
+                            <p id="pause-count" class="no-margin">0 / 2</p>
+                        </div> --> <!-- TODO: Ajouter la pause au Sprint 5 -->
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="separator"></div>
-
-        <div class="notify" id="notify"></div>
     </main>
 
     <script src="/static/js/game/game.js"></script>
     <script src="/static/js/global.js"></script>
-    <script src="/static/js/notify.js"></script>
+    <script src="/static/js/game/timer.js"></script>
 </body>
 </html>

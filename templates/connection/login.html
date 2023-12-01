@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="/static/css/connection/login.css">
 </head>
 <body>
+    {% include 'reusable/notify.html' %}
+
     <div class="container">
         <div class="login">
             <form onsubmit="return validateForm()">
@@ -36,11 +38,8 @@
                 </div>
             </form>
         </div>
-
-        <div class="notify" id="notify"></div>
     </div>
 
     <script src="/static/js/connection/login.js"></script>
-    <script src="/static/js/notify.js"></script>
 </body>
 </html>

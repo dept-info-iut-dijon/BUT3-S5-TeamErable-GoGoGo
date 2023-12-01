@@ -5,7 +5,9 @@ from ...models.custom_user import CustomUser
 from ...models.statistic import Statistic
 
 class LogInTestCase(TestCase):
+    '''Classe permettant de tester la connexion d'un utilisateur'''
     def setUp(self):
+        '''Fonction permettant de preparer le jeu de test'''
         self.statistic = Statistic.objects.create(
             game_win = 0,
             game_loose = 0,
@@ -31,5 +33,6 @@ class LogInTestCase(TestCase):
         }
 
     def test_successful_login(self):
+        '''Fonction permettant de tester la connexion d'un utilisateur'''
         response = self.client.post('/login', self.login_data)
         self.assertEqual(response.status_code, 302)
