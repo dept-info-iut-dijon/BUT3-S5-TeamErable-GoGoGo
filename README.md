@@ -1,15 +1,15 @@
-<h1 align="center"><img src="./todo-image" width="64" align="center" /> TODO-TITRE: TODO-SOUSTITRE</h1>
+<h1 align="center"><img src="./static/icons/favicon.svg" width="64" align="center" /> GoGoGo</h1>
 <p align="center">
   <a href="https://github.com/dept-info-iut-dijon/BUT3-S5-TeamErable-TMP/blob/master/LICENSE">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green" target="_blank" />
   </a>
-  <img alt="Platforms: Web" src="https://img.shields.io/badge/Platforms-TODO-yellow" />
+  <img alt="Platforms: Web" src="https://img.shields.io/badge/Platforms-Web-yellow" />
 </p>
 
 ----------------------------------------------------------------------
 
 
-# Projet EtiGO - Plateforme en ligne pour les passionnés de Go
+# Projet GoGoGo - Plateforme en ligne pour les passionnés de Go
 
 L'association EtiGO, ayant rassemblé pendant plusieurs années les joueurs de Go de Dijon et de ses environs, se lance dans une initiative novatrice pour étendre son influence. Nous sommes fiers de présenter notre projet de développement d'une application web dédiée, offrant une plateforme moderne et conviviale destinée à nos membres existants et à de nouveaux joueurs.
 
@@ -68,10 +68,14 @@ Pour lancer le serveur, ouvrez un terminal ( sur la machine Python ) et executer
 
 ## Contributeurs
 
-John GAUDRY, Hugo MRULA, Matthieu THIVARD, Samuel MONTAGNA
+John GAUDRY (JohnGdr), Hugo MRULA (HuGoMrula), Matthieu THIVARD (MatthieuThivard), Samuel MONTAGNA (Synel)
+
+Tous les contributeurs sont liés à une adresse IUT, sont identifiés explicitement ci-dessus, et sont donc identifiables par les administrateurs du projet.
+
+**Dans la logique établie avec Mme MENDES lors des retours de l'alpha par la promo entière, aucun retrait de points sur les pseudos n'est censé être effectué pour ce projet, que ce soit pour un membre ou pour l'équipe entière.**
 
 [//]: contributor-faces
 
-<a href="https://github.com/JohnGdr"><img src="https://avatars.githubusercontent.com/u/104968811?v=4" title="JohnGdr" width="80" height="80"></a>   <a href="https://github.com/Lynn-Mei"><img src="https://avatars.githubusercontent.com/u/114869669?v=4" title="Lynn-Mei" width="80" height="80"></a>   <a href="https://github.com/MatthieuThivard"><img src="https://avatars.githubusercontent.com/u/104895273?v=4" title="MatthieuThivard" width="80" height="80"></a>   <a href="https://github.com/Synell"><img src="https://avatars.githubusercontent.com/u/70210528?v=4" title="Synel" width="80" height="80"></a>
+<a href="https://github.com/JohnGdr"><img src="https://avatars.githubusercontent.com/u/104968811?v=4" title="JohnGdr" width="80" height="80"></a>   <a href="https://github.com/HuGoMrula"><img src="https://avatars.githubusercontent.com/u/104894581?v=4" title="HuGoMrula" width="80" height="80"></a>   <a href="https://github.com/MatthieuThivard"><img src="https://avatars.githubusercontent.com/u/104895273?v=4" title="MatthieuThivard" width="80" height="80"></a>   <a href="https://github.com/Synell"><img src="https://avatars.githubusercontent.com/u/70210528?v=4" title="Synel" width="80" height="80"></a>
 
 [//]: contributor-faces
