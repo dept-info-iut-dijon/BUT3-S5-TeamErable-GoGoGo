@@ -20,10 +20,10 @@ class Board:
             data (dict): Données du plateau.
         '''
         self.load(data)
-        self._timer = TimerFactory.createTimer(self._timer_data)
+        self._timer = TimerFactory.create_timer(self._timer_data)
 
     @overload
-    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase], timer_data:dict) -> None:
+    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase], timer_data: dict) -> None:
         '''Initialise un plateau de jeu.
 
         Args:
@@ -47,7 +47,7 @@ class Board:
         self._history: list[Vector2] = []
 
         self._timer_data = timer_data
-        self._timer = TimerFactory.createTimer(timer_data)
+        self._timer = TimerFactory.create_timer(timer_data)
 
 
 
