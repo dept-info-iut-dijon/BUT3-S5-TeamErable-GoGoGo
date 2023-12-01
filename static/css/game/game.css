@@ -207,3 +207,8 @@ table.board > tbody > tr:last-child > td::after {
     font-size: 2rem;
     font-weight: bold;
 }
+
+p#pause-count {
+    margin: auto;
+    margin-left: 0.5rem;
+}
