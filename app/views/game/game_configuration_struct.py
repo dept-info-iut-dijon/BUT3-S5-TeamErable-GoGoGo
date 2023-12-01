@@ -16,6 +16,14 @@ class GameConfigurationStruct:
 
     @classmethod
     def verify_game_config(cls, request: HttpRequest) -> 'GameConfigurationStruct':
+        '''Fonction permettant de valider les informations de la configuration de la partie et de la renvoyer
+        
+        Args:
+            request (HttpRequest): Requête HTTP
+
+        Returns:
+            GameConfigurationStruct: La configuration de la partie
+        '''
         ret = cls(
             is_private = bool(request.POST.get('game-private')),
             map_size = verify_post(request, 'map-size', 'La taille de la carte est vide.'),
