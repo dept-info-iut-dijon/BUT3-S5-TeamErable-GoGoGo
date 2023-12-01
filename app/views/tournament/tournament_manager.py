@@ -186,7 +186,16 @@ def _get_winner(player1:CustomUser, player2:CustomUser, curr_game_participate:Ga
 
 @login_required
 def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
+    '''
+        Permet de rejoindre un tournois
 
+        Args:
+            request (HttpRequest): Requete Http
+            id_tournament (int): id du tournois
+
+        Returns:
+            HttpResponse: Reponse Http confirmant ou non que l'on a rejoint le tournois
+    '''
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
     if tournament.ongoing() == True: 
@@ -208,14 +217,23 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
 
 @login_required
 def tournament_player_list(request: HttpRequest) -> HttpResponse:
+    '''
+        Permet de lister les joueurs du tournois
 
+        Args:
+            request (HttpRequest): Requete Http
+
+        Returns:
+            HttpResponse: Reponse Http contenant la liste
+    '''
+    ret = HttpResponseBadRequest()
     if request.method == 'GET':
         if (id_tournament := request.GET.get('id')) is None: return HttpResponseNotifError('Une erreur est survenue')
         try:
             tournament = Tournament.objects.get(id = id_tournament)
             listplayers = CustomUser.objects.filter(participatetournament__tournament__id = id_tournament).all()
-            return render(request, 'reusable/tournament_player_list.html', {'players': listplayers, 'tournament_unstarted': (not tournament.ongoing()) and tournament.creator.id == request.user.id})
+            ret = render(request, 'reusable/tournament_player_list.html', {'players': listplayers, 'tournament_unstarted': (not tournament.ongoing()) and tournament.creator.id == request.user.id})
         
-        except: return HttpResponseNotifError('Une erreur est survenue')
+        except: ret = HttpResponseNotifError('Une erreur est survenue')
 
-    return HttpResponseBadRequest()
+    return ret
