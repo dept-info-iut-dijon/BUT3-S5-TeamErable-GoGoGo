@@ -2,20 +2,22 @@
 const base_url = window.location.hostname + ":" + window.location.port + "/";
 const game_id = document.querySelector("#game-id").value;
 const websocket = new WebSocket("ws://" + base_url + "game/" + game_id + "/");
+const player_color = document.querySelector("#player-color").value;
+const game_ended = document.querySelector("#game-ended").value === "True" ? true : false;
 
 
 
 websocket.onopen = function(event) {
     websocket.send(JSON.stringify({
         'type': 'connect',
-        'data': 'hello server'
+        'data': null
     }));
 }
 
 websocket.onclose = function(event) {
     websocket.send(JSON.stringify({
         'type': 'disconnect',
-        'data': 'bye server'
+        'data': null
     }));
 }
 
@@ -42,6 +44,10 @@ websocket.onmessage = function(event) {
 
         case 'eaten-tiles':
             receivedEatenTiles(data);
+            break;
+
+        case 'timers':
+            receivedTimers(data);
             break;
 
         case 'end-game':
@@ -145,6 +151,16 @@ function receivedEatenTiles(data) {
     score_black.innerHTML = eaten.b;
 }
 
+function receivedTimers(data) {
+    let timers = JSON.parse(data);
+
+    let timer_white = document.querySelector("#timer-white");
+    let timer_black = document.querySelector("#timer-black");
+
+    timer_white.innerHTML = timers.w;
+    timer_black.innerHTML = timers.b;
+}
+
 function receivedEndGame(data) {
     let parsed_data = JSON.parse(data);
 
@@ -183,8 +199,16 @@ document.querySelectorAll(".stone").forEach((element) => {
 const board = document.querySelector(".board");
 const action_buttons = document.querySelector("#action-buttons");
 
+function getCanPlay() {
+    return board.classList.contains("can-play");
+}
+
+function getOpponentColor() {
+    return player_color === "white" ? "black" : "white";
+}
+
 function play(element) {
-    if (board.classList.contains("can-play")) {
+    if (getCanPlay()) {
         websocket.send(JSON.stringify({
             'type': 'play',
             'data': element.attributes.x.value + ";" + element.attributes.y.value
@@ -208,6 +232,15 @@ function giveUp() {
 
 document.querySelector("#skip-button").addEventListener("click", skip);
 document.querySelector("#give-up-button").addEventListener("click", giveUp);
+
+
+
+function checkState() {
+    websocket.send(JSON.stringify({
+        'type': 'check-state',
+        'data': null
+    }));
+}
 
 
 

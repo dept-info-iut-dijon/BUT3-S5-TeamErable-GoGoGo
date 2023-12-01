@@ -1,14 +1,12 @@
 function getTimerElement(color) {
     // Récupérer l'élément par son ID
     var countdownElement = document.querySelector("#timer-" + color);
-    updateCountdown(countdownElement);
+    return updateCountdown(countdownElement);
 }
 
 
 // Fonction pour mettre à jour le temps
 function updateCountdown(countdownElement) {
-
-
     // Récupérer la valeur du temps actuel au format "hh:mm:ss"
     var currentTime = countdownElement.innerText;
     var timeArray = currentTime.split(":");
@@ -34,6 +32,8 @@ function updateCountdown(countdownElement) {
 
     // Mettre à jour l'élément avec la nouvelle valeur
     countdownElement.innerText = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
+
+    return seconds <= 0 && minutes <= 0 && hours <= 0;
 }
 
 // Fonction pour formater le temps (ajouter un zéro devant si nécessaire)
@@ -43,5 +43,8 @@ function formatTime(time) {
 
 // Exécuter la fonction updateCountdown toutes les secondes
 setInterval( function() {
-    getTimerElement("white");
+    if (!game_ended) {
+        let timed_out = getTimerElement(getCanPlay() ? player_color : getOpponentColor());
+        if (timed_out) checkState();
+    }
 }, 1000);

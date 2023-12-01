@@ -16,7 +16,12 @@ class ChineseByoyomi(TimerBase):
 
 
 	def play(self, tile: Tile) -> None:
-		pass
+		delta = datetime.now() - self._last_action_time
+		self._player_time[tile] -= delta
+
+		self._player_time[tile] += timedelta(seconds = 60)
+
+		self.update_last_action_time()
 
 
 TimerFactory().register(ChineseByoyomi)

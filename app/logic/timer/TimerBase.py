@@ -82,7 +82,7 @@ class TimerBase(ABC):
     @property
     def timed_out(self) -> Tile | None:
         for t in Tile:
-            if self._player_time[t] <= timedelta():
+            if self._player_time[t] - self.last_action_time_diff <= timedelta(seconds = 0):
                 return t
         return None
 
