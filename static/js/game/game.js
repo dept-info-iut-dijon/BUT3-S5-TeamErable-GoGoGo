@@ -3,11 +3,14 @@ const base_url = window.location.hostname + ":" + window.location.port + "/";
 const game_id = document.querySelector("#game-id").value;
 const websocket = new WebSocket("ws://" + base_url + "game/" + game_id + "/");
 const player_color = document.querySelector("#player-color").value;
-const game_ended = document.querySelector("#game-ended").value === "True" ? true : false;
+let game_ended = document.querySelector("#game-ended").value === "True" ? true : false;
 const has_second_player_element = document.querySelector("#has-second-player");
 
 
-
+/**
+ * Envoie un message de connexion au serveur
+ * @param {string} event Event reçu par le serveur
+ */
 websocket.onopen = function(event) {
     websocket.send(JSON.stringify({
         'type': 'connect',
@@ -15,6 +18,10 @@ websocket.onopen = function(event) {
     }));
 }
 
+/**
+ * Envoie un message de déconnexion au serveur
+ * @param {string} event Event reçu par le serveur
+ */
 websocket.onclose = function(event) {
     websocket.send(JSON.stringify({
         'type': 'disconnect',
@@ -22,6 +29,10 @@ websocket.onclose = function(event) {
     }));
 }
 
+/**
+ * Envoie un message au serveur lorsqu'une touche est pressée
+ * @param {string} event Event reçu par le serveur
+ */
 websocket.onmessage = function(event) {
     let raw_data = JSON.parse(event.data);
     let type = raw_data.type;
@@ -29,42 +40,47 @@ websocket.onmessage = function(event) {
 
     switch(type) {
         case 'connect':
-            receivedConnect(data);
-            break;
+            receivedConnect(data); break;
 
         case 'disconnect':
             break; // Ne fait rien pour l'instant, mais on pourrait afficher une notification
 
         case 'play':
-            receivedPlay(data);
-            break;
+            receivedPlay(data); break;
 
         case 'can-play':
-            receivedCanPlay(data);
-            break;
+            receivedCanPlay(data); break;
 
         case 'eaten-tiles':
-            receivedEatenTiles(data);
-            break;
+            receivedEatenTiles(data); break;
 
         case 'timers':
-            receivedTimers(data);
-            break;
+            receivedTimers(data); break;
 
         case 'end-game':
-            receivedEndGame(data);
-            break;
+            receivedEndGame(data); break;
+
+        case 'pause-count':
+            receivedPauseCount(data); break;
+
+        case 'pause':
+            receivedPause(data); break;
+
+        case 'unpause':
+            receivedUnpause(data); break;
 
         case 'error':
-            notify('<p class="error">' + data + '</p>');
-            break;
+            notify('<p class="error">' + data + '</p>'); break;
 
         default:
-            console.log("unknown message type: ", type);
-            break;
+            console.log("unknown message type: ", type); break;
     }
 }
 
+/**
+ * Message de connexion reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
 function receivedConnect(data) {
     has_second_player_element.value = "True";
 
@@ -91,6 +107,11 @@ function receivedConnect(data) {
     request.send(formData);
 }
 
+/**
+ * Parse les données reçues par le serveur lors d'un coup
+ * @param {string} stringData Données reçues par le serveur
+ * @param {function} callback Fonction à appeler pour chaque coordonnée
+*/
 function parseReceivedPlayData(stringData, callback) {
     let list = stringData.split("\n");
     for (let i = 0; i < list.length; i++) {
@@ -104,6 +125,10 @@ function parseReceivedPlayData(stringData, callback) {
     }
 }
 
+/**
+ * Message de coup reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
 function receivedPlay(data) {
     let changes = JSON.parse(data);
 
@@ -133,6 +158,10 @@ function receivedPlay(data) {
     });
 }
 
+/**
+ * Message de jeu reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
 function receivedCanPlay(data) {
     if (data === true) {
         board.classList.add("can-play");
@@ -144,6 +173,10 @@ function receivedCanPlay(data) {
     }
 }
 
+/**
+ * Message de pierres mangées reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
 function receivedEatenTiles(data) {
     let eaten = JSON.parse(data);
 
@@ -154,6 +187,10 @@ function receivedEatenTiles(data) {
     score_black.innerHTML = eaten.b;
 }
 
+/**
+ * Message de timers reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
 function receivedTimers(data) {
     let timers = JSON.parse(data);
 
@@ -164,16 +201,22 @@ function receivedTimers(data) {
     timer_black.innerHTML = timers.b;
 }
 
+/**
+ * Message de fin de partie reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
 function receivedEndGame(data) {
+    game_ended = true;
+
     let parsed_data = JSON.parse(data);
 
     let winner = parsed_data.winner;
     let points = parsed_data.points;
 
-    let end_game_modal = document.querySelector(".band");
+    let end_game_modal = document.querySelector("#band-win");
 
-    let winner_text = end_game_modal.querySelector("#band-big-text");
-    let points_text = end_game_modal.querySelector("#band-small-text");
+    let winner_text = end_game_modal.querySelector("#band-win-big-text");
+    let points_text = end_game_modal.querySelector("#band-win-small-text");
 
     if (winner === "w") {
         winner_text.innerHTML = `Les blancs (${points[winner].username}) ont gagné la partie !`;
@@ -191,8 +234,35 @@ function receivedEndGame(data) {
     end_game_modal.classList.remove("hidden");
 }
 
+/**
+ * Message de compteur de pause reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
+function receivedPauseCount(data) {
+    let element = document.querySelector("#band-pause-count");
+    element.innerHTML = data;
+}
+
+/**
+ * Message de pause reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
+function receivedPause(data) {
+    let element = document.querySelector("#band-pause");
+    if (element.classList.contains("hidden")) element.classList.remove("hidden");
+}
+
+/**
+ * Message de reprise reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
+function receivedUnpause(data) {
+    let element = document.querySelector("#band-pause");
+    if (!element.classList.contains("hidden")) element.classList.add("hidden");
+}
 
 
+// Place une pierre sur le plateau si on clique dessus et qu'on peut jouer
 document.querySelectorAll(".stone").forEach((element) => {
     element.addEventListener("click", () => {
         play(element);
@@ -202,14 +272,26 @@ document.querySelectorAll(".stone").forEach((element) => {
 const board = document.querySelector(".board");
 const action_buttons = document.querySelector("#action-buttons");
 
+/**
+ * Renvoie si on peut jouer ou non
+ * @returns {boolean} Si on peut jouer ou non
+ */
 function getCanPlay() {
     return board.classList.contains("can-play");
 }
 
+/**
+ * Renvoie la couleur de l'adversaire
+ * @returns {string} Couleur de l'adversaire
+ */
 function getOpponentColor() {
     return player_color === "white" ? "black" : "white";
 }
 
+/**
+ * Joue un coup
+ * @param {HTMLElement} element Élément sur lequel on a cliqué
+ */
 function play(element) {
     if (getCanPlay()) {
         websocket.send(JSON.stringify({
@@ -219,6 +301,9 @@ function play(element) {
     }
 }
 
+/**
+ * Envoie un message pour passer son tour
+ */
 function skip() {
     websocket.send(JSON.stringify({
         'type': 'skip',
@@ -226,6 +311,9 @@ function skip() {
     }));
 }
 
+/**
+ * Envoie un message pour abandonner
+ */
 function giveUp() {
     websocket.send(JSON.stringify({
         'type': 'give-up',
@@ -233,11 +321,35 @@ function giveUp() {
     }));
 }
 
+/**
+ * Envoie un message demander à mettre en pause
+ */
+function askPause() {
+    websocket.send(JSON.stringify({
+        'type': 'pause',
+        'data': null
+    }));
+}
+
+/**
+ * Envoie un message demander à reprendre
+ */
+function askUnpause() {
+    websocket.send(JSON.stringify({
+        'type': 'unpause',
+        'data': null
+    }));
+}
+
 document.querySelector("#skip-button").addEventListener("click", skip);
 document.querySelector("#give-up-button").addEventListener("click", giveUp);
+// document.querySelector("#pause-button").addEventListener("click", askPause); // TODO: Ajouter la pause au sprint 5
+// document.querySelector("#unpause-button").addEventListener("click", askUnpause); // TODO: Ajouter la pause au sprint 5
 
 
-
+/**
+ * Envoie un message pour update l'état de la partie
+ */
 function checkState() {
     websocket.send(JSON.stringify({
         'type': 'check-state',
@@ -249,6 +361,9 @@ function checkState() {
 
 const code = document.querySelector("#code");
 
+/**
+ * Affiche ou cache le code
+ */
 function toggleCodeVisibility() {
     let checked = document.querySelector("#show-code").querySelector("input[type=checkbox]").checked;
     if (checked) code.classList.remove("opacity-0");
