@@ -5,14 +5,23 @@
                 <img class="pfp" src="/get-pfp?id={{ player.id }}" alt="">
                 <div class="little-stone {{ color }}"></div>
             </div>
-            <p class="name">{{ player.username }}</p>
+            <div class="name-container">
+                <p class="name">{{ player.username }}</p>
+                <p class="timer" id="timer-{{ color }}">{{ timer }}</p>
+            </div>
+            
         {% else %}
             <div>
                 <img class="pfp" src="/static/icons/profile.png" alt="">
                 <div class="little-stone {{ color }}"></div>
             </div>
-            <p class="name">???</p>
+            <div class="name-container">
+                <p class="name">???</p>
+                <p class="timer" id="timer-{{ color }}">{{ timer }}</p>
+            </div>
+            
         {% endif %}
+        
     </div>
     <div class="separator"></div>
     <div class="row score-group">
