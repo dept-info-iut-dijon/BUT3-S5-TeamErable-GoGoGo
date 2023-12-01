@@ -36,6 +36,10 @@ def game(request: HttpRequest) -> HttpResponse:
             game_inst.game_participate.player2 = request.user
             game_inst.game_participate.save()
 
+            board = GameStorage.load_game(game_inst.move_list.path)
+            board.init_start()
+            GameStorage.save_game(game_inst.move_list.path, board)
+
         if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 != request.user: return HttpResponseRedirect('/')
 
         ret = game_view(request, game_inst)
@@ -70,6 +74,10 @@ def game_code(request: HttpRequest) -> HttpResponse:
             game_inst.game_participate.player2 = request.user
             game_inst.game_participate.save()
 
+            board = GameStorage.load_game(game_inst.move_list.path)
+            board.init_start()
+            GameStorage.save_game(game_inst.move_list.path, board)
+
         if game_inst.game_participate.player1 != request.user and game_inst.game_participate.player2 != request.user: return HttpResponseNotifError('Vous n\'êtes pas autorisé à rejoindre la partie.')
 
         ret = HttpResponse(f'/game?id={game_inst.id_game}')
@@ -94,6 +102,8 @@ def game_view_players(request: HttpRequest, game: Game, board: Board, players: l
     player1_color = Tile.White if player1 == game.game_participate.player1 else Tile.Black
     player2_color = Tile.White if player2 == game.game_participate.player1 else Tile.Black
 
+    game_started = game.game_participate.player2 is not None
+
     player1_html = render(
         request,
         'reusable/game_player.html',
@@ -102,7 +112,7 @@ def game_view_players(request: HttpRequest, game: Game, board: Board, players: l
             'color': player1_color.value.color,
             'other_color': player2_color.value.color,
             'score': board.get_eaten_tiles(player1_color),
-            'timer': time2str(board.player_time[player1_color]),
+            'timer': time2str(board.player_time[player1_color] if game_started else board.initial_time),
         }
     ).content.decode('utf-8')
 
@@ -114,7 +124,7 @@ def game_view_players(request: HttpRequest, game: Game, board: Board, players: l
             'color': player2_color.value.color,
             'other_color': player1_color.value.color,
             'score': board.get_eaten_tiles(player2_color),
-            'timer': time2str(board.player_time[player2_color]),
+            'timer': time2str(board.player_time[player2_color] if game_started else board.initial_time),
         }
     ).content.decode('utf-8')
 
@@ -149,6 +159,7 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
     )
 
     color = Tile.White if request.user == game.game_participate.player1 else Tile.Black
+    has_second_player = game.game_participate.player2 is not None
 
     return render(
         request,
@@ -156,6 +167,7 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
         {
             'id': game.id_game,
             'color': color.value.color,
+            'has_second_player': has_second_player,
             'game_ended': board.ended,
             'board': [
                 [

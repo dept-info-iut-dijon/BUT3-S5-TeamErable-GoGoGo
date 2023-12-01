@@ -19,7 +19,7 @@ class ChineseByoyomi(TimerBase):
 		delta = datetime.now() - self._last_action_time
 		self._player_time[tile] -= delta
 
-		self._player_time[tile] += timedelta(seconds = 60)
+		self.add_time(tile, self._byo_yomi)
 
 		self.update_last_action_time()
 

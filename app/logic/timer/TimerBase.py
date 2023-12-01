@@ -17,7 +17,7 @@ class TimerBase(ABC):
         '''
         self._board = board
         self._byo_yomi = byo_yomi
-        self._initial_time = initial_time
+        self._initial_time = timedelta(seconds = initial_time.total_seconds())
         self._player_time = player_time if player_time is not None else {t: timedelta(seconds = initial_time.total_seconds()) for t in Tile}
         self._last_action_time = last_action_time if last_action_time is not None else datetime.now()
 
@@ -41,7 +41,7 @@ class TimerBase(ABC):
         return self._byo_yomi
 
     @property
-    def time(self) -> timedelta:
+    def initial_time(self) -> timedelta:
         '''Temps total.
 
         Returns:
@@ -127,11 +127,13 @@ class TimerBase(ABC):
         pass
 
 
-    def add_time(self, tile: Tile, time: timedelta) -> None:
+    def add_time(self, tile: Tile, time: timedelta | float | int) -> None:
         '''Ajoute du temps a un joueur.
 
         Args:
             tile (Tile): Couleur du joueur.
             time (timedelta): Temps a ajouter.
         '''
-        self._player_time[tile] += time
+        if isinstance(time, timedelta):
+            self._player_time[tile] += time
+        self._player_time[tile] += timedelta(seconds = time)
