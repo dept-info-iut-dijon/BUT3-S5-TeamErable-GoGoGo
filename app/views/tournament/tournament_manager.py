@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import FileResponse, HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from ...models.tournament import Tournament, ParticipateTournament
@@ -5,12 +6,12 @@ from ...models.game import Game
 from django.contrib.auth import get_user_model
 import datetime, os, json
 from ...logic import Board
-from app.models import Game
+from app.models import Game, GameParticipate
 from app.models import CustomUser
 from ..decorators import login_required
 from ...http import HttpResponseNotifError
 
-def has_game_happened(tournament_games:list[Game], player1:CustomUser, player2:CustomUser)->Game:
+def has_game_happened(tournament_games:list[Game], player1:CustomUser, player2:CustomUser)->GameParticipate:
     '''
         Verifie si la partie a eut lieu
         Args:
@@ -19,12 +20,24 @@ def has_game_happened(tournament_games:list[Game], player1:CustomUser, player2:C
             player2 (CustomUser): le joueur 2 de la partie concernee
 
         Returns:
-            Game: la partie ou None si elle n'existe pas
+            GameParticipate: les lien de participation ou None si elle n'existe pas
     '''
     ret = None
+
     for game in tournament_games:
-        if (game.player1 == player1 and game.player2 == player2) or (game.player1 == player2 and game.player2 == player1):
-            ret = game
+        game_participate = GameParticipate.objects.filter(
+            Q(id_game_participate=game.game_participate_id) &
+            (Q(player1=player1) | Q(player1=player2)) &
+            (Q(player2=player1) | Q(player2=player2))
+        )
+        if game_participate.count() == 1:
+            ret = game_participate
+            break
+
+    if(player1 != None and player2 != None):
+        print(player1.username + " VS " + player2.username + ":")
+        print(game_participate)
+        #print(str(player1.username) + " VS " str(player2.username) + " : " + str(ret))
     return ret
 
 """def create_tournament_game(tournament, player1, player2):
@@ -69,6 +82,7 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
     participants = get_tournament_participants(tournament)
     games = Game.objects.filter(tournament=tournament)
     tournament_games = generate_tournament_tree(participants, games)
+    print(tournament_games)
     context = {
         'tournament': tournament,
         'organisator': user,
@@ -127,10 +141,13 @@ def generate_tournament_tree(participants:list[CustomUser], games:list[Game])->l
         next_round = []
 
         for match in current_round:
-            curr_game = has_game_happened(games, match[0], match[1])
-            player1, player2 = get_player_status(match[0], match[1], curr_game)
-            next_round.append(curr_game.winner) if curr_game else next_round.append(None)
-            tournament_games[round_iter].append((player1, player2, curr_game))
+            curr_game_participate = has_game_happened(games, match[0], match[1])
+            winner = get_winner(match[0], match[1], curr_game_participate)
+            if winner != None : 
+                next_round.append(match[winner])
+            else:
+                next_round.append(None)
+            tournament_games[round_iter].append((match[0], match[1], winner))
 
         lone_member = handle_lone_member(lone_member, next_round, current_round)
         current_round = create_next_round(next_round, lone_member)
@@ -192,28 +209,30 @@ def create_next_round(next_round:list[CustomUser], lone_member:CustomUser)->list
         current_round = [(next_round[i - 1], next_round[i]) for i in range(1, len(next_round), 2)]
     return current_round
 
-def get_player_status(player1:CustomUser, player2:CustomUser, curr_game:Game)-> bool:
+def get_winner(player1:CustomUser, player2:CustomUser, curr_game_participate:GameParticipate)-> bool:
     '''
-        Permet d'obtenir le status gagnant d'un joueur par rapport a une partie
+        Permet d'obtenir le gagnant d'une partie
 
         Args:
             player1 (CustomUser): le joueur 1
             player2 (CustomUser): le joueur 2
-            curr_game (Game): la partie 
+            curr_game (Game): le lien de participation a la partie 
         
         Returns:
             bool: status des joueurs 1 et 2
     '''
-    player1_status = [player1, False]
-    player2_status = [player2, False]
+    winner=None
 
-    if curr_game:
-        if str(curr_game.winner) == str(player1.username):
-            player1_status[1] = True
-        elif str(curr_game.winner) == str(player2.username):
-            player2_status[1] = True
+    if curr_game_participate != None and curr_game_participate[0]:
+        score_player1 = curr_game_participate[0].score_player1
+        score_player2 = curr_game_participate[0].score_player2
 
-    return player1_status, player2_status
+        if score_player1 > score_player2:
+            winner = 0
+        elif score_player2 > score_player1:
+            winner = 1
+
+    return winner
     
 
 @login_required
