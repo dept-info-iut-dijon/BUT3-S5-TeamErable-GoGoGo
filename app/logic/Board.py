@@ -4,10 +4,10 @@ from .Tile import Tile
 from .Island import Island
 from ..exceptions import InvalidMoveException
 from .GoConstants import GoConstants
-from .RuleBase import RuleBase
-from .RuleFactory import RuleFactory
-from .timer.TimerFactory import TimerFactory
+from .rules import RuleBase, RuleFactory
+from .timer import TimerBase, TimerFactory
 from .Grid import Grid
+from datetime import timedelta
 
 class Board:
     '''Plateau de jeu.'''
@@ -20,10 +20,9 @@ class Board:
             data (dict): Données du plateau.
         '''
         self.load(data)
-        self._timer = TimerFactory.create_timer(self._timer_data)
 
     @overload
-    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase], timer_data: dict) -> None:
+    def __init__(self, size: int, komi: float, rule_cls: type[RuleBase], byo_yomi: int, time: timedelta, player_time: dict[Tile, timedelta] | None, timer_cls: type[TimerBase]) -> None:
         '''Initialise un plateau de jeu.
 
         Args:
@@ -32,22 +31,19 @@ class Board:
             rule_cls (type[RuleBase]): Classe de la règle.
         '''
         self._grid = Grid(size)
-        self._rule: RuleBase = rule_cls(self)
+        self._rule: RuleBase = rule_cls(self, komi)
         self._current_player = Tile.White
 
         self._eaten_tiles = {}
         for tile in Tile:
             self._eaten_tiles[tile] = 0
 
-        self._komi = komi
-
         self._ended: bool = False
         self._skip_list: list[Tile] = []
         self._illegal_moves: list[Vector2] = []
         self._history: list[Vector2] = []
 
-        self._timer_data = timer_data
-        self._timer = TimerFactory.create_timer(timer_data)
+        self._timer = timer_cls(self, byo_yomi, time, player_time)
 
 
 
@@ -81,19 +77,35 @@ class Board:
 
     @property
     def komi(self) -> float:
-        return self._komi
+        return self._rule.komi
+
+    @property
+    def byo_yomi(self) -> int:
+        return self._timer._byo_yomi
+
+    @property
+    def time(self) -> timedelta:
+        return self._timer.time
+
+    @property
+    def player_time(self) -> dict[Tile, timedelta]:
+        return self._timer.player_time
 
     @property
     def history(self) -> list[Vector2]:
         return self._history.copy()
-    
+
     @property
     def skip_list(self) -> list[Tile]:
         return self._skip_list.copy()
-    
+
     @property
     def illegal_moves(self) -> list[Vector2]:
         return self._illegal_moves.copy()
+
+    @property
+    def timer(self) -> TimerBase:
+        return self._timer
 
 
     def get(self, coords: Vector2) -> Tile:
@@ -156,6 +168,7 @@ class Board:
 
         has_eaten = False
 
+        # Vérifie si le coup mange des pions
         for neightbor in self.get_neighbors(coords):
             if self._grid.is_outside(neightbor): continue
 
@@ -169,6 +182,7 @@ class Board:
                     self.set(c, None)
                     ret[None].append(c)
 
+        # Si le coup ne mange pas de pions, vérifie si l'île est entourée
         if not has_eaten:
             island = self._grid.get_island_from_coords(coords)
             if self._grid.is_island_surronded(island):
@@ -196,9 +210,7 @@ class Board:
         if game_over:
             self.end_game()
 
-
-        # if len(ret) == 1: # todo: finish this
-        #     self._illegal_moves = [ret[0]]
+        # Définie les coups illégaux si un seul pion est mangé
         if len(ret[None]) == 1:
             self._illegal_moves = [ret[None][0]]
 
@@ -289,8 +301,13 @@ class Board:
             Tile.from_value(k): v
             for k, v in data.get('eaten-tiles', {t.value.value: 0 for t in Tile}).items()
         }
-        self._rule = RuleFactory().get(data.get('rule', 'chinese'))(self)
-        self._komi = data.get('komi', 0.5)
+
+        rule_data = data.get('rule', {'key': 'chinese', 'komi': 6.5})
+        self._rule = RuleFactory().get(rule_data.get('rule', 'chinese'))(
+            self,
+            rule_data.get('komi', 6.5),
+        )
+
         self._ended = data.get('ended', False)
         self._skip_list = [Tile.from_value(t) for t in data.get('skip-list', [])]
         self._illegal_moves = [
@@ -301,7 +318,16 @@ class Board:
             Vector2(*pos) if pos else None
             for pos in data.get('history', [])
         ]
-        self._timer_data = data.get('timer_data', {})
+
+        timer_data = data.get('timer', {'key': 'chinese', 'time': 3600, 'byo_yomi': 30})
+        self._timer = TimerFactory().get(timer_data.get('key', 'chinese'))(
+            self,
+            timer_data.get('byo_yomi', 30),
+            timedelta(seconds = timer_data.get('time', 3600)),
+            {
+                Tile.from_value(k): timedelta(seconds = v) for k, v in timer_data.get('player_time', {}).items()
+            }
+        )
 
 
     def export(self) -> dict:
@@ -325,13 +351,12 @@ class Board:
                 str(tile): self._eaten_tiles[tile]
                 for tile in Tile
             },
-            'rule': self._rule.key,
-            'komi': self._komi,
+            'rule': self._rule.export(),
             'ended': self._ended,
             'skip-list': [str(tile) for tile in self._skip_list],
             'illegal-moves': [[pos.x, pos.y] if pos else None for pos in self._illegal_moves],
             'history': [[pos.x, pos.y] if pos else None for pos in self._history],
-            'timer_data': self._timer_data
+            'timer': self._timer.export(),
         }
 
 
@@ -342,7 +367,15 @@ class Board:
             Board: Copie du plateau de jeu.
         '''
 
-        b = Board(self.size.x, self._komi, self._rule.__class__, self._timer_data)
+        b = Board(
+            self.size.x,
+            self.komi,
+            self._rule.__class__,
+            self.byo_yomi,
+            timedelta(seconds = self.time.total_seconds()),
+            {k: timedelta(seconds = v.total_seconds()) for k, v in self.player_time.items()},
+            self._timer.__class__
+        )
         b._grid = Grid.from_list([row.copy() for row in self._grid])
         b._current_player = self._current_player
         b._eaten_tiles = self._eaten_tiles.copy()
