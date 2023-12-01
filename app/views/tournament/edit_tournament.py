@@ -22,7 +22,7 @@ def edit_tournament(request: HttpRequest, id_tournament: int) -> HttpResponse:
     '''
     ret: HttpResponse = HttpResponseNotifError('Erreur lors de la modification du tournois')
     
-    if (tournament := can_create_tournament(id_tournament)) is None:
+    if (tournament := can_edit_tournament(id_tournament)) is None:
         ret = HttpResponse(f'/tournament?id={tournament.id}')
 
     elif request.method == RequestType.POST.value:
@@ -88,8 +88,8 @@ def edit_tournament_post(request: HttpRequest, tournament: Tournament) -> HttpRe
     
     return ret
 
-def can_create_tournament(id_tournament: int) -> Tournament:
-    '''Fonction permettant de savoir si un tournoi peut être créé
+def can_edit_tournament(id_tournament: int) -> Tournament:
+    '''Fonction permettant de savoir si un tournoi peut être modifié
 
     Args:
         id_tournament (int): L'id du tournoi
