@@ -9,7 +9,17 @@ from .tournament_struct import TournamentStruct
 
 @login_required
 def create_tournament_game(request: HttpRequest, idplayer1:int, idplayer2: int, tournament: TournamentStruct) -> HttpResponse:
+    '''Fonction permettant de creer une nouvelle partie dans le tournoi
 
+    Args:
+        request (HttpRequest): Requête HTTP
+        idplayer1 (int): L'id du premier joueur
+        idplayer2 (int): L'id du deuxième joueur
+        tournament (TournamentStruct): Le tournoi
+
+    Returns:
+        HttpResponse: La requête HTTP
+    '''
     player1 = CustomUser.objects.get(id=idplayer1)
     player2 = CustomUser.objects.get(id=idplayer2)
     game_name = f'{player1.username} vs {player2.username}'

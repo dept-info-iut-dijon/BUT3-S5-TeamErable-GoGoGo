@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from ..models.custom_user import CustomUser
 
 class ResetPasswordForm(forms.Form):
+	'''Classe permettant de creer un formulaire de reinitialisation du mot de passe'''
 	class Meta:
 		model = CustomUser
 		fields = ['password1', 'password2'] 

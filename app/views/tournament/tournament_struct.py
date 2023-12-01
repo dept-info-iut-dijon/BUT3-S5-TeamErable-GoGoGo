@@ -16,6 +16,14 @@ class TournamentStruct:
 
     @classmethod
     def verify_tournament(cls, request: HttpRequest) -> Union["TournamentStruct", Exception]:
+        '''Fonction permettant de valider les informations du tournoi et de la renvoyer
+
+        Args:
+            request (HttpRequest): Requête HTTP
+
+        Returns:
+            TournamentStruct: Le tournoi ou l'exception
+        '''
         ret = None
         try: 
             game_config = GameConfigurationStruct.verify_game_config(request)
