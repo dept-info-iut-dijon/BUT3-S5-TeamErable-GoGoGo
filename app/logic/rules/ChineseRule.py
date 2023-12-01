@@ -1,5 +1,5 @@
-from ..RuleBase import RuleBase, Board, Tile
-from ..RuleFactory import RuleFactory
+from .RuleBase import RuleBase, Board, Tile
+from .RuleFactory import RuleFactory
 from .JapaneseRule import JapaneseRule
 from ..Vector2 import Vector2
 
@@ -8,8 +8,8 @@ class ChineseRule(RuleBase):
 
     key: str = 'chinese'
 
-    def __init__(self, board: Board) -> None:
-        super().__init__(board)
+    def __init__(self, board: Board, komi: float) -> None:
+        super().__init__(board, komi)
 
     def count_points(self) -> dict[Tile, float]:
         '''Compte les points selon la règle chinoise.
@@ -23,7 +23,7 @@ class ChineseRule(RuleBase):
             dict[Tile, int]: Points des joueurs.
         '''
         
-        total = JapaneseRule(self.board).count_points()
+        total = JapaneseRule(self.board, self.komi).count_points()
 
         checked: list[list[bool]] = [[False for _ in range(self.board.size.x)] for _ in range(self.board.size.y)]
 

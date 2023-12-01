@@ -1,13 +1,13 @@
-from ..RuleBase import RuleBase, Board, Tile
-from ..RuleFactory import RuleFactory
+from .RuleBase import RuleBase, Board, Tile
+from .RuleFactory import RuleFactory
 
 class JapaneseRule(RuleBase):
     '''Règle japonaise.'''
 
     key: str = 'japanese'
 
-    def __init__(self, board: Board) -> None:
-        super().__init__(board)
+    def __init__(self, board: Board, komi: float) -> None:
+        super().__init__(board, komi)
 
     def count_points(self) -> dict[Tile, float]:
         '''Compte les points selon la règle japonaise.
@@ -43,7 +43,6 @@ class JapaneseRule(RuleBase):
                         if self.board.get(pion) == None: 
                             score_black += 1
 
-        print(score_black, score_white, death_pionts_black, death_pionts_white, self.board.komi)
         score_black -= death_pionts_black
         score_white -= death_pionts_white
         score_black += self.board.komi

@@ -1,31 +1,19 @@
-from . import Timer
-from ..Tile import Tile
-from datetime import datetime
-import math
+from . import TimerBase
+from .TimerFactory import TimerFactory
+from .. import Board, Tile
+from datetime import datetime, timedelta
 
-class JapaneseByoyomi(Timer):
-	def __init__(self, timer_data: dict) -> None:
-		self._initialize_separate_timer(timer_data)
-		self.byo_yomi = timer_data['byo_yomi']
-		self.new_time = None
-		self.initial_time = None
-		if 'initial_time' in timer_data.keys():
-			self.initial_time = timer_data['initial_time']
+class JapaneseByoyomi(TimerBase):
+	key: str = 'japanese'
 
-	def _initialize_separate_timer(self, timer_data: dict) -> None:
-		'''
-        Methode auxiliaire pour initialiser les minuteurs separes.
-
-        Args :
-            timer_data (dict): Dictionnaire contenant les donnees de configuration du minuteur.
-        '''
-		if 'separate_timer' in timer_data.keys():
-			self.main_time_black = timer_data['separate_timer'][0]
-			self.main_time_white = timer_data['separate_timer'][1]
-		else:
-			self.main_time_black = timer_data['clock_value']
-			self.main_time_white = timer_data['clock_value']
-		
+	def __init__(self, board: Board, byo_yomi: int, time: timedelta, player_time: dict[Tile, timedelta] | None) -> None:
+		super().__init__(board, byo_yomi, time, player_time)
+		# self._initialize_separate_timer(timer_data)
+		# self.byo_yomi = timer_data['byo_yomi']
+		# self.new_time = None
+		# self.initial_time = None
+		# if 'initial_time' in timer_data.keys():
+		# 	self.initial_time = timer_data['initial_time']
 
 	def set_move(self) -> None:
 		'''Definit le timestamp du coup pour le calcul du temps.'''
@@ -77,4 +65,6 @@ class JapaneseByoyomi(Timer):
 
 	def get_separate_timers(self) -> tuple[int, int]:
 		return (self.main_time_black, self.main_time_white)
-	
+
+
+TimerFactory().register(JapaneseByoyomi)
