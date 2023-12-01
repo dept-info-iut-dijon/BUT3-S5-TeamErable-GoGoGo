@@ -118,13 +118,19 @@ table.board > tbody > tr:last-child > td::after {
 }
 
 .stone-fixed .name {
-    margin-left: 1rem;
     font-size: 1.25rem;
     font-weight: bold;
+}
+
+.stone-fixed p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.stone-fixed .name-container {
+    margin-left: 1rem;
     color: var(--font-color);
-    text-align: center;
     vertical-align: middle;
-    justify-content: center;
     margin-top: auto;
     margin-bottom: auto;
 }
@@ -137,7 +143,6 @@ table.board > tbody > tr:last-child > td::after {
     margin-right: 0.5rem;
     object-fit: cover;
 }
-
 
 .code-block p {
     margin-top: 0;
