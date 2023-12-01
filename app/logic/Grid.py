@@ -75,7 +75,7 @@ class Grid:
         return self._grid[coords.y][coords.x]
 
 
-    def set(self, coords: Vector2, value: Tile) -> None:
+    def set(self, coords: Vector2, value: Tile | None) -> None:
         '''Définit la tuile aux coordonnées spécifiées.
 
         Args:
