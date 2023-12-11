@@ -266,6 +266,38 @@ class Board:
             self.end_game()
 
 
+    def pause(self, tile: Tile) -> None:
+        '''Met en pause la partie.
+
+        Args:
+            tile (Tile): Tuile du joueur.
+
+        Raises:
+            InvalidMoveException: Si la partie est terminée.
+            InvalidMoveException: Si le joueur n'est pas le joueur courant.
+        '''
+        if self._ended: raise InvalidMoveException('La partie est terminée.')
+        if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
+
+        self._timer.pause(tile)
+
+
+    def resume(self, tile: Tile) -> None:
+        '''Reprend la partie.
+
+        Args:
+            tile (Tile): Tuile du joueur.
+
+        Raises:
+            InvalidMoveException: Si la partie est terminée.
+            InvalidMoveException: Si le joueur n'est pas le joueur courant.
+        '''
+        if self._ended: raise InvalidMoveException('La partie est terminée.')
+        if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
+
+        self._timer.resume(tile)
+
+
     def update_game_state(self) -> Tile | None:
         '''Met à jour l'état de la partie.
 
@@ -362,7 +394,13 @@ class Board:
                 Tile.White.value.value: 3600.0,
                 Tile.Black.value.value: 3600.0
             },
-            'last-action-time': 0.0
+            'last-action-time': 0.0,
+        })
+        timer_pause_data = timer_data.get('pause', {
+            'ask-pause': [],
+            'ask-resume': [],
+            'is-paused': False,
+            'timer-offset': 0.0,
         })
         self._timer = TimerFactory().get(timer_data.get('key', 'chinese'))(
             self,
@@ -372,6 +410,10 @@ class Board:
                 Tile.from_value(k): timedelta(seconds = v) for k, v in timer_data.get('player-time', {}).items()
             },
             datetime.fromtimestamp(timer_data.get('last-action-time', datetime.now().timestamp())),
+            timer_pause_data.get('is-paused', False),
+            [Tile.from_value(t) for t in timer_pause_data.get('ask-pause', [])],
+            [Tile.from_value(t) for t in timer_pause_data.get('ask-resume', [])],
+            timedelta(seconds = timer_pause_data.get('timer-offset', 0.0)),
         )
 
 

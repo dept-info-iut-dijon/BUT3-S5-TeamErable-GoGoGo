@@ -2,13 +2,25 @@ from abc import ABC, abstractmethod
 from ..Tile import Tile
 from .. import Board
 from datetime import timedelta, datetime
+from ...exceptions import InvalidMoveException
 
 class TimerBase(ABC):
     '''Classe abstraite pour le minuteur'''
 
     key: str = 'base'
 
-    def __init__(self, board: Board, byo_yomi: int, initial_time: timedelta, player_time: dict[Tile, timedelta] | None, last_action_time: datetime | None) -> None:
+    def __init__(
+        self,
+        board: Board,
+        byo_yomi: int,
+        initial_time: timedelta,
+        player_time: dict[Tile, timedelta] | None,
+        last_action_time: datetime | None,
+        is_paused: bool = False,
+        ask_pause: list[Tile] = [],
+        ask_resume: list[Tile] = [],
+        timer_offset: timedelta = timedelta(seconds = 0)
+    ) -> None:
         '''
         Methode du constructeur pour le minuteur
 
@@ -20,6 +32,10 @@ class TimerBase(ABC):
         self._initial_time = timedelta(seconds = initial_time.total_seconds())
         self._player_time = player_time if player_time is not None else {t: timedelta(seconds = initial_time.total_seconds()) for t in Tile}
         self._last_action_time = last_action_time if last_action_time is not None else datetime.now()
+        self._is_paused = is_paused
+        self._ask_pause: list[Tile] = ask_pause.copy()
+        self._ask_resume: list[Tile] = ask_resume.copy()
+        self._timer_offset: timedelta = timedelta(seconds = timer_offset.total_seconds())
 
 
     @property
@@ -76,7 +92,7 @@ class TimerBase(ABC):
         Returns:
             timedelta: Temps depuis le dernier placement.
         '''
-        return datetime.now() - self._last_action_time
+        return (datetime.now() - self._last_action_time) + self._timer_offset
 
 
     @property
@@ -92,6 +108,11 @@ class TimerBase(ABC):
         self._last_action_time = datetime.now()
 
 
+    def reset_timer_offset(self) -> None:
+        '''Remet a zero le decalage du minuteur.'''
+        self._timer_offset = timedelta(seconds = 0)
+
+
     def export(self) -> dict:
         '''Exporte les données du minuteur.
 
@@ -104,6 +125,12 @@ class TimerBase(ABC):
             'initial-time': self._initial_time.total_seconds(),
             'player-time': {key.value.value: value.total_seconds() for key, value in self._player_time.items()},
             'last-action-time': self._last_action_time.timestamp(),
+            'pause': {
+                'ask-pause': [t.value.value for t in self._ask_pause],
+                'ask-resume': [t.value.value for t in self._ask_resume],
+                'is-paused': self._is_paused,
+                'timer-offset': self._timer_offset.total_seconds()
+            }
         }
 
 
@@ -137,3 +164,37 @@ class TimerBase(ABC):
         if isinstance(time, timedelta):
             self._player_time[tile] += time
         self._player_time[tile] += timedelta(seconds = time)
+
+
+    def pause(self, tile: Tile) -> None:
+        '''Met en pause le minuteur.
+
+        Args:
+            tile (Tile): Couleur du joueur.
+        '''
+        if self._is_paused: raise InvalidMoveException('Le minuteur est déjà en pause.')
+        if tile in self._ask_pause: raise InvalidMoveException('La demande de pause a déjà été faite.')
+
+        self._ask_pause.append(tile)
+        if len(self._ask_pause) == len(Tile):
+            self._is_paused = True
+            self._ask_pause = []
+            self._ask_resume = []
+            self._timer_offset = self.last_action_time_diff
+
+
+    def resume(self, tile: Tile) -> None:
+        '''Reprend le minuteur.
+
+        Args:
+            tile (Tile): Couleur du joueur.
+        '''
+        if not self._is_paused: raise InvalidMoveException('Le minuteur n\'est pas en pause.')
+        if tile in self._ask_resume: raise InvalidMoveException('La demande de reprise a déjà été faite.')
+
+        self._ask_resume.append(tile)
+        if len(self._ask_resume) == len(Tile):
+            self._is_paused = False
+            self._ask_pause = []
+            self._ask_resume = []
+            self.update_last_action_time()
