@@ -184,6 +184,9 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
             'player2_html': player2_html,
             'code': game.code,
             'action_buttons_class': '' if can_play and not board.ended else 'hidden',
+            'game_paused': board.is_paused,
+            'pause_count': board.pause_count,
+            'resume_count': board.resume_count,
         }
     )
 

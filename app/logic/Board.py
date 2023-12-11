@@ -124,6 +124,18 @@ class Board:
     def initial_time(self) -> timedelta:
         return self._timer.initial_time
 
+    @property
+    def is_paused(self) -> bool:
+        return self._timer.is_paused
+
+    @property
+    def pause_count(self) -> int:
+        return self._timer.pause_count
+
+    @property
+    def resume_count(self) -> int:
+        return self._timer.resume_count
+
 
     def get(self, coords: Vector2) -> Tile:
         '''Renvoie la tuile à la position donnée.
@@ -277,7 +289,6 @@ class Board:
             InvalidMoveException: Si le joueur n'est pas le joueur courant.
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
-        if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
 
         self._timer.pause(tile)
 
@@ -293,7 +304,6 @@ class Board:
             InvalidMoveException: Si le joueur n'est pas le joueur courant.
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
-        if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
 
         self._timer.resume(tile)
 
