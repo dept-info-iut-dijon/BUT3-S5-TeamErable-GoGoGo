@@ -7,6 +7,7 @@ from ...http import HttpResponseNotifError
 from ...storage import GameStorage
 from ...models import CustomUser
 from ...utils import time2str
+from datetime import timedelta
 
 @login_required
 @request_type(RequestType.GET)
@@ -186,7 +187,7 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
             'action_buttons_class': '' if can_play and not board.ended else 'hidden',
             'game_paused': board.is_paused,
             'pause_count': board.pause_count,
-            'resume_count': board.resume_count,
+            'resume_timer': time2str(board.pause_time_left),
         }
     )
 

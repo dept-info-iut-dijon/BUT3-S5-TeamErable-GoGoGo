@@ -15,10 +15,10 @@ class ChineseByoyomi(TimerBase):
         last_action_time: datetime | None,
         is_paused: bool = False,
         ask_pause: list[Tile] = [],
-        ask_resume: list[Tile] = [],
-        timer_offset: timedelta = timedelta(seconds = 0)
+        timer_offset: timedelta = timedelta(seconds = 0),
+        date_pause: datetime | None = None,
     ) -> None:
-		super().__init__(board, byo_yomi, initial_time, player_time, last_action_time, is_paused, ask_pause, ask_resume, timer_offset)
+		super().__init__(board, byo_yomi, initial_time, player_time, last_action_time, is_paused, ask_pause, timer_offset, date_pause)
 		self.started = False
 
 
@@ -31,8 +31,8 @@ class ChineseByoyomi(TimerBase):
 			self._last_action_time,
 			self._is_paused,
 			self._ask_pause,
-			self._ask_resume,
-			self._timer_offset
+			self._timer_offset,
+			self._date_pause,
 		)
 
 

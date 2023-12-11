@@ -7,7 +7,8 @@ let game_ended = document.querySelector("#game-ended").value === "True" ? true :
 let has_second_player = document.querySelector("#has-second-player").value === "True" ? true : false;
 
 const pause_count_element = document.querySelector("#span-pause-count");
-const resume_count_element = document.querySelector("#span-resume-count");
+const resume_timer_element = document.querySelector("#span-resume-timer");
+const resume_button = document.querySelector("#resume-button");
 let game_is_paused = document.querySelector("#game-paused").value === "True" ? true : false;
 
 
@@ -69,6 +70,9 @@ websocket.onmessage = function(event) {
 
         case 'resume':
             receivedResume(data); break;
+
+        case 'pause-timer':
+            receivedPauseTimer(data); break;
 
         case 'error':
             notify('<p class="error">' + data + '</p>'); break;
@@ -241,7 +245,6 @@ function receivedEndGame(data) {
  */
 function receivedPause(data) {
     pause_count_element.innerHTML = data.pause_count.toString();
-    resume_count_element.innerHTML = data.resume_count.toString();
     game_is_paused = data.is_paused;
 
     if (data.is_paused) {
@@ -256,12 +259,23 @@ function receivedPause(data) {
  */
 function receivedResume(data) {
     pause_count_element.innerHTML = data.pause_count.toString();
-    resume_count_element.innerHTML = data.resume_count.toString();
     game_is_paused = data.is_paused;
 
     if (!data.is_paused) {
         let element = document.querySelector("#band-pause");
         if (!element.classList.contains("hidden")) element.classList.add("hidden");
+    }
+}
+
+
+/**
+ * Message de pause du timer reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
+function receivedPauseTimer(data) {
+    resume_timer_element.innerHTML = data.timer;
+    if (!resume_button.classList.contains("hidden")) {
+        resume_button.classList.add("hidden");
     }
 }
 

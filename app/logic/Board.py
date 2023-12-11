@@ -133,8 +133,12 @@ class Board:
         return self._timer.pause_count
 
     @property
-    def resume_count(self) -> int:
-        return self._timer.resume_count
+    def can_resume(self) -> bool:
+        return self._timer.can_resume
+
+    @property
+    def pause_time_left(self) -> timedelta:
+        return self._timer.pause_time_left
 
 
     def get(self, coords: Vector2) -> Tile:
@@ -190,6 +194,7 @@ class Board:
             InvalidMoveException: Si l'île serait entourée (Si le joueur n'est pas autorisé à jouer dans les zones mortes).
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
+        if self._timer.is_paused: raise InvalidMoveException('La partie est en pause.')
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
         if self._grid.is_outside(coords): raise InvalidMoveException('Impossible de jouer ici, les coordonnées sont en dehors du plateau.')
         if self.get(coords) is not None: raise InvalidMoveException('Impossible de jouer ici, la case est déjà occupée.')
@@ -262,6 +267,7 @@ class Board:
             InvalidMoveException: Si le joueur n'est pas le joueur courant.
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
+        if self._timer.is_paused: raise InvalidMoveException('La partie est en pause.')
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
 
         if self._timer.timed_out is not None:
@@ -286,7 +292,6 @@ class Board:
 
         Raises:
             InvalidMoveException: Si la partie est terminée.
-            InvalidMoveException: Si le joueur n'est pas le joueur courant.
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
 
@@ -301,7 +306,6 @@ class Board:
 
         Raises:
             InvalidMoveException: Si la partie est terminée.
-            InvalidMoveException: Si le joueur n'est pas le joueur courant.
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
 
@@ -323,6 +327,7 @@ class Board:
     def end_game(self) -> None:
         '''Termine la partie.'''
         if self._ended: raise InvalidMoveException('La partie est déjà terminée.')
+        if self._timer.is_paused: raise InvalidMoveException('La partie est en pause.')
         self._ended = True
 
 
@@ -408,7 +413,6 @@ class Board:
         })
         timer_pause_data = timer_data.get('pause', {
             'ask-pause': [],
-            'ask-resume': [],
             'is-paused': False,
             'timer-offset': 0.0,
         })
@@ -422,8 +426,8 @@ class Board:
             datetime.fromtimestamp(timer_data.get('last-action-time', datetime.now().timestamp())),
             timer_pause_data.get('is-paused', False),
             [Tile.from_value(t) for t in timer_pause_data.get('ask-pause', [])],
-            [Tile.from_value(t) for t in timer_pause_data.get('ask-resume', [])],
             timedelta(seconds = timer_pause_data.get('timer-offset', 0.0)),
+            datetime.fromtimestamp(timer_pause_data.get('date-pause', datetime.now().timestamp())),
         )
 
 
