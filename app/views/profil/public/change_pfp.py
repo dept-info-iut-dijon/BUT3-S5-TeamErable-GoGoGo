@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpRequest
 from ...decorators import login_required, request_type, RequestType
 from ....http import HttpResponseNotifError, HttpResponseNotifSuccess
 
-def _remove_pfp(path: str | None) -> None:
+def _remove_pfp(path: str) -> None:
     '''Supprime la photo de profil d'un utilisateur
 
     Args:

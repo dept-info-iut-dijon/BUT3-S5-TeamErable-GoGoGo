@@ -304,22 +304,30 @@ class Board:
         Returns:
             Tile | None: Couleur du joueur qui a perdu, None si aucun joueur n'a perdu.
         '''
-        if (ret := self._timer.timed_out) is not None and not self._ended:
+        ret = None
+        if self._timer.timed_out is not None and not self._ended:
+            ret = self._timer.timed_out
             self.end_game()
 
         return ret
 
 
     def end_game(self) -> None:
-        '''Termine la partie.'''
+        '''Termine la partie.
+        
+        Raises:
+            InvalidMoveException: Si la partie est terminée.
+        '''
         if self._ended: raise InvalidMoveException('La partie est déjà terminée.')
         self._ended = True
 
 
     def __str__(self) -> str:
+        '''Renvoie le plateau de jeu sous forme de chaine de caractères.'''
         return str(self._grid)
 
     def __repr__(self) -> str:
+        '''Surcharge de l'opérateur str.'''
         return str(self)
 
 
