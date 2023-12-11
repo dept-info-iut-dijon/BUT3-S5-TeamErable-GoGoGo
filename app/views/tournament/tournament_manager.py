@@ -1,13 +1,8 @@
 from django.db.models import Q
-from django.http import FileResponse, HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
-from ...models.tournament import Tournament, ParticipateTournament
-from ...models.game import Game
 from django.contrib.auth import get_user_model
-import datetime, os, json
-from ...logic import Board
-from app.models import Game, GameParticipate
-from app.models import CustomUser
+from app.models import CustomUser, Game, GameParticipate, Tournament, ParticipateTournament
 from ..decorators import login_required
 from ...http import HttpResponseNotifError
 

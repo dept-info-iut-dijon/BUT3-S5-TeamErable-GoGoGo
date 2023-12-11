@@ -1,6 +1,5 @@
-from django.shortcuts import render
 from ...decorators import login_required, request_type, RequestType
-from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
+from django.http import HttpResponse, HttpRequest
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate, login
 from ....http import HttpResponseNotifError, HttpResponseNotifSuccess
