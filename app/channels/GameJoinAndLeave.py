@@ -58,9 +58,11 @@ class GameJoinAndLeave(WebsocketConsumer):
                 case 'check-state':
                     self.receive_check_state(data)
 
-                case 'pause': pass # TODO: Faire la pause au Sprint 5
+                case 'pause':
+                    self.receive_pause(data)
 
-                case 'unpause': pass # TODO: Faire la pause au Sprint 5
+                case 'resume':
+                    self.receive_resume(data)
 
                 case _:
                     raise ValueError('Une erreur est survenue.')
@@ -324,3 +326,65 @@ class GameJoinAndLeave(WebsocketConsumer):
         data: str = event['data']
         print('disconnect', data)
         self.send(text_data = json.dumps(event))
+
+
+    def receive_pause(self, event: dict) -> None:
+        '''Reçoit la demande de pause du joueur.
+
+        Args:
+            event (dict): Demande de pause du joueur.
+        '''
+        game, board, tile = self._get_game_board()
+        if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
+        if board.is_paused: raise InvalidMoveException('Le minuteur est déjà en pause.')
+
+        board.pause(tile)
+
+        self._save_game_board(game, board)
+
+        new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+        new_event = {'type': 'send_pause', 'data': {'pause_count': board.pause_count, 'resume_count': board.resume_count, 'is_paused': board.is_paused}}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+
+    def receive_resume(self, event: dict) -> None:
+        '''Reçoit la demande de reprise du joueur.
+
+        Args:
+            event (dict): Demande de reprise du joueur.
+        '''
+        game, board, tile = self._get_game_board()
+        if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
+        if not board.is_paused: raise InvalidMoveException('Le minuteur n\'est pas en pause.')
+
+        board.resume(tile)
+
+        self._save_game_board(game, board)
+
+        new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+        new_event = {'type': 'send_resume', 'data': {'pause_count': board.pause_count, 'resume_count': board.resume_count, 'is_paused': board.is_paused}}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+
+    def send_pause(self, event: dict) -> None:
+        '''Envoie la demande de pause du joueur.
+
+        Args:
+            event (dict): Demande de pause du joueur.
+        '''
+        new_event = {'type': 'pause', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))
+
+
+    def send_resume(self, event: dict) -> None:
+        '''Envoie la demande de reprise du joueur.
+
+        Args:
+            event (dict): Demande de reprise du joueur.
+        '''
+        new_event = {'type': 'resume', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))

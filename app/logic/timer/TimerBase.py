@@ -74,7 +74,6 @@ class TimerBase(ABC):
         '''
         return self._player_time
 
-
     @property
     def last_action_time(self) -> datetime:
         '''Temps du dernier placement.
@@ -84,7 +83,6 @@ class TimerBase(ABC):
         '''
         return self._last_action_time
 
-
     @property
     def last_action_time_diff(self) -> timedelta:
         '''Temps depuis le dernier placement.
@@ -92,8 +90,8 @@ class TimerBase(ABC):
         Returns:
             timedelta: Temps depuis le dernier placement.
         '''
+        if self._is_paused: return self._timer_offset
         return (datetime.now() - self._last_action_time) + self._timer_offset
-
 
     @property
     def timed_out(self) -> Tile | None:
@@ -101,6 +99,33 @@ class TimerBase(ABC):
             if self._player_time[t] - self.last_action_time_diff <= timedelta(seconds = 0):
                 return t
         return None
+
+    @property
+    def is_paused(self) -> bool:
+        '''Indique si le minuteur est en pause.
+
+        Returns:
+            bool: True si le minuteur est en pause, False sinon.
+        '''
+        return self._is_paused
+
+    @property
+    def pause_count(self) -> int:
+        '''Nombre de demande de pause.
+
+        Returns:
+            int: Nombre de demande de pause.
+        '''
+        return len(self._ask_pause)
+
+    @property
+    def resume_count(self) -> int:
+        '''Nombre de demande de reprise.
+
+        Returns:
+            int: Nombre de demande de reprise.
+        '''
+        return len(self._ask_resume)
 
 
     def update_last_action_time(self) -> None:
@@ -177,10 +202,10 @@ class TimerBase(ABC):
 
         self._ask_pause.append(tile)
         if len(self._ask_pause) == len(Tile):
-            self._is_paused = True
             self._ask_pause = []
             self._ask_resume = []
             self._timer_offset = self.last_action_time_diff
+            self._is_paused = True
 
 
     def resume(self, tile: Tile) -> None:
@@ -194,7 +219,9 @@ class TimerBase(ABC):
 
         self._ask_resume.append(tile)
         if len(self._ask_resume) == len(Tile):
-            self._is_paused = False
             self._ask_pause = []
             self._ask_resume = []
             self.update_last_action_time()
+            self._player_time[self._board.current_player] -= self.last_action_time_diff
+            self._timer_offset = timedelta(seconds = 0)
+            self._is_paused = False
