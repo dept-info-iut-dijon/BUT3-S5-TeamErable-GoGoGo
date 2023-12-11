@@ -8,6 +8,7 @@ class TimerBase(ABC):
     '''Classe abstraite pour le minuteur'''
 
     key: str = 'base'
+    _pause_timer: timedelta = timedelta(seconds = 15)
 
     def __init__(
         self,
@@ -18,8 +19,8 @@ class TimerBase(ABC):
         last_action_time: datetime | None,
         is_paused: bool = False,
         ask_pause: list[Tile] = [],
-        ask_resume: list[Tile] = [],
-        timer_offset: timedelta = timedelta(seconds = 0)
+        timer_offset: timedelta = timedelta(seconds = 0),
+        date_pause: datetime | None = None,
     ) -> None:
         '''
         Methode du constructeur pour le minuteur
@@ -34,8 +35,8 @@ class TimerBase(ABC):
         self._last_action_time = last_action_time if last_action_time is not None else datetime.now()
         self._is_paused = is_paused
         self._ask_pause: list[Tile] = ask_pause.copy()
-        self._ask_resume: list[Tile] = ask_resume.copy()
         self._timer_offset: timedelta = timedelta(seconds = timer_offset.total_seconds())
+        self._date_pause = datetime.now() if date_pause is None else datetime.fromtimestamp(date_pause.timestamp())
 
 
     @property
@@ -119,13 +120,33 @@ class TimerBase(ABC):
         return len(self._ask_pause)
 
     @property
-    def resume_count(self) -> int:
-        '''Nombre de demande de reprise.
+    def date_pause(self) -> datetime:
+        '''Date de la pause.
 
         Returns:
-            int: Nombre de demande de reprise.
+            datetime: Date de la pause.
         '''
-        return len(self._ask_resume)
+        return self._date_pause
+
+
+    @property
+    def pause_time_left(self) -> timedelta:
+        '''Temps restant avant la reprise.
+
+        Returns:
+            timedelta: Temps restant avant la reprise.
+        '''
+        return max(self._pause_timer - (datetime.now() - self._date_pause), timedelta(seconds = 0))
+
+
+    @property
+    def can_resume(self) -> bool:
+        '''Indique si le minuteur peut reprendre.
+
+        Returns:
+            bool: True si le minuteur peut reprendre, False sinon.
+        '''
+        return self._is_paused and (datetime.now() - self._date_pause >= self._pause_timer)
 
 
     def update_last_action_time(self) -> None:
@@ -152,9 +173,9 @@ class TimerBase(ABC):
             'last-action-time': self._last_action_time.timestamp(),
             'pause': {
                 'ask-pause': [t.value.value for t in self._ask_pause],
-                'ask-resume': [t.value.value for t in self._ask_resume],
                 'is-paused': self._is_paused,
-                'timer-offset': self._timer_offset.total_seconds()
+                'timer-offset': self._timer_offset.total_seconds(),
+                'date-pause': self._date_pause.timestamp(),
             }
         }
 
@@ -202,8 +223,8 @@ class TimerBase(ABC):
 
         self._ask_pause.append(tile)
         if len(self._ask_pause) == len(Tile):
+            self._date_pause = datetime.now()
             self._ask_pause = []
-            self._ask_resume = []
             self._timer_offset = self.last_action_time_diff
             self._is_paused = True
 
@@ -215,13 +236,10 @@ class TimerBase(ABC):
             tile (Tile): Couleur du joueur.
         '''
         if not self._is_paused: raise InvalidMoveException('Le minuteur n\'est pas en pause.')
-        if tile in self._ask_resume: raise InvalidMoveException('La demande de reprise a déjà été faite.')
+        if not self.can_resume: raise InvalidMoveException('Le minuteur ne peut pas encore reprendre.')
 
-        self._ask_resume.append(tile)
-        if len(self._ask_resume) == len(Tile):
-            self._ask_pause = []
-            self._ask_resume = []
-            self.update_last_action_time()
-            self._player_time[self._board.current_player] -= self.last_action_time_diff
-            self._timer_offset = timedelta(seconds = 0)
-            self._is_paused = False
+        self._ask_pause = []
+        self.update_last_action_time()
+        self._player_time[self._board.current_player] -= self.last_action_time_diff
+        self._timer_offset = timedelta(seconds = 0)
+        self._is_paused = False

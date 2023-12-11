@@ -47,4 +47,11 @@ setInterval( function() {
         let timed_out = getTimerElement(getCanPlay() ? player_color : getOpponentColor());
         if (timed_out) checkState();
     }
+    else if (game_is_paused === true) {
+        if (updateCountdown(resume_timer_element)) {
+            if (resume_button.classList.contains("hidden")) {
+                resume_button.classList.remove("hidden");
+            }
+        }
+    }
 }, 1000);

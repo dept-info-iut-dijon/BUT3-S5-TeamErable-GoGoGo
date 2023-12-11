@@ -37,10 +37,11 @@
                 <div>
                     <div class="center flex-column">
                         <p class="big" id="band-pause-big-text">Partie en pause</p>
-                        <div class="row">
-                            <button class="big secondary" id="resume-button">Reprendre la partie</button>
-                            <div class="separator"></div>
-                            <p><span id="span-resume-count">{{ resume_count }}</span> / 2</p>
+                        <div class="column">
+                            <p>Vous pourrez reprendre la partie dans <span id="span-resume-timer">{{ resume_timer }}</span></p>
+                            <div class="center height-auto">
+                                <button class="big secondary {% if resume_timer != '00:00:00' %}hidden{% endif %}" id="resume-button">Reprendre la partie</button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -188,6 +188,10 @@ table.board > tbody > tr:last-child > td::after {
     height: 100%;
 }
 
+.band div.height-auto {
+    height: auto;
+}
+
 .band > div > div {
     width: 100%;
     min-height: 10rem;

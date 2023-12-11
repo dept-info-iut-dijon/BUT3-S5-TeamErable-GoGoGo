@@ -345,8 +345,22 @@ class GameJoinAndLeave(WebsocketConsumer):
         new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
-        new_event = {'type': 'send_pause', 'data': {'pause_count': board.pause_count, 'resume_count': board.resume_count, 'is_paused': board.is_paused}}
+        new_event = {'type': 'send_pause', 'data': {'pause_count': board.pause_count, 'is_paused': board.is_paused}}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+        if board.is_paused:
+            new_event = {'type': 'send_pause_timer', 'data': {'timer': time2str(board.pause_time_left)}}
+            async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+
+    def send_pause_timer(self, event: dict) -> None:
+        '''Envoie le timer de la pause.
+
+        Args:
+            event (dict): Timer de la pause.
+        '''
+        new_event = {'type': 'pause-timer', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))
 
 
     def receive_resume(self, event: dict) -> None:
@@ -366,7 +380,7 @@ class GameJoinAndLeave(WebsocketConsumer):
         new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
-        new_event = {'type': 'send_resume', 'data': {'pause_count': board.pause_count, 'resume_count': board.resume_count, 'is_paused': board.is_paused}}
+        new_event = {'type': 'send_resume', 'data': {'pause_count': board.pause_count, 'is_paused': board.is_paused}}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
 
@@ -377,6 +391,16 @@ class GameJoinAndLeave(WebsocketConsumer):
             event (dict): Demande de pause du joueur.
         '''
         new_event = {'type': 'pause', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))
+
+
+    def send_pause_timer(self, event: dict) -> None:
+        '''Envoie le timer de la pause.
+
+        Args:
+            event (dict): Timer de la pause.
+        '''
+        new_event = {'type': 'pause-timer', 'data': event['data']}
         self.send(text_data = json.dumps(new_event))
 
 
