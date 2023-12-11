@@ -1,44 +1,106 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from ...models.tournament import Tournament
 from datetime import datetime
-import random, string
+from ..decorators import login_required, request_type, RequestType
+from ...http import HttpResponseNotifError
+from .tournament_struct import TournamentStruct
+from ..game.game_configuration import edit_game_config
 
+
+@login_required
+@request_type(RequestType.GET, RequestType.POST)
 def edit_tournament(request: HttpRequest, id_tournament: int) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
+    '''Controller de la page de modification d'un tournoi
+
+    Args:
+        request (HttpRequest): Requête HTTP
+        id_tournament (int): Identifiant du tournoi
+
+    Returns:
+        HttpResponse: Réponse HTTP de redirection vers la page du tournoi modifié ou erreur
+    '''
+    ret: HttpResponse = HttpResponseNotifError('Erreur lors de la modification du tournois')
+    
+    if (tournament := can_edit_tournament(id_tournament)) is None:
+        ret = HttpResponse(f'/tournament?id={tournament.id}')
+
+    elif request.method == RequestType.POST.value:
+        ret = edit_tournament_post(request, tournament)
+
+    elif request.method == RequestType.GET.value:
+        ret = render(request, 'tournament/edit_tournament.html', {'tournament': tournament, 'checked': 'checked' if tournament.private else ''})
+
+    return ret
+
+def modify_tournament(tournament_struct: TournamentStruct, tournament: Tournament, private : bool) -> Tournament:
+    '''Fonction permettant de modifier un tournoi dans la BDD
+
+    Args:
+        tournament_struct (TournamentStruct): Le tournoi à modifier
+        tournament (Tournament): Le tournoi à modifier
+        private (bool): True si le tournoi est privé, False sinon
+
+    Returns:
+        Tournament: Le tournoi modifié
+    '''
+    game_configuration = edit_game_config(tournament.game_configuration, tournament_struct.game_configuration)
+
+    tournament.name = tournament_struct.name
+    tournament.description = tournament_struct.description
+    tournament.start_date = tournament_struct.start_date
+    tournament.private = private
+    tournament.end_date = tournament_struct.end_date
+    tournament.organisator = tournament_struct.organisator
+    tournament.register_date = datetime.now().date()
+    tournament.player_min = tournament_struct.player_min
+    tournament.game_configuration = game_configuration
+    tournament.save()
+
+    return tournament
+
+def edit_tournament_post(request: HttpRequest, tournament: Tournament) -> HttpResponse:
+    '''Edit le tournoi si le type de requête est POST
+    
+    Args:
+        request (HttpRequest): Requête HTTP
+        tournament (Tournament): Le tournoi à modifier
+
+    Returns:
+        HttpResponse: Réponse HTTP de redirection vers la page du tournoi modifié ou erreur
+    '''
+    ret = None
+
+    if (tournament_verif := TournamentStruct.verify_tournament(request)) and isinstance(tournament_verif, Exception):
+        return HttpResponseNotifError(tournament_verif)
+
+    private = bool(request.POST.get('tournament-private'))
 
     try:
-        tournament = Tournament.objects.get(id = id_tournament)
-
-        if datetime.now().date() >= tournament.start_date:
-            return HttpResponseRedirect(f'/tournament?id={tournament.id}')
+        tournament_edited = modify_tournament(tournament_verif, tournament, private)
+        ret = HttpResponse(f'/tournament?id={tournament_edited.id}')
 
     except:
-        return HttpResponseRedirect('/tournament')
+        import traceback
+        traceback.print_exc()
+        return HttpResponseNotifError('Erreur lors de la modification du tournois.')
 
-    if request.method == 'POST':
-        if (name := request.POST.get('tournament-name')) is None: return HttpResponseBadRequest('<p class="error">Le nom du tournoi est vide.</p>')
-        if (start_date := request.POST.get('start-date')) is None: return HttpResponseBadRequest('<p class="error">La date de début du tournoi est vide.</p>')
-        if (end_date := request.POST.get('end-date')) is None: return HttpResponseBadRequest('<p class="error">La date de fin du tournoi est vide.</p>')
-        if (organisator := request.POST.get('tournament-organizer')) is None: return HttpResponseBadRequest('<p class="error">L\'organisateur du tournoi est vide.</p>')
-        if (description := request.POST.get('tournament-desc', '')) is None: return HttpResponseBadRequest('<p class="error">La description du tournoi est vide.</p>')
-        if (player_min := request.POST.get('tournament-player-min')) is None: return HttpResponseBadRequest('<p class="error">Le nombre de joueurs minimum est vide.</p>')
-        private = bool(request.POST.get('tournament-private'))
+    
+    return ret
 
-        try:
-            tournament.name = name
-            tournament.description = description
-            tournament.start_date = start_date
-            tournament.private = private
-            tournament.end_date = end_date
-            tournament.organisator = organisator
-            tournament.register_date = datetime.now().date()
-            tournament.player_min = player_min
-            tournament.save()
+def can_edit_tournament(id_tournament: int) -> Tournament:
+    '''Fonction permettant de savoir si un tournoi peut être modifié
 
-            return HttpResponse(f'/tournament?id={tournament.id}')
+    Args:
+        id_tournament (int): L'id du tournoi
 
-        except:
-            return HttpResponseBadRequest('<p class="error">Erreur lors de la modification du tournois</p>')
-
-    return render(request, 'edit_tournament.html', {'tournament': tournament, 'checked': 'checked' if tournament.private else ''})
+    Returns:
+        Tournament: Le tournoi ou None
+    '''
+    try:
+        tournament = Tournament.objects.get(id = id_tournament)
+        if datetime.now().date() >= tournament.start_date:
+            tournament = None
+    except:
+        return HttpResponse('/tournament')
+    return tournament

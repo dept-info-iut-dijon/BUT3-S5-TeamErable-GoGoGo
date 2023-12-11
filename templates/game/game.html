@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGoGo • Partie</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css/game/game.css">
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
+
+    <main>
+        {% csrf_token %}
+        <input type="text" id="game-id" value="{{ id }}" hidden>
+        <input type="text" id="player-color" value="{{ color }}" hidden>
+        <input type="text" id="game-ended" value="{{ game_ended }}" hidden>
+        <input type="text" id="has-second-player" value="{{ has_second_player }}" hidden>
+
+        <div class="band transition hidden" id="band-win">
+            <div class="center flex-column">
+                <div>
+                    <div class="center flex-column">
+                        <p class="big" id="band-win-big-text">XXX a gagné la partie !</p>
+                        <p id="band-win-small-text">YYYY (Player1) vs ZZZZ (Player2)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="band transition hidden" id="band-pause">
+            <div class="center flex-column">
+                <div>
+                    <div class="center flex-column">
+                        <p class="big" id="band-pause-big-text">Partie en pause</p>
+                        <div class="row">
+                            <button class="big secondary" id="unpause-button">Reprendre la partie</button>
+                            <div class="separator"></div>
+                            <p><span id="band-pause-count">0</span> / 2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator-2"></div>
+
+        <div class="flex flex-column mobile-flex-reverse">
+            <div class="flex flex-row row mobile-flex-direction">
+                {{ player1_html | safe }}
+
+                <div class="mobile-separator"></div>
+    
+                <div class="row code-block">
+                    <p>Code:</p>
+                    <p class="pcode opacity-0" id="code" data-content="{{ code }}">{{ code }}</p>
+                    <switchbutton name="show-code" id="show-code" onclick="toggleCodeVisibility()"></switchbutton>
+                </div>
+
+                <div class="mobile-separator"></div>
+    
+                {{ player2_html | safe }}
+            </div>
+    
+            <div class="separator"></div>
+            <div class="mobile-separator"></div>
+    
+            <div>
+                <div class="overflow-auto-x">
+                    <div class="width-max-content margin-auto-x">
+                        <table class="board {{ can_play }}" cellspacing="0">
+                            {% for row in board %}
+                            <tr>
+                                {% for cell in row %}
+                                <td class="cell">
+                                    <div class="inside">
+                                        <div class="stone {{ cell.tile }}" x="{{ cell.x }}" y="{{ cell.y }}"></div>
+                                    </div>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+        
+                <div class="center transition {{ action_buttons_class }}" id="action-buttons">
+                    <div class="row width-fit-content">
+                        <button class="margin-side" id="skip-button">Passer le Tour</button>
+                        <button class="margin-side" id="give-up-button">Déclarer Forfait</button>
+                        <!-- <div class="margin-side row">
+                            <button id="pause-button">Mettre en pause</button>
+                            <p id="pause-count" class="no-margin">0 / 2</p>
+                        </div> --> <!-- TODO: Ajouter la pause au Sprint 5 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+    </main>
+
+    <script src="/static/js/game/game.js"></script>
+    <script src="/static/js/global.js"></script>
+    <script src="/static/js/game/timer.js"></script>
+</body>
+</html>

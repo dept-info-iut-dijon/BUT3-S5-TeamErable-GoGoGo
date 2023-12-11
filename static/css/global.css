@@ -1,5 +1,6 @@
 :root {
     --main-color: #cc7f4e;
+    --main-color-transparent: #cc7e4edd;
     --main-color-hover: #b36e42;
     --main-color-light: #f5b38b;
     --gray-color: #ccc;
@@ -43,6 +44,11 @@ footer {
 
 .margin-top {
     margin-top: 2rem;
+}
+
+.margin-side {
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
 
 .no-margin {
@@ -150,6 +156,22 @@ form.no-border {
     border-color: var(--main-color);
 }
 
+.form-control select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid var(--gray-color);
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease-in-out;
+    background-color: var(--font-color-light);
+}
+
+.form-control select:hover, .form-control select:focus {
+    outline: none;
+    border-color: var(--main-color);
+}
+
 input[type="submit"], input[type="button"], button {
     cursor: pointer;
     display: inline-block;
@@ -160,6 +182,15 @@ input[type="submit"], input[type="button"], button {
     border-radius: var(--border-radius);
     border: none;
     transition: all 0.2s ease-in-out;
+}
+
+button.big {
+    font-size: 1.25rem;
+}
+
+button.secondary {
+    background-color: var(--font-color-light);
+    color: var(--main-color);
 }
 
 button:has(img) {
@@ -175,10 +206,19 @@ input[type="submit"]:hover, input[type="button"]:hover, button:hover {
     background-color: var(--main-color-hover);
 }
 
+button.secondary:hover {
+    background-color: var(--main-color-light);
+    color: var(--font-color);
+}
+
 input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     background-color: var(--gray-color);
     cursor: not-allowed;
 }
+
+/* input[type="number"]::-webkit-inner-spin-button {
+    opacity: 1;
+} */
 
 .row {
     display: flex;
@@ -198,6 +238,28 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     height: fit-content;
 }
 
+.width-max-content {
+    width: max-content;
+}
+
+.height-max-content {
+    height: max-content;
+}
+
+.margin-auto {
+    margin: auto;
+}
+
+.margin-auto-x {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.margin-auto-y {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 @media screen and (max-width: 720px) {
     .row.dynamic-row {
         flex-direction: column;
@@ -215,6 +277,11 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
 .center {
     display: flex;
     align-items: center;
+    justify-content: center;
+}
+
+.flex {
+    display: flex;
 }
 
 .flex-row {
@@ -229,8 +296,62 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     flex-wrap: wrap;
 }
 
+@media screen and (max-width: 720px) {
+    .row.mobile-flex-column {
+        flex-direction: row-reverse;
+    }
+
+    .flex-row.mobile-flex-column {
+        flex-direction: row-reverse;
+    }
+
+    .flex-column.mobile-flex-reverse {
+        flex-direction: column-reverse;
+    }
+
+    .row.mobile-flex-direction {
+        flex-direction: column;
+    }
+
+    .flex-row.mobile-flex-direction {
+        flex-direction: column;
+    }
+
+    .flex-column.mobile-flex-direction {
+        flex-direction: row;
+    }
+
+    .mobile-separator {
+        height: 1rem;
+    }
+
+    .mobile-separator-2 {
+        height: 2rem;
+    }
+
+    .mobile-separator-3 {
+        height: 3rem;
+    }
+
+    .mobile-separator-4 {
+        height: 4rem;
+    }
+}
+
 .separator {
     height: 1rem;
+}
+
+.separator-2 {
+    height: 2rem;
+}
+
+.separator-3 {
+    height: 3rem;
+}
+
+.separator-4 {
+    height: 4rem;
 }
 
 .row > .separator {
@@ -243,14 +364,14 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
 
 .error {
     padding: 0.5rem 2rem;
-    background-color: rgba(255, 0, 0, 0.2);
+    background-color: #ffcccc;
     border-radius: var(--border-radius);
     margin-bottom: 1rem;
 }
 
 .success {
     padding: 0.5rem 2rem;
-    background-color: rgba(0, 255, 0, 0.2);
+    background-color: #ccffcc;
     border-radius: var(--border-radius);
     margin-bottom: 1rem;
 }
@@ -314,25 +435,156 @@ input:checked + .slider:before {
 
 /* Notifications */
 .notify {  
-    position: absolute;
-    top: 3rem;
-    left: 15%;
-    width: 70%;
+    position: -webkit-sticky;
+    position: sticky;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 0;
     box-sizing: border-box;
     text-align: center;
     overflow: hidden;
     box-sizing: border-box;
     transition: all 0.2s;
+    justify-content: center;
+    padding: 0;
 }
 
-@media screen and (max-width: 720px) {
-    .notify {
-        top: auto;
-        bottom: 3rem;
+.notify, .notify * {
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.notify > div {
+    position: fixed;
+    width: 70%;
+    box-sizing: border-box;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    height: 5rem;
+    margin-top: 6rem;
+}
+
+.notify ul {
+    margin-block: 0;
+    margin-inline: 0;
+    padding-inline: 0;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    text-decoration: none;
+    width: 100%;
+    list-style: none;
+    transition: all 0.2s;
+    height: 100%;
+}
+
+.notify ul > li {
+    margin: 0;
+    padding: 0;
+    transition: all 0.2s;
+    animation: notify 5s ease-in-out forwards;
+    height: 0;
+    opacity: 0;
+    width: 100%;
+}
+
+@keyframes notify {
+    0% {
+        height: 0;
+        opacity: 0;
+    }
+    4% {
+        height: auto;
+        opacity: 1;
+    }
+    96% {
+        height: auto;
+        opacity: 1;
+    }
+    100% {
+        height: 0;
+        opacity: 0;
     }
 }
 
-.notify.active {  
-    height: 50px;
+@media screen and (max-width: 720px) {
+    .notify > div {
+        width: 90%;
+    }
+}
+
+.duration-picker-input-controls-wrapper .duration-picker {
+    text-align: left;
+    padding-right: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    cursor: text;
+}
+
+.duration-picker-input-controls-wrapper .scroll-btn {
+    text-align: center;
+    width: 16px;
+    padding: 0 4px;
+    border: none;
+    cursor: default;
+    position: absolute;
+}
+
+.duration-picker-input-controls-wrapper .caret {
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.duration-picker-input-controls-wrapper .caret.caret-up {
+    border-width: 0 4px 5px 4px;
+    border-color: transparent transparent #000 transparent;
+}
+
+.duration-picker-input-controls-wrapper .caret.caret-down {
+    border-width: 5px 4px 0 4px;
+    border-color: #000 transparent transparent transparent;
+}
+
+.duration-picker-input-controls-wrapper .controls {
+    display: inline-block;
+    position: absolute;
+    top: 1px;
+    padding: 2px 0;
+}
+
+.duration-picker-input-controls-wrapper {
+    display: inline-block;
+    position: relative;
+    background: transparent;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.duration-picker-input-controls-wrapper .controls button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    outline: none;
+}
+
+.transition {
+    transition: all 0.2s ease-in-out;
+}
+
+.hidden {
+    transform: scaleY(0);
+}
+
+.overflow-auto-x {
+    overflow-x: overlay;
+    position: sticky;
 }

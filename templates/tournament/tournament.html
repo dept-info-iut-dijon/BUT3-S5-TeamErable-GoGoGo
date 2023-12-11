@@ -4,14 +4,16 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tournoi</title>
+    <title>GoGoGo • Tournoi</title>
     <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}">
     <link rel="stylesheet" href="/static/css/global.css">
-    <link rel="stylesheet" href="/static/css/tournament.css">
-    <link rel="stylesheet" href="/static/css/tournament_list.css">
+    <link rel="stylesheet" href="/static/css/tournament/tournament.css">
+    <link rel="stylesheet" href="/static/css/tournament/tournament_list.css">
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
+
     <main>
         <section class="upper-section">
             <div class="tournois-header-section">
@@ -103,12 +105,9 @@
                 </table>
             </div>
         </div>
-
-        <div class="notify" id="notify"></div>
     </main>
     {% include 'reusable/footer.html' %}
-    <script src="/static/js/join_tournament.js"></script>
-    <script src="/static/js/notify.js"></script>
+    <script src="/static/js/tournament/join_tournament.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
 </body>
 </html>

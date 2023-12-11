@@ -1,17 +1,36 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
 from ...models.tournament import Tournament
+from ...http import HttpResponseNotifError
 from datetime import datetime
+from ..decorators import login_required
 
-
-# Function to delete a tournament if the user is the creator
+@login_required
 def delete_tournament(request: HttpRequest, id_tournament: int) -> HttpResponse:
-    if not request.user.is_authenticated: return HttpResponseRedirect('/login')
+    '''Fonction permettant de supprimer un tournoi
+    
+    Args:
+        request (HttpRequest): Requête HTTP
+        id_tournament (int): L'id du tournoi a supprimer
+        
+    Returns:
+        HttpResponse: La page de la liste des tournois ou erreur
+    '''
+    ret: HttpResponse = HttpResponseBadRequest('Erreur lors de la suppression du tournoi')
+
     try:
         tournament = Tournament.objects.get(id=id_tournament)
-        if tournament.creator.id != request.user.id: return HttpResponseRedirect('/tournament')
-        if tournament.start_date <= datetime.now(): return HttpResponseRedirect('/tournament')
-        tournament.delete()
-        return HttpResponseRedirect('/tournament')
+        
+        if tournament.creator.id == request.user.id and tournament.start_date >= datetime.now().date():
+            configuration = tournament.game_configuration
+            tournament.delete()
+            configuration.delete()
+            ret = HttpResponseRedirect('/tournament')
+
+        else:
+            ret = HttpResponseNotifError('Vous ne pouvez pas supprimer ce tournoi')
+
     except:
-        return HttpResponseRedirect('/tournament')
+        return HttpResponseNotifError('Erreur lors de la suppression du tournois')
+
+    return ret

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+        <link rel="stylesheet" href="static/css/global.css">
+        <link rel="stylesheet" href="static/css/connection/login.css">
+        <link rel="stylesheet" href="static/css/signup.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="login">
+                {% if password2_error %}
+                <div class="error">
+                    {{ password2_error }}
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <a href="/login" class="button gray">🔙 Retour</a>
+                    <div class="separator"></div>
+                    <h2>S'inscrire</h2>
+                    <div class="form-control">
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                    </div>
+                    <div class="form-control">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                    </div>
+                    <div class="form-control" id="password_input">
+                        <div>
+                            {{ form.password1.label_tag }}
+                            {{ form.password1 }}
+                        </div>
+                        <div class="tooltip">
+                            <img src="static/icons/tooltip.png" class="tooltip_icon">
+                            <span class="tooltiptext">{{form.password1.help_text}}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-control">
+                        {{ form.password2.label_tag }}
+                        {{ form.password2 }}
+                    </div>
+
+                    <div class="separator"></div>
+
+                    <div class="form-control">
+                        <input type="submit"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

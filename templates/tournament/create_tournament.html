@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGoGo • Créer un Tournoi</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+    <link rel="stylesheet" href="/static/css/global.css">
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
+
+    <main>
+        {% csrf_token %}
+        <div class="container">
+            <div class="separator"></div>
+            <div class="center flex-column">
+                <h2>Créer un tournoi</h2>
+                <form id="create-tournament" class="no-border max-width" hx-post="/create-tournament" hx-trigger="submit" hx-swap="none">
+                    <h3>Configuration du tournoi</h3>
+                    <div class="center flex-wrap">
+                        <div class="form-control">
+                            <label for="tournament-name">Nom du tournoi</label>
+                            <input type="text" name="tournament-name" id="tournament-name" placeholder="Nom du tournoi" required>
+                        </div>
+                        <div class="form-control">
+                            <label for="tournament-organizer">Organisateur</label>
+                            <input type="text" name="tournament-organizer" id="tournament-organizer" placeholder="Organisateur du tournoi" required>
+                        </div> 
+                        <div class="form-control">
+                            <label for="tournament-desc">Description</label>
+                            <textarea name="tournament-desc" id="tournament-desc" placeholder="Description du tournoi"></textarea>
+                        </div>
+                        <div class="form-control">
+                            <label for="start-date">Date de début</label>
+                            <input type="date" name="start-date" id="start-date" required></input>
+                        </div>
+                        <div class="form-control">
+                            <label for="end-date">Date de fin</label>
+                            <input type="date" name="end-date" id="end-date" required></input>
+                        </div>
+                        <div class="form-control">
+                            <label for="tournament-player-min">Nombre de participants minimum</label>
+                            <input type="number" name="tournament-player-min" id="tournament-player-min" required min="8" value="8"></input>
+                        </div>
+                        <div class="form-control">
+                            <label for="tournament-private">Privée ?</label>
+                            <switchbutton name="tournament-private" id="tournament-private"></switchbutton>
+                        </div>
+                    </div>
+                    <h3>Configuration des parties du tournoi</h3>
+                    <div class="center flex-wrap">
+                        <div class="form-control">
+                            <label for="map-size">Taille de la carte</label>
+                            <select name="map-size" id="map-size">
+                                <option value="9">9x9</option>
+                                <option value="11">11x11</option>
+                                <option value="13">13x13</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="counting-method">Regles de la partie</label>
+                            <select name="counting-method" id="counting-method">
+                                <option value="japanese">Japonaise</option>
+                                <option value="chinese">Chinoise</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="byo-yomi">Byo-yomi</label>
+                            <input type="number" name="byo-yomi" id="byo-yomi" min="0" max="60" value="30" placeholder="byo-yomi de la partie">
+                        </div>
+                        <div class="form-control">
+                            <label for="clock-type">Type d'horloge</label>
+                            <select name="clock-type" id="clock-type">
+                                <option value="japanese">Byo-yomi Japonais</option>
+                                <option value="chinese">Byo-yomi Chinois</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="time-clock">Temps attribué (Heures : Minutes : Secondes)</label>
+                            <input type="text" name="time-clock" id="time-clock" class="duration-picker" value="01:00:00" data-duration-min="00:00:00" data-duration-max="10:00:00">
+                        </div>
+                        <div class="form-control">
+                            <label for="komi">Valeur donnée au Komi</label>
+                            <input type="number" name="komi" id="komi" min="3.5" max="25.5" value="6.5" placeholder="Valeur donnée au Komi">
+                        </div>
+                        <div class="form-control">
+                            <label for="is-handicap">Handicap ?</label>
+                            <switchbutton name="is-handicap" id="is-handicap" onclick="toggleHandicap()"></switchbutton>
+                        <div id="handicap-form" class="form-control" hidden>
+                            <label for="handicap">Handicap</label>
+                            <input type="number" name="handicap" id="handicap" min="0" max="9" value="0" placeholder="Handicap">
+                        </div>
+                        <div class="form-control">
+                            <label for="game-private">Privée ?</label>
+                            <switchbutton name="game-private" id="game-private"></switchbutton>
+                        </div>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="form-control">
+                        <input type="submit" value="Créer le tournoi">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    {% include 'reusable/footer.html' %}
+    <script src="/static/js/global.js"></script>
+    <script src="/static/js/tournament/date_validation.js"></script>
+    <script src="/static/js/tournament/create_tournament.js"></script>
+</body>
+</html>
