@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGoGo • Créer une Partie</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
+    <link rel="stylesheet" href="/static/css/global.css">
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% include 'reusable/header.html' %}
+    {% include 'reusable/notify.html' %}
+    <main>
+        {% csrf_token %}
+        <div class="container">
+            <div class="center flex-column margin-top">
+                <h2>Créer une partie</h2>
+                <form id="create-game" class="no-border max-width" hx-post="/create-game" hx-trigger="submit" hx-swap="none" onsubmit="return validateForm()">
+                    <div class="center flex-wrap">
+                        <div class="form-control">
+                            <label for="game-name">Nom de la partie</label>
+                            <input type="text" name="game-name" id="game-name" placeholder="Nom de la partie" required>
+                        </div>
+                        <div class="form-control">
+                            <label for="game-desc">Description</label>
+                            <textarea name="game-desc" id="game-desc" placeholder="Description de la partie"></textarea>
+                        </div>
+                        <div class="form-control">
+                            <label for="game-private">Privée ?</label>
+                            <switchbutton name="game-private" id="game-private"></switchbutton>
+                        </div>
+                        <div class="form-control">
+                            <label for="map-size">Taille de la carte</label>
+                            <select name="map-size" id="map-size">
+                                <option value="9">9x9</option>
+                                <option value="11">11x11</option>
+                                <option value="13">13x13</option>
+                                <option value="19">19x19</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="counting-method">Regles de la partie</label>
+                            <select name="counting-method" id="counting-method">
+                                <option value="japanese">Japonaise</option>
+                                <option value="chinese">Chinoise</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="byo-yomi">Byo-yomi</label>
+                            <input type="number" name="byo-yomi" id="byo-yomi" min="0" max="60" value="30" placeholder="byo-yomi de la partie">
+                        </div>
+                        <div class="form-control">
+                            <label for="clock-type">Type d'horloge</label>
+                            <select name="clock-type" id="clock-type">
+                                <option value="japanese">Byo-yomi Japonais</option>
+                                <option value="chinese">Byo-yomi Chinois</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="time-clock">Temps attribué (Heures : Minutes : Secondes)</label>
+                            <input type="text" name="time-clock" id="time-clock" class="duration-picker" value="01:00:00" data-duration-min="00:00:00" data-duration-max="10:00:00">
+                        </div>
+                        <div class="form-control">
+                            <label for="komi">Valeur donnée au Komi</label>
+                            <input type="number" name="komi" id="komi" min="3.5" max="25.5" value="6.5" placeholder="Valeur donnée au Komi">
+                        </div>
+                        <div class="form-control">
+                            <label for="game-is-handicap">Handicap ?</label>
+                            <switchbutton name="game-is-handicap" id="game-is-handicap" onclick="toggleHandicap()"></switchbutton>
+                        <div id="handicap-form" class="form-control" hidden>
+                            <label for="handicap">Handicap</label>
+                            <input type="number" name="handicap" id="handicap" min="0" max="9" value="0" placeholder="Handicap">
+                        </div>
+                        
+                    <div class="separator"></div>
+                    <div class="form-control">
+                        <input type="submit" value="Créer la partie">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    {% include 'reusable/footer.html' %}
+    <script src="/static/js/global.js"></script>
+    <script src="/static/js/duration_picker.js" type="module"></script>
+    <script src="/static/js/game/create_game.js"></script>
+</body>
+</html>

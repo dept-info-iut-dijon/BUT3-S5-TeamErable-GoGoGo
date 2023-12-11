@@ -1,0 +1,1 @@
+from .InvalidMoveException import InvalidMoveException

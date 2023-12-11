@@ -1,8 +1,10 @@
 from django.db import models
 from .custom_user import CustomUser
+from .game_configuration import GameConfiguration
 import datetime
 
 class Tournament(models.Model):
+    '''Classe permettant de creer un tournoi'''
     name = models.CharField(max_length=255)
     register_date = models.DateField()
     start_date = models.DateField()
@@ -11,6 +13,7 @@ class Tournament(models.Model):
     code = models.CharField(max_length=16)
     description = models.CharField(max_length=255, null=True)
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    game_configuration = models.ForeignKey(GameConfiguration, on_delete=models.CASCADE, null=False)
     player_min = models.IntegerField()
     start = models.BooleanField(default=False)
     private = models.BooleanField(default=False)
@@ -23,7 +26,8 @@ class Tournament(models.Model):
     def __str__(self):
         return self.name
 
-class Participate(models.Model):
+class ParticipateTournament(models.Model):
+    '''Classe permettant de creer une table qui répertorie les joueurs dans un tournoi'''
     person = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     win = models.BooleanField(default=False)
