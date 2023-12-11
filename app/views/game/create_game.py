@@ -1,18 +1,14 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
-from ...models.game import Game
-from ...models.tournament import Tournament
-from ...models.game_participate import GameParticipate
-from ...models.game_configuration import GameConfiguration
+from django.http import HttpResponse, HttpRequest
+from ...models import Game, GameParticipate, CustomUser
 from datetime import datetime
-import random, string, os, json
+import os, json
 from ...logic import Board, RuleFactory
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
 from ..code_manager import CodeManager
 from .game_struct import GameStruct
 from .game_configuration import create_game_config
-from ...models.custom_user import CustomUser
 from datetime import timedelta
 from ...logic.timer.TimerFactory import TimerFactory
 

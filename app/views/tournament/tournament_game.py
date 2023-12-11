@@ -1,9 +1,7 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest
 from django.contrib.auth.decorators import login_required
 from ..game.create_game import construct_game, construct_participate
-from ...models.custom_user import CustomUser
-from ..game.game_configuration_struct import GameConfigurationStruct
+from ...models import CustomUser
 from ..game.game_struct import GameStruct
 from .tournament_struct import TournamentStruct
 

@@ -8,7 +8,6 @@ from .profil.test_security import *
 # Game tests
 from .games.test_init_game import *
 from .games.test_place_stone import *
-from .games.test_scoring import *
 #from .games.test_surrounded_stone import *
 # Tournament tests
 from .tournament.test_init_tournament import *

@@ -1,8 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from ...http import HttpResponseNotifError
-from ...models import Tournament
-from ...models import ParticipateTournament
+from ...models import ParticipateTournament, Tournament
 from datetime import datetime
 from django.db.models import Q
 from ..decorators import login_required
