@@ -5,6 +5,7 @@ from .GoConstants import GoConstants
 import math
 
 class Grid:
+    '''Grille de jeu.'''
     def __init__(self, size: int) -> None:
         '''Initialise une grille de taille spécifiée.
 
@@ -29,6 +30,7 @@ class Grid:
 
     @property
     def raw(self) -> list[list[Tile | None]]:
+        '''Renvoie la grille sous forme de liste de liste de couleurs.'''
         l: list[list[Tile | None]] = []
 
         for y in range(self.size.y):
@@ -245,7 +247,7 @@ class Grid:
         for island in self.get_islands():
             if island.tile == tile and coords in island.coords:
                 return island
-            
+
         return None
 
 

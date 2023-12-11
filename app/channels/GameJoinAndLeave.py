@@ -8,7 +8,7 @@ from ..storage import GameStorage
 from ..utils import time2str
 
 class GameJoinAndLeave(WebsocketConsumer):
-    '''Gère le websocket de la partie.
+    '''Gère le websocket de la partie et le jeu.
 
     Args:
         WebsocketConsumer (_type_): Classe de base du websocket.
@@ -63,7 +63,7 @@ class GameJoinAndLeave(WebsocketConsumer):
                 case 'unpause': pass # TODO: Faire la pause au Sprint 5
 
                 case _:
-                    raise ValueError('Une erreur est survenue.')
+                    raise ValueError('Une commande non valide a été envoyée.')
 
         except (InvalidMoveException, ValueError) as e:
             self.send(text_data = json.dumps({'type': 'error', 'data': str(e)}))
@@ -73,7 +73,11 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def disconnect(self, code: int) -> None:
-        '''Enlève le joueur de la salle s'il n'est plus connecté.'''
+        '''Enlève le joueur de la salle s'il n'est plus connecté.
+        
+        Args:
+            code (int): Code de l'erreur.
+        '''
         async_to_sync(self.channel_layer.group_discard)(f'game_{self._game_id}', self.channel_name)
         self.close()
 
@@ -123,13 +127,13 @@ class GameJoinAndLeave(WebsocketConsumer):
         Returns:
             int: 1 si le joueur peut bouger, 0 sinon, -1 si la partie est finie.
         '''
-        can_play = 0 if board.current_player == Tile.White else 1
-        can_play = -1 if board.ended else can_play
-        return can_play
+        current_player = 0 if board.current_player == Tile.White else 1
+        current_player = -1 if board.ended else current_player
+        return current_player
 
 
     def _check_end_game(self, game: Game, board: Board, looser: Tile = None) -> None:
-        '''Verifie si la partie est finie.
+        '''Verifie si la partie est finie et met a jour le jeu.
 
         Args:
             game (Game): Le jeu
@@ -321,6 +325,4 @@ class GameJoinAndLeave(WebsocketConsumer):
         Args:
             event (dict): Déconnexion du joueur.
         '''
-        data: str = event['data']
-        print('disconnect', data)
         self.send(text_data = json.dumps(event))
