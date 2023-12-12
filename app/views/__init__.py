@@ -39,3 +39,5 @@ from .game.game import game, game_code, game_view_player
 from .game.game_struct import GameStruct
 from .game.game_configuration_struct import GameConfigurationStruct
 from .game.game_configuration import create_game_config
+# Import classement
+from .classement.classement_global import classement_global
