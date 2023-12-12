@@ -15,7 +15,6 @@ def _set_password(old_pwd, new_pwd, request) -> HttpResponse:
     Returns:
         HttpResponse: Réponse HTTP de la modification du mot de passe de l'utilisateur
     '''
-
     validate_password(new_pwd)
     ret = HttpResponseNotifError('L\'ancien mot de passe est incorrect.')
     if request.user.check_password(old_pwd):

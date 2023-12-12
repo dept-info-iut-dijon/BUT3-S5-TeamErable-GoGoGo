@@ -1,3 +1,8 @@
+/**
+ * Récupérer l'élément par son ID
+ * @param {string} color Couleur du joueur
+ * @returns {boolean} Si on a plus de temps
+ */
 function getTimerElement(color) {
     // Récupérer l'élément par son ID
     var countdownElement = document.querySelector("#timer-" + color);
@@ -5,7 +10,10 @@ function getTimerElement(color) {
 }
 
 
-// Fonction pour mettre à jour le temps
+/**
+ * Met à jour le temps
+ * @param {HTMLElement} countdownElement Elemennt du temps
+ */
 function updateCountdown(countdownElement) {
     // Récupérer la valeur du temps actuel au format "hh:mm:ss"
     var currentTime = countdownElement.innerText;
@@ -36,7 +44,11 @@ function updateCountdown(countdownElement) {
     return seconds <= 0 && minutes <= 0 && hours <= 0;
 }
 
-// Fonction pour formater le temps (ajouter un zéro devant si nécessaire)
+/**
+ * Formater le temps
+ * @param {number} time Le chiffre à formater
+ * @returns {string} Le temps avec un 0 devant le chiffre
+ */
 function formatTime(time) {
     return time < 10 ? "0" + time : time;
 }

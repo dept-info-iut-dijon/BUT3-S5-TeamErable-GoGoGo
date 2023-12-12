@@ -191,24 +191,27 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
         Returns:
             HttpResponse: Reponse Http confirmant ou non que l'on a rejoint le tournois
     '''
+    ret = None
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
     if tournament.ongoing() == True: 
-        return HttpResponseNotifError('Les inscription pour ce tournois sont terminees')
+        ret = HttpResponseNotifError('Les inscription pour ce tournois sont terminees')
 
     if len(ParticipateTournament.objects.filter(person=request.user, tournament=tournament).all()) < 1:
-        link = ParticipateTournament.objects.create(
-                person = request.user,
-                tournament = tournament,
-                win = False,
-            )
-        return HttpResponse('''
+        ParticipateTournament.objects.create(
+            person = request.user,
+            tournament = tournament,
+            win = False,
+        )
+        ret = HttpResponse('''
             <script>
                     window.location.reload();
             </script>
             ''')
     else:
-        return HttpResponseNotifError('Vous participez deja au tournois')
+        ret = HttpResponseNotifError('Vous participez deja au tournois')
+    
+    return ret
 
 @login_required
 def tournament_player_list(request: HttpRequest) -> HttpResponse:
