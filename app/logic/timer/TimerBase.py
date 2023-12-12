@@ -8,7 +8,7 @@ class TimerBase(ABC):
     '''Classe abstraite pour le minuteur'''
 
     key: str = 'base'
-    _pause_timer: timedelta = timedelta(seconds = 15)
+    _pause_timer: timedelta = timedelta(minutes = 15)
 
     def __init__(
         self,
