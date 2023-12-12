@@ -50,5 +50,8 @@ urlpatterns = [
     path("game-code", views.game_code, name="game_code"),
     path("game-view-player", views.game_view_player, name="game_view_player"),
 
+    #Classement
+    path("classement-global", views.classement_global, name="classement_global"),
+
 
 ]
