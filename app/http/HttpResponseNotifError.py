@@ -9,5 +9,7 @@ class HttpResponseNotifError(HttpResponseBadRequest):
 
         Args:
             content (str): Contenu de la réponse
+            *args (Any): Arguments de position supplémentaires
+            **kwargs (Any): Arguments nommés supplémentaires
         '''
         super().__init__(f'<p class="error">{content}<p>', *args, **kwargs)

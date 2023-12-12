@@ -29,7 +29,7 @@ def search_tournament(request: HttpRequest) -> HttpResponse:
     '''
     ret = None
     if request.method != 'POST':
-        return HttpResponseBadRequest('')
+        ret = HttpResponseBadRequest('')
     else:
         query = request.POST.get('tournament_name','')
         tournaments = Tournament.objects.exclude(id__in = ParticipateTournament.objects.filter(person = request.user).values('tournament')).filter(name__icontains = query).exclude(end_date__lt = datetime.now()).exclude(private = True).order_by('name')[:12]
@@ -52,7 +52,7 @@ def search_current_tournament(request: HttpRequest) -> HttpResponse:
     '''
     ret = None
     if request.method != 'POST':
-        return HttpResponseBadRequest('Une erreur est survenue. Veuillez recharger la page pour afficher les tournois.')
+        ret = HttpResponseBadRequest('Une erreur est survenue. Veuillez recharger la page pour afficher les tournois.')
     else:
         tournaments = (
             Tournament.objects.filter(Q(id__in = ParticipateTournament.objects.filter(person = request.user).values('tournament')) | Q(creator = request.user)).exclude(end_date__lt = datetime.now()).order_by('name')[:12]
@@ -81,9 +81,11 @@ def tournament_code(request: HttpRequest) -> HttpResponse:
     try:
         tournament_inst = Tournament.objects.get(code = tournament_code, end_date__gt = datetime.now())
         if not tournament_inst: ret = HttpResponseNotifError('Aucun tournoi trouvé')
+        else:
+            ret = HttpResponse(f'/tournament/{tournament_inst.id}/')
 
     except:
-        return HttpResponseNotifError('Code invalide')
+        ret = HttpResponseNotifError('Code invalide')
 
-    ret = HttpResponse(f'/tournament/{tournament_inst.id}/')
+
     return ret
