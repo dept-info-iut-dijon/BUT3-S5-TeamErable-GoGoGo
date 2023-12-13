@@ -4,10 +4,20 @@ from ..Player import Player
 
 class Bracket(implements(IMatch)):
     def __init__(self, bracket1: IMatch, bracket2: IMatch) -> None:
+        self._id: int = None
         self._bracket1 = bracket1
         self._bracket2 = bracket2
         self._winner: Player | None = None
 
+
+    @property
+    def id(self) -> int:
+        return self._id
+
+    @id.setter
+    def id(self, value: int) -> None:
+        if self._id is not None: raise Exception('Match id is already set')
+        self._id = value
 
     @property
     def bracket1(self) -> IMatch:
