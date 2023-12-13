@@ -19,25 +19,28 @@ def classement_global(request: HttpRequest) -> HttpResponse:
         HttpResponse: Reponse HTTP de la page de classement global
     '''
     users = list(CustomUser.objects.all())
-    global_ranking = _get_top_rank(users)
+    global_ranking = _get_top_rank(users, 1)
 
     friends = list(request.user.friends.all())
     friends.append(request.user)
-    friends_ranking = _get_top_rank(friends)
+    friends_ranking = _get_top_rank(friends, 1)
 
     return render(request, 'classement/global.html', {'user': request.user, 'friends_ranked': friends_ranking, 
         'top_ranked': global_ranking})
 
-def _get_top_rank(user_range: list[CustomUser]) -> list[RankingStruct]:
+def _get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]:
     '''
         Permet d'obtenir un classement selon une certaine liste d'utilisateurs
 
         Args:
             user_range (list[CustomUser]): Liste des utilisateurs concernes
+            limit (int): position du dernier elment affiche
 
         Returns:
             list[RankingStruct]: le classement 
     '''
+    #Constante correspondant au nombre d'elements du classement affiches simultanement
+    LIMIT_RANGE = 20
     ranking:list[CustomUser] = []
     
     ranked_game_participate_ids = Game.objects.filter(
@@ -52,7 +55,7 @@ def _get_top_rank(user_range: list[CustomUser]) -> list[RankingStruct]:
     history = _get_history(user_range, game_participates)
     history = _merge_player_history(history)
     ranking = _get_as_ranking(history)
-    ranking = sorted(ranking, key=_sorting_key, reverse=True)
+    ranking = sorted(ranking, key=_sorting_key, reverse=True)[limit*LIMIT_RANGE-LIMIT_RANGE:limit*LIMIT_RANGE]
 
     return ranking
 
