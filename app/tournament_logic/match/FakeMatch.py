@@ -25,4 +25,4 @@ class FakeMatch(implements(IMatch)):
 
 
     def get_current_matches(self) -> list[IMatch]:
-        return [self]
+        return []

@@ -4,10 +4,20 @@ from ..Player import Player
 
 class Match(implements(IMatch)):
     def __init__(self, player1: Player, player2: Player) -> None:
+        self._id: int = None
         self._player1: Player = player1
         self._player2: Player = player2
         self._winner: Player = None
 
+
+    @property
+    def id(self) -> int:
+        return self._id
+
+    @id.setter
+    def id(self, value: int) -> None:
+        if self._id is not None: raise Exception('Match id is already set')
+        self._id = value
 
     @property
     def player1(self) -> Player:

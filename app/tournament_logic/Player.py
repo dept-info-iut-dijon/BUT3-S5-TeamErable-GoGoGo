@@ -9,7 +9,7 @@ class Player:
 
 
     def __str__(self) -> str:
-        return f'{__class__.__name__}(name = {self._id})'
+        return f'{__class__.__name__}(id = {self._id})'
 
 
     def __repr__(self) -> str:
