@@ -65,8 +65,8 @@
                 <div id="players-list" class="container" hx-get="/tournament-player-list?id={{ tournament.id }}" hx-swap="innerHTML" hx-trigger="load"></div>
             </div>
         </section>
-        <section id="arbre-section">
-            <div class="tournament-tree row">
+        <section id="tree-section">
+            {% comment %} <div class="tournament-tree row">
                 {% for match_round in tree %}
                     <div class="column">
                         <div class="tour-label">Tour {{ forloop.counter }}</div>
@@ -78,7 +78,9 @@
                         {% endfor %}
                     </div>
                 {% endfor %}
-            </div>
+            </div> {% endcomment %}
+
+            {{ tree | safe }}
         </section>
     </main>
     {% include 'reusable/footer.html' %}
