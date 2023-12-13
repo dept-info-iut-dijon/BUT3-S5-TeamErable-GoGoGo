@@ -41,6 +41,14 @@ class Bracket(implements(IMatch)):
         return self._bracket2
 
     @property
+    def player1(self) -> Player | None:
+        return self._bracket1.player1 if self._bracket1.winner is not None else None
+
+    @property
+    def player2(self) -> Player | None:
+        return self._bracket2.player2 if self._bracket2.winner is not None else None
+
+    @property
     def winner(self) -> Player | None:
         return self._winner
 

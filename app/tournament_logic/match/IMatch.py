@@ -6,6 +6,14 @@ class IMatch(Interface):
     def winner(self) -> Player | None:
         pass
 
+    @property
+    def player1(self) -> Player | None:
+        pass
+
+    @property
+    def player2(self) -> Player | None:
+        pass
+
 
     def do_win(self, player: Player) -> None:
         '''Indique qu'un joueur a gagné
