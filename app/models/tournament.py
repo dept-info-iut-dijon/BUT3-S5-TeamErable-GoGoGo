@@ -17,6 +17,7 @@ class Tournament(models.Model):
     player_min = models.IntegerField()
     start = models.BooleanField(default=False)
     private = models.BooleanField(default=False)
+    tournament_status = models.FileField(upload_to='dynamic/tournaments', null=True)
 
     #Permet de verifier si le tournois est en cours
     def ongoing(self):
