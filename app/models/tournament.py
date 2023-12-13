@@ -4,6 +4,7 @@ from .game_configuration import GameConfiguration
 from ..tournament_logic import Tournament as TournamentLogic, Player as TournamentPlayer
 from ..storage import TournamentStorage
 import datetime
+from random import shuffle
 
 class Tournament(models.Model):
     '''Classe permettant de creer un tournoi'''
@@ -33,6 +34,7 @@ class Tournament(models.Model):
 
             if self.tournament_status is None:
                 players: list[CustomUser] = ParticipateTournament.objects.filter(tournament = self).all()
+                shuffle(players)
                 tl = TournamentLogic([TournamentPlayer(p.id) for p in players])
                 f = self.get_filename()
                 TournamentStorage.save_tournament(tl, f)
