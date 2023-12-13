@@ -8,3 +8,4 @@ waitress==2.1.2
 daphne==4.0.0
 channels==4.0.0
 channels-redis==4.1.0
+python-interface==1.6.1
