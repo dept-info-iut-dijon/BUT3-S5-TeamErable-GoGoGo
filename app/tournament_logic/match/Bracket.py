@@ -1,9 +1,22 @@
 from interface import implements
 from .IMatch import IMatch
 from ..Player import Player
+from . import MatchFactory
 
 class Bracket(implements(IMatch)):
+    '''Bracket entre deux matchs
+
+    Args:
+        implements (_type_): Interface IMatch
+    '''
+
     def __init__(self, bracket1: IMatch, bracket2: IMatch) -> None:
+        '''Initialise un bracket
+
+        Args:
+            bracket1 (IMatch): Bracket 1
+            bracket2 (IMatch): Bracket 2
+        '''
         self._id: int = None
         self._bracket1 = bracket1
         self._bracket2 = bracket2
@@ -38,6 +51,9 @@ class Bracket(implements(IMatch)):
         s2 = '\t' + str(self._bracket2).replace('\n', '\n\t')
         return f'{__class__.__name__}{addon}(\n{s1},\n{s2}\n)'
 
+    def __repr__(self) -> str:
+        return str(self)
+
 
     def do_win(self, player: Player) -> None:
         if (self._bracket1.winner is None): self._bracket1.do_win(player)
@@ -55,4 +71,28 @@ class Bracket(implements(IMatch)):
 
         if self._bracket1.winner is not None and self._bracket2.winner is not None: ret.append(self)
 
+        return ret
+
+
+    def export(self) -> dict:
+        return {
+            'type': 'Bracket',
+            'id': self._id,
+            'brackets': [self._bracket1.export(), self._bracket2.export()],
+        }
+
+
+    @staticmethod
+    def import_(data: dict) -> IMatch:
+        '''Importe un bracket depuis un dictionnaire
+
+        Args:
+            data (dict): Le dictionnaire contenant le bracket
+
+        Returns:
+            IMatch: Le bracket
+        '''
+        brackets = [MatchFactory.MatchFactory.import_(bracket) for bracket in data['brackets']]
+        ret = Bracket(*brackets)
+        ret.id = data['id']
         return ret
