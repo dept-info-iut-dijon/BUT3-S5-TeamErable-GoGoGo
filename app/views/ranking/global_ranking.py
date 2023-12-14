@@ -9,7 +9,7 @@ from .ranking_struct import RankingStruct
 
 @login_required
 @request_type(RequestType.GET)
-def classement_global(request: HttpRequest) -> HttpResponse:
+def global_ranking(request: HttpRequest) -> HttpResponse:
     '''Controlleur de la page de classement global
 
     Args:
@@ -25,7 +25,7 @@ def classement_global(request: HttpRequest) -> HttpResponse:
     friends.append(request.user)
     friends_ranking = _get_top_rank(friends, 1)
 
-    return render(request, 'classement/global.html', {'user': request.user, 'friends_ranked': friends_ranking, 
+    return render(request, 'ranking/global.html', {'user': request.user, 'friends_ranked': friends_ranking, 
         'top_ranked': global_ranking})
 
 def _get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]:
