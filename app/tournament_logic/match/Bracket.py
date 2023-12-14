@@ -64,9 +64,16 @@ class Bracket(implements(IMatch)):
 
 
     def do_win(self, player: Player) -> None:
-        if (self._bracket1.winner is None): self._bracket1.do_win(player)
-        elif (self._bracket2.winner is None): self._bracket2.do_win(player)
-        else:
+        ret = False
+        if (self._bracket1.winner is None):
+            self._bracket1.do_win(player)
+            ret = True
+
+        if (self._bracket2.winner is None):
+            self._bracket2.do_win(player)
+            ret = True
+
+        if not ret:
             if (self._bracket1.winner == player): self._winner = self._bracket1.winner
             elif (self._bracket2.winner == player): self._winner = self._bracket2.winner
 
