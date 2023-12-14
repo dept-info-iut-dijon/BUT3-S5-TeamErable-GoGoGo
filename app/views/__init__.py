@@ -41,3 +41,5 @@ from .game.game_configuration_struct import GameConfigurationStruct
 from .game.game_configuration import create_game_config
 # Import classement
 from .classement.classement_global import classement_global
+# Imports carrière
+from .profil.career.career import search_games_historic, career
