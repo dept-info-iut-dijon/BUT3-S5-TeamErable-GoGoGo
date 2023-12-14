@@ -31,7 +31,7 @@ def career(request: HttpRequest) -> HttpResponse:
         {'total_tournaments': total_tournaments, 'total_wins_tournaments': total_win_tournaments, 'total_loses_tournaments': total_lose_tournaments,'total_games': total_games, 'total_wins': total_wins, 'total_loses': total_loses, 'total_classed_games': total_game_ranked, 'total_classed_wins': total_wins_ranked, 'total_classed_loses': total_loses_ranked}
     )
 
-def count_total_game_ranked_win(user) -> int:
+def count_total_game_ranked_win(user : CustomUser) -> int:
     '''Compte le nombre de parties classées gagnées ou perdu par un joueur
 
     Args:
@@ -44,7 +44,7 @@ def count_total_game_ranked_win(user) -> int:
 
     return ret
 
-def count_total_game_ranked_loose(user) -> int:
+def count_total_game_ranked_loose(user : CustomUser) -> int:
     '''Compte le nombre de parties classées gagnées ou perdu par un joueur
 
     Args:
@@ -57,7 +57,7 @@ def count_total_game_ranked_loose(user) -> int:
 
     return ret
 
-def count_total_game_win(user) -> int:
+def count_total_game_win(user : CustomUser) -> int:
     '''Compte le nombre de parties gagnées ou perdu par un joueur
 
     Args:
@@ -70,7 +70,7 @@ def count_total_game_win(user) -> int:
 
     return ret
 
-def count_total_game_loose(user) -> int:
+def count_total_game_loose(user : CustomUser) -> int:
     '''Compte le nombre de parties gagnées ou perdu par un joueur
 
     Returns:
@@ -80,7 +80,7 @@ def count_total_game_loose(user) -> int:
 
     return ret
 
-def count_total_tournament(user, result) -> int:
+def count_total_tournament(user : CustomUser, result : bool) -> int:
     '''Compte le nombre de tournois gagnés ou perdu par un joueur
 
     Args:
