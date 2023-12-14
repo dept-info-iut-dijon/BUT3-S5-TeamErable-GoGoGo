@@ -7,7 +7,7 @@
         <title>GoGoGo • Classement</title>
         <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
         <link rel="stylesheet" href="/static/css/global.css">
-        <link rel="stylesheet" href="/static/css/classement/classement.css">
+        <link rel="stylesheet" href="/static/css/ranking/ranking.css">
         <link rel="stylesheet" href="/static/css/signup.css">
     </head>
 
@@ -34,6 +34,7 @@
                     <thead>
                         <tr>
                             <th>Position</th>
+                            <th></th>
                             <th>Joueur</th>
                             <th>Rang</th>
                             <th>Elo</th>
@@ -47,6 +48,7 @@
                         {% for player in top_ranked %}
                         <tr {% if player.user.id is user.id%}id="current"{% endif %}>
                             <td>{{ forloop.counter }}</td>
+                            <td><img src="get-pfp?id={{player.user.id}}" class="pfp"></td>
                             <td>{{ player.user.username }}</td>
                             <td></td> 
                             <td></td>  
@@ -97,6 +99,7 @@
             </section>
         </div>
     </main>
+    {% include 'reusable/footer.html' %}
     <script src="/static/js/sidebar-link.js"></script>
 </body>
 </html>

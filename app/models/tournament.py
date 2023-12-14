@@ -41,7 +41,14 @@ class Tournament(models.Model):
                 self.tournament_status = f
 
         return ret
+    
+    def terminated(self):
+        ret = False
 
+        if(self.end_date <= datetime.datetime.now().date()):
+            ret = True
+
+        return ret
 
     def __str__(self):
         return self.name
