@@ -65,13 +65,9 @@ def _generate_tournament(request: HttpRequest, tournament: TournamentLogic) -> s
         if isinstance(element, Bracket):
             if isinstance(element.bracket1, (Bracket, Match)):
                 new_pile.append(element.bracket1)
-            # elif isinstance(element.bracket1, FakeMatch):
-            #     new_pile.append(None)
 
             if isinstance(element.bracket2, (Bracket, Match)):
                 new_pile.append(element.bracket2)
-            # elif isinstance(element.bracket2, FakeMatch):
-            #     new_pile.append(None)
 
         if not pile:
             pile = new_pile.copy()
