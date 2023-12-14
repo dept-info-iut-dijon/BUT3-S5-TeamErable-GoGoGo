@@ -37,6 +37,10 @@ class Tournament:
     def bracket(self) -> IMatch:
         return self._bracket
 
+    @property
+    def winner(self) -> Player:
+        return self._bracket.winner
+
 
     def _generate_bracket(self, players: list[Player]) -> IMatch:
         '''Génère un bracket à partir d'une liste de joueurs
