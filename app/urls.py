@@ -55,7 +55,7 @@ urlpatterns = [
     path("career", views.career, name="career"),
 
     #Classement
-    path("classement-global", views.classement_global, name="classement_global"),
+    path("classement-global", views.global_ranking, name="classement_global"),
 
 
 ]

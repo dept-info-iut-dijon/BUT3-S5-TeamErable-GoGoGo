@@ -26,6 +26,14 @@ class FakeMatch(implements(IMatch)):
     def winner(self) -> Player | None:
         return self._player
 
+    @property
+    def player1(self) -> Player | None:
+        return self._player
+
+    @property
+    def player2(self) -> Player | None:
+        return None
+
 
     def __str__(self) -> str:
         return 'FakeMatch -> ' + str(self._player)

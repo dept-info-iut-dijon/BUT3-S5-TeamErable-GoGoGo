@@ -1,35 +1,150 @@
 from django.db.models import Q
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
 from app.models import CustomUser, Game, GameParticipate, Tournament, ParticipateTournament
 from ..decorators import login_required
 from ...http import HttpResponseNotifError
+from ...tournament_logic import Tournament as TournamentLogic, IMatch, Bracket, Match, FakeMatch, Player
+from random import shuffle
 
-def _has_game_happened(tournament_games:list[Game], player1:CustomUser, player2:CustomUser)->GameParticipate:
-    '''
-        Verifie si la partie a eut lieu
-        Args:
-            tournament_games (List[Game]): liste des parties liees au tournois
-            player1 (CustomUser): le joueur 1 de la partie concernee
-            player2 (CustomUser): le joueur 2 de la partie concernee
+# def _has_game_happened(tournament_games:list[Game], player1:CustomUser, player2:CustomUser)->GameParticipate:
+#     '''
+#         Verifie si la partie a eut lieu
+#         Args:
+#             tournament_games (List[Game]): liste des parties liees au tournois
+#             player1 (CustomUser): le joueur 1 de la partie concernee
+#             player2 (CustomUser): le joueur 2 de la partie concernee
 
-        Returns:
-            GameParticipate: les lien de participation ou None si elle n'existe pas
-    '''
-    ret = None
+#         Returns:
+#             GameParticipate: les lien de participation ou None si elle n'existe pas
+#     '''
+#     ret = None
 
-    for game in tournament_games:
-        game_participate = GameParticipate.objects.filter(
-            Q(id_game_participate=game.game_participate_id) &
-            (Q(player1=player1) | Q(player1=player2)) &
-            (Q(player2=player1) | Q(player2=player2))
-        )
-        if game_participate.count() == 1:
-            ret = game_participate
-            break
+#     for game in tournament_games:
+#         game_participate = GameParticipate.objects.filter(
+#             Q(id_game_participate=game.game_participate_id) &
+#             (Q(player1=player1) | Q(player1=player2)) &
+#             (Q(player2=player1) | Q(player2=player2))
+#         )
+#         if game_participate.count() == 1:
+#             ret = game_participate
+#             break
 
-    return ret
+#     return ret
+
+
+def generate_match(request: HttpRequest, match: Match) -> str:
+    if match is None:
+        return render_to_string('tournament/bracket/fake_match.html', {}, request)
+
+    if match.player1 is not None:
+        try: player1 = CustomUser.objects.get(id = match.player1.id)
+        except: player1 = None
+    else: player1 = None
+
+    if match.player2 is not None:
+        try: player2 = CustomUser.objects.get(id = match.player2.id)
+        except: player2 = None
+    else: player2 = None
+
+    return render_to_string('tournament/bracket/match.html', {'name1': player1.username if player1 is not None else '', 'name2': player2.username if player2 is not None else ''}, request)
+
+
+def generate_round(request: HttpRequest, round: list[IMatch]) -> str:
+    spacer = render_to_string('tournament/bracket/spacer.html', {}, request)
+    matches = [generate_match(request, match) for match in round]
+
+    return render_to_string('tournament/bracket/round.html', {'rounds': spacer.join(matches)}, request)
+
+def _generate_tournament(request: HttpRequest, tournament: TournamentLogic) -> str:
+    levels = []
+    pile = [tournament.bracket]
+    new_pile = []
+
+    while pile:
+        element = pile.pop(0)
+
+        if isinstance(element, Bracket):
+            if isinstance(element.bracket1, (Bracket)):
+                new_pile.append(element.bracket1)
+            elif isinstance(element.bracket1, Match):
+                new_pile.append(element.bracket1)
+            elif isinstance(element.bracket1, FakeMatch):
+                new_pile.append(None)
+
+            if isinstance(element.bracket2, (Bracket, Match)):
+                new_pile.append(element.bracket2)
+            elif isinstance(element.bracket2, FakeMatch):
+                new_pile.append(None)
+
+        if not pile:
+            pile = new_pile.copy()
+            if new_pile: levels.append(new_pile)
+            new_pile = []
+
+    levels.reverse()
+
+    n = len(tournament.players)
+
+    # if not ((n & (n - 1) == 0) and n != 0):
+    #     l = []
+    #     for match in levels[1]:
+    #         if isinstance(match, Match):
+    #             l += [None] * 2
+
+    #         else:
+    #             l += [None, levels[0].pop(0)]
+
+    #     levels[0] = l
+
+
+    # if not ((n & (n - 1) == 0) and n != 0):
+    #     if len(levels[0]) < len(levels[1]):
+    #         print('<')
+    #         sep = len(levels[1]) // len(levels[0])
+    #         k = 0
+    #         for i in range(len(levels[0])):
+    #             for _ in range(sep * 2 - 1):
+    #                 k += 1
+    #                 levels[0].insert(i * sep + k - i - 1, None)
+
+    #     elif len(levels[0]) > len(levels[1]):
+    #         print('>')
+    #         sep = len(levels[0]) - len(levels[1]) - 1
+    #         for i in range(sep + 1):
+    #             levels[0].insert(sep * i, None)
+
+    #     else:
+    #         print('=')
+    #         sep = len(levels[1]) // len(levels[0])
+    #         k = 0
+    #         for i in range(len(levels[0])):
+    #             for _ in range(sep * 2 - 1):
+    #                 k += 1
+    #                 levels[0].insert(i * sep + k - 1, None)
+
+
+
+    # if len(levels[0]) < len(levels[1]):
+    #     print('<')
+    #     sep = len(levels[1]) // len(levels[0])
+    #     k = 0
+    #     for i in range(len(levels[0])):
+    #         for _ in range(sep * 2 - 1):
+    #             k += 1
+    #             levels[0].insert(i * sep + k - i - 1, None)
+
+    # elif not ((n & (n - 1) == 0) and n != 0):
+    #     print('>')
+    #     sep = len(levels[0]) - len(levels[1])
+    #     for i in range(sep):
+    #         levels[0].insert(sep * i, None)
+
+    rounds = [generate_round(request, round) for round in levels]
+
+    return render_to_string('tournament/bracket/tournament.html', {'rounds': '\n'.join(rounds)}, request)
 
 
 @login_required
@@ -47,12 +162,21 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=id)
     user = _get_organisator_user(tournament)
     participants = _get_tournament_participants(tournament)
-    games = Game.objects.filter(tournament=tournament)
-    tournament_games = _generate_tournament_tree(participants, games)
+
+    nb_players = 9
+
+    list_of_players = [Player(i + 1) for i in range(nb_players)]
+    shuffle(list_of_players)
+
+    tournament_logic = TournamentLogic(list_of_players)
+    tournament_res = _generate_tournament(request, tournament_logic)
+
+    # print(tournament_logic)
+
     context = {
         'tournament': tournament,
         'organisator': user,
-        'tree': tournament_games,
+        'tree': tournament_res,
         'in_tournament': request.user in participants,
         'ongoing': tournament.ongoing()
     }
@@ -87,97 +211,97 @@ def _get_tournament_participants(tournament:Tournament)->list[CustomUser]:
     participants = [entry.person for entry in participate]
     return participants
 
-def _generate_tournament_tree(participants:list[CustomUser], games:list[Game])->list[list]:
-    '''
-        Genere l'arbre de tournois
-        Args:
-            participants (list[CustomUser]): la liste des participants
-            games (list[Game]): la liste des parties liees au tournois
+# def _generate_tournament_tree(participants:list[CustomUser], games:list[Game])->list[list]:
+#     '''
+#         Genere l'arbre de tournois
+#         Args:
+#             participants (list[CustomUser]): la liste des participants
+#             games (list[Game]): la liste des parties liees au tournois
 
-        Returns:
-            list[list]: la liste des rounds
-    '''
-    tournament_games = []
-    current_round = [(participants[i - 1], participants[i]) for i in range(1, len(participants), 2)]
-    lone_member = _get_lone_member(participants)
-    round_iter = 0
+#         Returns:
+#             list[list]: la liste des rounds
+#     '''
+#     tournament_games = []
+#     current_round = [(participants[i - 1], participants[i]) for i in range(1, len(participants), 2)]
+#     lone_member = _get_lone_member(participants)
+#     round_iter = 0
 
-    while len(current_round) != 0:
-        tournament_games.append([])
-        next_round = []
-        if lone_member != None:
-            next_round.append(lone_member)
+#     while len(current_round) != 0:
+#         tournament_games.append([])
+#         next_round = []
+#         if lone_member != None:
+#             next_round.append(lone_member)
 
-        for match in current_round:
-            curr_game_participate = _has_game_happened(games, match[0], match[1])
-            winner = _get_winner(match[0], match[1], curr_game_participate)
-            if winner != None : 
-                next_round.append(match[winner])
-            else:
-                next_round.append(None)
-            tournament_games[round_iter].append((match[0], match[1], winner))
+#         for match in current_round:
+#             curr_game_participate = _has_game_happened(games, match[0], match[1])
+#             winner = _get_winner(match[0], match[1], curr_game_participate)
+#             if winner != None : 
+#                 next_round.append(match[winner])
+#             else:
+#                 next_round.append(None)
+#             tournament_games[round_iter].append((match[0], match[1], winner))
 
-        lone_member = _get_lone_member(next_round)
-        current_round = _create_next_round(next_round)
-        round_iter += 1
-    return tournament_games
+#         lone_member = _get_lone_member(next_round)
+#         current_round = _create_next_round(next_round)
+#         round_iter += 1
+#     return tournament_games
 
-def _get_lone_member(participants:list[CustomUser])->CustomUser:
-    '''
-        Permet d'obtenir un eventuel participant impaire
+# def _get_lone_member(participants:list[CustomUser])->CustomUser:
+#     '''
+#         Permet d'obtenir un eventuel participant impaire
 
-        Args:
-            participants (CustomUser): liste des participants 
+#         Args:
+#             participants (CustomUser): liste des participants 
 
-        Returns:
-            CustomUser: Le participant impaire
-    '''
-    lone_member = None
-    if len(participants) % 2 == 1:
-        lone_member = participants[-1]
-    return lone_member
+#         Returns:
+#             CustomUser: Le participant impaire
+#     '''
+#     lone_member = None
+#     if len(participants) % 2 == 1:
+#         lone_member = participants[-1]
+#     return lone_member
 
-def _create_next_round(next_round:list[CustomUser])->list:
-    '''
-        Cree la liste des mathcs du prochain round
+# def _create_next_round(next_round:list[CustomUser])->list:
+#     '''
+#         Cree la liste des mathcs du prochain round
 
-        Args:
-            next_round (list[CustomUser]): liste de gagnants du round
+#         Args:
+#             next_round (list[CustomUser]): liste de gagnants du round
 
-        Returns:
-            list: liste des matchs du prochain round
+#         Returns:
+#             list: liste des matchs du prochain round
 
-    '''
+#     '''
 
-    current_round = [(next_round[i - 1], next_round[i]) for i in range(1, len(next_round), 2)]
+#     current_round = [(next_round[i - 1], next_round[i]) for i in range(1, len(next_round), 2)]
         
-    return current_round
+#     return current_round
 
-def _get_winner(player1:CustomUser, player2:CustomUser, curr_game_participate:GameParticipate)-> int:
-    '''
-        Permet d'obtenir le gagnant d'une partie
+# def _get_winner(player1:CustomUser, player2:CustomUser, curr_game_participate:GameParticipate)-> int:
+#     '''
+#         Permet d'obtenir le gagnant d'une partie
 
-        Args:
-            player1 (CustomUser): le joueur 1
-            player2 (CustomUser): le joueur 2
-            curr_game (Game): le lien de participation a la partie 
+#         Args:
+#             player1 (CustomUser): le joueur 1
+#             player2 (CustomUser): le joueur 2
+#             curr_game (Game): le lien de participation a la partie 
         
-        Returns:
-            int: position du gagnant dans l'association (0 ou 1)
-    '''
-    winner=None
+#         Returns:
+#             int: position du gagnant dans l'association (0 ou 1)
+#     '''
+#     winner=None
 
-    if curr_game_participate != None and curr_game_participate[0]:
-        score_player1 = curr_game_participate[0].score_player1
-        score_player2 = curr_game_participate[0].score_player2
+#     if curr_game_participate != None and curr_game_participate[0]:
+#         score_player1 = curr_game_participate[0].score_player1
+#         score_player2 = curr_game_participate[0].score_player2
 
-        if score_player1 > score_player2:
-            winner = 0
-        elif score_player2 > score_player1:
-            winner = 1
+#         if score_player1 > score_player2:
+#             winner = 0
+#         elif score_player2 > score_player1:
+#             winner = 1
 
-    return winner
-    
+#     return winner
+
 
 @login_required
 def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
