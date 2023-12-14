@@ -1,123 +1,49 @@
-/* #tree-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-} */
-
-/* .tournament-tree {
-    gap: 20px;
-    align-items: center;
-    margin-top: 20px;
-    margin-bottom: 3rem;
-} */
-
 #tree-section{
-    display:flex;
-    flex-direction:row;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 .round{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    width:200px;
-    list-style:none;
-    padding:0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 200px;
+    list-style: none;
+    padding: 0;
 }
 .round .spacer{
-    flex-grow:1;
+    flex-grow: 1;
 }
 .round .spacer:first-child,
 .round .spacer:last-child{
-    flex-grow:.5;
+    flex-grow: 0.5;
 }
 
 .round .game-spacer{
-    flex-grow:1;
+    flex-grow: 1;
 }
 
 li.game{
-    padding-left:20px;
+    padding-left: 20px;
 }
 
 li.game.winner{
-    font-weight:bold;
+    font-weight: bold;
 }
 li.game span{
-    float:right;
-    margin-right:5px;
+    float: right;
+    margin-right: 5px;
 }
 
 li.game-top{
-    border-bottom:1px solid #aaa;
+    border-bottom: 1px solid #aaa;
 }
 
 li.game-spacer{ 
-    border-right:1px solid #aaa;
-    min-height:40px;
+    border-right: 1px solid #aaa;
+    min-height: 40px;
 }
 
 li.game-bottom{ 
-    border-top:1px solid #aaa;
+    border-top: 1px solid #aaa;
 }
-
-/* .column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-}
-
-.tour-label {
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.match {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 5px 0;
-    position: relative;
-}
-
-.team {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: var(--main-color-light);
-    border-bottom-right-radius: var(--border-radius);
-    border-top-right-radius: var(--border-radius);
-    position: relative;
-}
-
-.winner {
-    background-color: #7ac95b;
-} */
-
-/* Style pour les lignes reliant les équipes */
-/* .team::before {
-    content: "";
-    position: absolute;
-    width: 2px; 
-    height: 100%;
-    background-color: #000;
-    top: 50%;
-    left: -2px;
-    transform: translateY(-50%);
-    z-index: -1; 
-} */
-
-/* Style pour les lignes indiquant le passage au tour suivant */
-/* .match::after {
-    content: "";
-    position: absolute;
-    width: 20px; 
-    height: 2px;
-    background-color: #000;
-    top: 50%;
-    left: 100%;
-    transform: translateY(-50%);
-} */
