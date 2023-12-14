@@ -9,7 +9,7 @@ class Statistic(models.Model):
     tournament_win = models.IntegerField(default=0)
     tournament_loose = models.IntegerField(default=0)
     elo = models.IntegerField(default=1000)
-    rang = models.CharField(max_length=100, default="30ème Kyu")
+    rank = models.CharField(max_length=100, default="30ème Kyu")
 
 
 
