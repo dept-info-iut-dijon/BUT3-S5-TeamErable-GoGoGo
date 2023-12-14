@@ -40,4 +40,4 @@ from .game.game_struct import GameStruct
 from .game.game_configuration_struct import GameConfigurationStruct
 from .game.game_configuration import create_game_config
 # Import classement
-from .classement.classement_global import classement_global
+from .ranking.global_ranking import global_ranking

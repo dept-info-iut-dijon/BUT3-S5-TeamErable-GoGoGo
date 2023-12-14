@@ -51,7 +51,7 @@ urlpatterns = [
     path("game-view-player", views.game_view_player, name="game_view_player"),
 
     #Classement
-    path("classement-global", views.classement_global, name="classement_global"),
+    path("classement-global", views.global_ranking, name="classement_global"),
 
 
 ]
