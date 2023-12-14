@@ -28,8 +28,13 @@ li.game{
 }
 
 li.game.winner{
-    font-weight: bold;
+    background-color: #a5f6a5;
 }
+
+li.game.loser{
+    background-color: #ff7070;
+}
+
 li.game span{
     float: right;
     margin-right: 5px;
@@ -37,6 +42,10 @@ li.game span{
 
 li.game-top{
     border-bottom: 1px solid #aaa;
+    padding: 0.5rem 1rem;
+    background-color: var(--main-color-light);
+    border-top-right-radius: var(--border-radius);
+    border-top-left-radius: var(--border-radius);
 }
 
 li.game-spacer{ 
@@ -46,4 +55,20 @@ li.game-spacer{
 
 li.game-bottom{ 
     border-top: 1px solid #aaa;
+    padding: 0.5rem 1rem;
+    background-color: var(--main-color-light);
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}
+
+li.game-top.no-background{
+    background-color: lightgrey;
+    border-top-right-radius: var(--border-radius);
+    border-top-left-radius: var(--border-radius);
+}
+
+li.game-bottom.no-background{
+    background-color: lightgrey;
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
 }
