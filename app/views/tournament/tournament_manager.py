@@ -37,6 +37,16 @@ def generate_match(request: HttpRequest, match: Match) -> str:
             'name2': player2.username if player2 is not None else '',
             'score1': match_obj.game_participate.score_player1 if match_obj is not None else '&nbsp;',
             'score2': match_obj.game_participate.score_player2 if match_obj is not None else '&nbsp;',
+            'cls1': ' '.join(
+                ['winner' if match.player1 == match.winner != None else ''] +
+                ['loser' if match.player1 != match.winner and match.winner != None else ''] +
+                ['no-background' if match.player1 is None else '']
+            ),
+            'cls2': ' '.join(
+                ['winner' if match.player2 == match.winner != None else ''] +
+                ['loser' if match.player2 != match.winner and match.winner != None else ''] +
+                ['no-background' if match.player2 is None else '']
+            )
         },
         request
     )
@@ -136,6 +146,12 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
     # shuffle(list_of_players)
 
     tournament_logic = TournamentLogic(list_of_players)
+    tournament_logic.do_win(Player(2))
+    tournament_logic.do_win(Player(4))
+    tournament_logic.do_win(Player(6))
+    tournament_logic.do_win(Player(8))
+    tournament_logic.do_win(Player(10))
+    tournament_logic.do_win(Player(12))
     tournament_res = _generate_tournament(request, tournament_logic)
 
     print(tournament_logic)
