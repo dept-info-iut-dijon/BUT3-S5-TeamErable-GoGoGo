@@ -29,10 +29,12 @@ L'application vise à faciliter les rencontres en ligne entre les passionnés de
 
 
 ## Prérequis
-- Machine Window / Linux / MACOS ( avec python 3.11 ou plus )
-- Machine Linux ( ou WSL )
+- Machine Window / Linux / MACOS ( avec python **3.11** ou plus **avec pip dans le path** ( Case à cocher sur la première page de l'installateur ) )
+- Machine Linux (ou WSL)
 
 ## Installation
+
+Si python 3.11 n'est pas celui installé par défaut sur votre machine, replacez les `python` par `python3.11` dans les commandes suivantes.
 
 Pour installer les dépendances du projet ( sur la Machine python ) vous pouvez executer la commande suivante a la racine du projet: 
 - ```python -m pip install -r requirements.txt```
@@ -46,6 +48,7 @@ Pour installer redis ( sur la machine Linux ) vous pouvez executer la commande s
 - Asgrief
 - Django
 - Plum
+- Interface
 - Waitress
 - Daphne
 - Channels

@@ -83,3 +83,15 @@ class Island:
             bool: True si l'île est contenue, False sinon.
         '''
         return set(island._coords).issubset(set(self._coords))
+
+
+    def overlaps(self, island: 'Island') -> bool:
+        '''Vérifie si l'île chevauche une autre île.
+
+        Args:
+            island (Island): Île à vérifier.
+
+        Returns:
+            bool: True si l'île chevauche, False sinon.
+        '''
+        return set(island._coords).intersection(set(self._coords)) != set()
