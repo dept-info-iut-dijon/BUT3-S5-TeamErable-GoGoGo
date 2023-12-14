@@ -64,7 +64,7 @@ def generate_winner(request: HttpRequest, winner: Player) -> str:
         'tournament/bracket/winner.html',
         {
             'name': winner.username if winner is not None else '&nbsp;',
-            'cls': 'no-background' if winner is not None else ''
+            'cls': 'no-background' if winner is None else ''
         },
         request
     )
