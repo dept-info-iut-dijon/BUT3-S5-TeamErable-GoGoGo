@@ -49,7 +49,22 @@ def generate_match(request: HttpRequest, match: Match) -> str:
         except: player2 = None
     else: player2 = None
 
-    return render_to_string('tournament/bracket/match.html', {'name1': player1.username if player1 is not None else '', 'name2': player2.username if player2 is not None else ''}, request)
+    if match.id is not None:
+        try: match_obj = Game.objects.filter(id = match.id).first()
+        except: match_obj = None
+    else: match_obj = None
+
+
+    return render_to_string(
+        'tournament/bracket/match.html',
+        {
+            'name1': player1.username if player1 is not None else '',
+            'name2': player2.username if player2 is not None else '',
+            'score1': match_obj.game_participate.score_player1 if match_obj is not None else '&nbsp;',
+            'score2': match_obj.game_participate.score_player2 if match_obj is not None else '&nbsp;',
+        },
+        request
+    )
 
 
 def generate_round(request: HttpRequest, round: list[IMatch]) -> str:
@@ -57,6 +72,12 @@ def generate_round(request: HttpRequest, round: list[IMatch]) -> str:
     matches = [generate_match(request, match) for match in round]
 
     return render_to_string('tournament/bracket/round.html', {'rounds': spacer.join(matches)}, request)
+
+
+def generate_winner(request: HttpRequest, winner: Player) -> str:
+    winner_str = render_to_string('tournament/bracket/winner.html', {'name': winner.username if winner is not None else ''}, request)
+    return render_to_string('tournament/bracket/round.html', {'rounds': winner_str}, request)
+
 
 def _generate_tournament(request: HttpRequest, tournament: TournamentLogic) -> str:
     levels = []
@@ -67,17 +88,15 @@ def _generate_tournament(request: HttpRequest, tournament: TournamentLogic) -> s
         element = pile.pop(0)
 
         if isinstance(element, Bracket):
-            if isinstance(element.bracket1, (Bracket)):
+            if isinstance(element.bracket1, (Bracket, Match)):
                 new_pile.append(element.bracket1)
-            elif isinstance(element.bracket1, Match):
-                new_pile.append(element.bracket1)
-            elif isinstance(element.bracket1, FakeMatch):
-                new_pile.append(None)
+            # elif isinstance(element.bracket1, FakeMatch):
+            #     new_pile.append(None)
 
             if isinstance(element.bracket2, (Bracket, Match)):
                 new_pile.append(element.bracket2)
-            elif isinstance(element.bracket2, FakeMatch):
-                new_pile.append(None)
+            # elif isinstance(element.bracket2, FakeMatch):
+            #     new_pile.append(None)
 
         if not pile:
             pile = new_pile.copy()
@@ -86,63 +105,40 @@ def _generate_tournament(request: HttpRequest, tournament: TournamentLogic) -> s
 
     levels.reverse()
 
-    n = len(tournament.players)
+    if len(levels[0]) != len(levels[1] * 2):
+        new_level0 = []
 
-    # if not ((n & (n - 1) == 0) and n != 0):
-    #     l = []
-    #     for match in levels[1]:
-    #         if isinstance(match, Match):
-    #             l += [None] * 2
+        for element in levels[1]:
+            if isinstance(element, Bracket):
+                if isinstance(element.bracket1, Match):
+                    new_level0 += [levels[0].pop(0)]
 
-    #         else:
-    #             l += [None, levels[0].pop(0)]
+                elif isinstance(element.bracket1, Bracket):
+                    new_level0 += [None]
 
-    #     levels[0] = l
-
-
-    # if not ((n & (n - 1) == 0) and n != 0):
-    #     if len(levels[0]) < len(levels[1]):
-    #         print('<')
-    #         sep = len(levels[1]) // len(levels[0])
-    #         k = 0
-    #         for i in range(len(levels[0])):
-    #             for _ in range(sep * 2 - 1):
-    #                 k += 1
-    #                 levels[0].insert(i * sep + k - i - 1, None)
-
-    #     elif len(levels[0]) > len(levels[1]):
-    #         print('>')
-    #         sep = len(levels[0]) - len(levels[1]) - 1
-    #         for i in range(sep + 1):
-    #             levels[0].insert(sep * i, None)
-
-    #     else:
-    #         print('=')
-    #         sep = len(levels[1]) // len(levels[0])
-    #         k = 0
-    #         for i in range(len(levels[0])):
-    #             for _ in range(sep * 2 - 1):
-    #                 k += 1
-    #                 levels[0].insert(i * sep + k - 1, None)
+                else:
+                    new_level0 += [None]
 
 
+                if isinstance(element.bracket2, Match):
+                    new_level0 += [levels[0].pop(0)]
 
-    # if len(levels[0]) < len(levels[1]):
-    #     print('<')
-    #     sep = len(levels[1]) // len(levels[0])
-    #     k = 0
-    #     for i in range(len(levels[0])):
-    #         for _ in range(sep * 2 - 1):
-    #             k += 1
-    #             levels[0].insert(i * sep + k - i - 1, None)
+                elif isinstance(element.bracket2, Bracket):
+                    new_level0 += [None]
 
-    # elif not ((n & (n - 1) == 0) and n != 0):
-    #     print('>')
-    #     sep = len(levels[0]) - len(levels[1])
-    #     for i in range(sep):
-    #         levels[0].insert(sep * i, None)
+                else:
+                    new_level0 += [None]
 
-    rounds = [generate_round(request, round) for round in levels]
+
+            else:
+                new_level0 += [None, None]
+
+        levels[0] = new_level0 + levels[0]
+
+    levels.append([tournament.bracket])
+
+
+    rounds = [generate_round(request, round) for round in levels] + [generate_winner(request, tournament.bracket.winner)]
 
     return render_to_string('tournament/bracket/tournament.html', {'rounds': '\n'.join(rounds)}, request)
 
@@ -163,15 +159,15 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
     user = _get_organisator_user(tournament)
     participants = _get_tournament_participants(tournament)
 
-    nb_players = 9
+    nb_players = 15
 
     list_of_players = [Player(i + 1) for i in range(nb_players)]
-    shuffle(list_of_players)
+    # shuffle(list_of_players)
 
     tournament_logic = TournamentLogic(list_of_players)
     tournament_res = _generate_tournament(request, tournament_logic)
 
-    # print(tournament_logic)
+    print(tournament_logic)
 
     context = {
         'tournament': tournament,
