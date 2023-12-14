@@ -8,6 +8,8 @@
         <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
         <link rel="stylesheet" href="/static/css/global.css">
         <link rel="stylesheet" href="/static/css/profil/profile.css">
+        <link rel="stylesheet" href="/static/css/profil/career.css">
+        <link rel="stylesheet" href="/static/css/profil/games_historic.css">
         <link rel="stylesheet" href="/static/css/signup.css">
     </head>
 
@@ -29,9 +31,9 @@
                     <div class="sidebar-item">
                         <a href="#" activate="#friends" class="sidebar-link">Amis</a>
                     </div>
-                    <!-- <div class="sidebar-item">
-                    <a href="#" activate="#stats" class="sidebar-link">Statistiques</a>
-                </div> -->
+                    <div class="sidebar-item">
+                    <a href="#" activate="#stats" class="sidebar-link">Carrière</a>
+                </div>
                 </div>
 
                 <div class="content">
@@ -114,14 +116,14 @@
                         <div id="friends-list" hx-get="/friend-list" hx-swap="innerHTML" hx-trigger="load"></div>
                     </section>
 
-                    {% comment %} <section id="stats">
-                        <h2>Statistiques</h2>
-                    </section> {% endcomment %}
+                    <section id="stats" hx-get="/career" hx-swap="innerHTML" hx-trigger="load">
+                    </section>
                 </div>
             </div>
         </main>
         <script src="/static/js/sidebar-link.js"></script>
         <script src="/static/js//profil/profile.js"></script>
+        <script src="/static/js//profil/career.js"></script>
         <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     </body>
 </html>
