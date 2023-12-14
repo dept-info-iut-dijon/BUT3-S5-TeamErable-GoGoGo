@@ -38,14 +38,14 @@ def generate_match(request: HttpRequest, match: Match) -> str:
             'score1': match_obj.game_participate.score_player1 if match_obj is not None else '&nbsp;',
             'score2': match_obj.game_participate.score_player2 if match_obj is not None else '&nbsp;',
             'cls1': ' '.join(
-                ['winner' if match.player1 == match.winner != None else ''] +
-                ['loser' if match.player1 != match.winner and match.winner != None else ''] +
-                ['no-background' if match.player1 is None else '']
+                (['winner'] if match.player1 == match.winner != None else []) +
+                (['loser'] if match.player1 != match.winner and match.winner != None else []) +
+                (['no-background'] if match.player1 is None else [])
             ),
             'cls2': ' '.join(
-                ['winner' if match.player2 == match.winner != None else ''] +
-                ['loser' if match.player2 != match.winner and match.winner != None else ''] +
-                ['no-background' if match.player2 is None else '']
+                (['winner'] if match.player2 == match.winner != None else []) +
+                (['loser'] if match.player2 != match.winner and match.winner != None else []) +
+                (['no-background'] if match.player2 is None else [])
             )
         },
         request
