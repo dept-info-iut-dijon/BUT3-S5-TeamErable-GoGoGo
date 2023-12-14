@@ -13,92 +13,111 @@ def career(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La page de carriere
     '''
-    total_win_tournaments = count_total_tournament(request.user, True)
-    total_lose_tournaments = count_total_tournament(request.user, False)
+    total_wins = _get_total_game_win(request.user)
+    total_loses = _get_total_game_loose(request.user)
+    total_games = total_wins + total_loses
+
+    total_win_tournaments = _get_total_tournament_win(request.user)
+    total_lose_tournaments = _get_total_tournament_loose(request.user)
     total_tournaments = total_win_tournaments + total_lose_tournaments
     
-    total_wins = count_total_game_win(request.user)
-    total_loses = count_total_game_loose(request.user)
-    total_games = total_wins + total_loses
-    
-    total_wins_ranked = count_total_game_ranked_win(request.user)
-    total_loses_ranked = count_total_game_ranked_loose(request.user)
+    total_wins_ranked = _get_total_game_ranked_win(request.user)
+    total_loses_ranked = _get_total_game_ranked_loose(request.user)
     total_game_ranked = total_wins_ranked + total_loses_ranked
+
+    elo = _get_elo(request.user)
+    rank = _get_rank(request.user)
 
     return render(
         request, 
         'profile/career.html',
-        {'total_tournaments': total_tournaments, 'total_wins_tournaments': total_win_tournaments, 'total_loses_tournaments': total_lose_tournaments,'total_games': total_games, 'total_wins': total_wins, 'total_loses': total_loses, 'total_classed_games': total_game_ranked, 'total_classed_wins': total_wins_ranked, 'total_classed_loses': total_loses_ranked}
+        {'total_tournaments': total_tournaments, 'total_wins_tournaments': total_win_tournaments, 'total_loses_tournaments': total_lose_tournaments,'total_games': total_games, 'total_wins': total_wins, 'total_loses': total_loses, 'total_classed_games': total_game_ranked, 'total_classed_wins': total_wins_ranked, 'total_classed_loses': total_loses_ranked, 'elo': elo, 'rank': rank}
     )
 
-def count_total_game_ranked_win(user : CustomUser) -> int:
-    '''Compte le nombre de parties classées gagnées ou perdu par un joueur
+def _get_total_game_ranked_win(user : CustomUser) -> int:
+    '''Recupère le nombre de parties classées gagnées par un joueur
 
     Args:
         user (CustomUser): Le joueur
 
     Returns:
-        int: Le nombre de parties classées gagnées ou perdu
+        int: Le nombre de parties classées gagnées
     '''
-    ret = CustomUser.objects.filter(id = user.id).first().stat.game_ranked_win
+    return CustomUser.objects.filter(id = user.id).first().stat.game_ranked_win
 
-    return ret
-
-def count_total_game_ranked_loose(user : CustomUser) -> int:
-    '''Compte le nombre de parties classées gagnées ou perdu par un joueur
+def _get_total_game_ranked_loose(user : CustomUser) -> int:
+    '''Recupère le nombre de parties classées perdu par un joueur
 
     Args:
         user (CustomUser): Le joueur
 
     Returns:
-        int: Le nombre de parties classées gagnées ou perdu
+        int: Le nombre de parties classées perdu
     '''
-    ret = CustomUser.objects.filter(id = user.id).first().stat.game_ranked_loose
+    return CustomUser.objects.filter(id = user.id).first().stat.game_ranked_loose
 
-    return ret
-
-def count_total_game_win(user : CustomUser) -> int:
-    '''Compte le nombre de parties gagnées ou perdu par un joueur
+def _get_total_game_win(user : CustomUser) -> int:
+    '''Recupère le nombre de parties gagnées par un joueur
 
     Args:
         user (CustomUser): Le joueur
 
     Returns:
-        int: Le nombre de parties gagnées ou perdu
+        int: Le nombre de parties gagnées
     '''
-    ret = CustomUser.objects.filter(id = user.id).first().stat.game_win
+    return CustomUser.objects.filter(id = user.id).first().stat.game_win
 
-    return ret
-
-def count_total_game_loose(user : CustomUser) -> int:
-    '''Compte le nombre de parties gagnées ou perdu par un joueur
+def _get_total_game_loose(user : CustomUser) -> int:
+    '''Recupère le nombre de parties perdu par un joueur
 
     Returns:
-        int: Le nombre de parties gagnées ou perdu
+        int: Le nombre de parties perdu
     '''
-    ret = CustomUser.objects.filter(id = user.id).first().stat.game_loose
+    return CustomUser.objects.filter(id = user.id).first().stat.game_loose
 
-    return ret
-
-def count_total_tournament(user : CustomUser, result : bool) -> int:
-    '''Compte le nombre de tournois gagnés ou perdu par un joueur
+def _get_total_tournament_win(user : CustomUser) -> int:
+    '''Recupère le nombre de tournois gagnés par un joueur
 
     Args:
         user (CustomUser): Le joueur
-        result (bool): Le résultat du tournoi recherché
 
     Returns:
-        int: Le nombre de tournois gagnés ou perdu
+        int: Le nombre de tournois gagnés
     '''
-    ret = 0
+    return CustomUser.objects.filter(id = user.id).first().stat.tournament_win
 
-    tournaments = Tournament.objects.filter(id__in = ParticipateTournament.objects.filter(person = user).values('tournament').filter(win = result))
+def _get_total_tournament_loose(user : CustomUser) -> int:
+    '''Recupère le nombre de tournois perdu par un joueur
 
-    for tournament in tournaments:
-        if tournament.terminate() == True:
-            ret += 1
+    Args:
+        user (CustomUser): Le joueur
 
-    return ret
+    Returns:
+        int: Le nombre de tournois perdu
+    '''
+    return CustomUser.objects.filter(id = user.id).first().stat.tournament_loose
+
+def _get_elo(user : CustomUser) -> int:
+    '''Recupère l'elo du joueur
+
+    Args:
+        user (CustomUser): Le joueur
+
+    Returns:
+        int: L'elo du joueur
+    '''
+    return CustomUser.objects.filter(id = user.id).first().stat.elo
+
+def _get_rank(user : CustomUser) -> str:
+    '''Recupère le rang du joueur
+
+    Args:
+        user (CustomUser): Le joueur
+
+    Returns:
+        str: Le rang du joueur
+    '''
+    return CustomUser.objects.filter(id = user.id).first().stat.rank
 
 
 def search_games_historic(request: HttpRequest) -> HttpResponse:
