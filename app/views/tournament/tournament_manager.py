@@ -60,7 +60,14 @@ def generate_round(request: HttpRequest, round: list[IMatch]) -> str:
 
 
 def generate_winner(request: HttpRequest, winner: Player) -> str:
-    winner_str = render_to_string('tournament/bracket/winner.html', {'name': winner.username if winner is not None else ''}, request)
+    winner_str = render_to_string(
+        'tournament/bracket/winner.html',
+        {
+            'name': winner.username if winner is not None else '&nbsp;',
+            'cls': 'no-background' if winner is not None else ''
+        },
+        request
+    )
     return render_to_string('tournament/bracket/round.html', {'rounds': winner_str}, request)
 
 
