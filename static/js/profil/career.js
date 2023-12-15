@@ -16,3 +16,22 @@ document.querySelector("#search-input-historic").addEventListener('keyup', funct
     }
     request.send(formData);
 });
+
+
+document.getElementById('importForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch('/import_JSON/', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Réponse du serveur :', data);
+        })
+        .catch(error => {
+            console.error('Erreur lors de la requête :', error);
+        });
+});

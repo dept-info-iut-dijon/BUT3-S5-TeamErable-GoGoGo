@@ -27,7 +27,10 @@
 
     <div class="row space-between">
         <h2>Historiques</h2>
-        <a href="/" class="button import-game height-fit-content align-self-center row"><img src="/static/icons/import.png" />Importer</a>
+        <form id="importForm" method="post" action="/import-JSON" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="json_file" name="json_file", accept=".json" required>
+            <button class="button import-game height-fit-content align-self-center" type="submit" value="Importer">
     </div>
 
     <div class="historics">

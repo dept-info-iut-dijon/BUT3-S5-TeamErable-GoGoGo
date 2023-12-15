@@ -42,4 +42,4 @@ from .game.game_configuration import create_game_config
 # Import classement
 from .ranking.global_ranking import global_ranking
 # Imports carrière
-from .profil.career.career import search_games_historic, career
+from .profil.career.career import search_games_historic, career, import_JSON

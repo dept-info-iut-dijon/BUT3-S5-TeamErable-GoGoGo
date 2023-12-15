@@ -1,11 +1,14 @@
-from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, JsonResponse
 from ...decorators import login_required, request_type, RequestType
 from django.shortcuts import render
 from ....http import HttpResponseNotifError, HttpResponseNotifSuccess
-from ....models import Game, ParticipateTournament, CustomUser, Tournament
+from django.core.files.storage import default_storage
+from ....models import Game, CustomUser, GameParticipate, GameSave
+import json
+from django.db.models import Q
 
 def career(request: HttpRequest) -> HttpResponse:
-    '''Controlleur de la page de carriere
+    '''Constructeur de la page de carriere
 
     Args:
         request (HttpRequest): Requête HTTP
@@ -119,9 +122,8 @@ def _get_rank(user : CustomUser) -> str:
     '''
     return CustomUser.objects.filter(id = user.id).first().stat.rank
 
-
 def search_games_historic(request: HttpRequest) -> HttpResponse:
-    '''Recherche les parties que le joueur à jouées et sauvegardées
+    '''Recherche les 5 dernières parties que le joueur à jouées
 
     Args:
         request (HttpRequest): Requête HTTP
@@ -130,7 +132,9 @@ def search_games_historic(request: HttpRequest) -> HttpResponse:
         HttpResponse: La réponse HTTP à la requête de recherche de parties
     '''
     query = request.POST.get('game_name','')
-    games = Game.objects.filter(done = True)[:12]
+
+    games = GameSave.objects.filter(user = request.user).order_by('-name')[:12]
+
     return render(
         request,
         'profile/games_historic.html',
@@ -138,3 +142,47 @@ def search_games_historic(request: HttpRequest) -> HttpResponse:
         ({'error': 'Aucune partie n\'est disponible pour le moment ou correspond à vos critères de recherche.'} if len(games) == 0 else {})
     )
 
+@request_type(RequestType.POST)
+def import_JSON(request : HttpRequest) -> HttpResponse:
+    ''' Importe un fichier JSON
+    
+    Args:
+        request (HttpRequest): La requête HTTP
+    
+    Returns:
+        HttpResponse: La réponse HTTP à la requête d'importation de fichier JSON
+    '''
+    ret = HttpResponseNotifError('Erreur lors de l\'importation du fichier JSON')
+    try:
+        uploaded_file = request.FILES.get('json_file')
+        ret = HttpResponseNotifError('Fichier manquant')
+        if uploaded_file:
+            file_path = default_storage.save(uploaded_file.name, uploaded_file)
+
+            with default_storage.open(file_path) as f:
+                json_data = json.loads(f.read())
+                game_save = GameSave(
+                    user = request.user,
+                    name = json_data['name'],
+                    player1 = json_data['player1'],
+                    player2 = json_data['player2'],
+                    score_player1 = json_data['score_player1'],
+                    score_player2 = json_data['score_player2'],
+                    duration = json_data['duration'],
+                    move_list = json_data['move_list'],
+                    tournament = json_data['tournament'],
+                    map_size = json_data['map_size'],
+                    komi = json_data['komi'],
+                    counting_method = json_data['counting_method'],
+                    clock_type = json_data['clock_type'],
+                    clock_value = json_data['clock_value'],
+                    byo_yomi = json_data['byo_yomi'],
+                    handicap = json_data['handicap'],
+                )
+                game_save.save()
+                ret = HttpResponseNotifSuccess('Fichier JSON importé')
+
+    except Exception:
+        ret = HttpResponseNotifError("Le fichier JSON est corrompu")
+
+    return ret
