@@ -12,6 +12,15 @@ from ...storage import TournamentStorage
 
 
 def generate_match(request: HttpRequest, match: Match) -> str:
+    '''Génère un match
+
+    Args:
+        request (HttpRequest): Requete http
+        match (Match): Le match
+
+    Returns:
+        str: Le match
+    '''
     if match is None:
         return render_to_string('tournament/bracket/fake_match.html', {}, request)
 
@@ -54,6 +63,15 @@ def generate_match(request: HttpRequest, match: Match) -> str:
 
 
 def generate_round(request: HttpRequest, round: list[IMatch]) -> str:
+    '''Génère un tour
+
+    Args:
+        request (HttpRequest): Requete http
+        round (list[IMatch]): Liste des matchs du tour
+
+    Returns:
+        str: Le tour
+    '''
     spacer = render_to_string('tournament/bracket/spacer.html', {}, request)
     matches = [generate_match(request, match) for match in round]
 
@@ -61,6 +79,15 @@ def generate_round(request: HttpRequest, round: list[IMatch]) -> str:
 
 
 def generate_winner(request: HttpRequest, winner: Player) -> str:
+    '''Génère le gagnant du tournoi
+
+    Args:
+        request (HttpRequest): Requete http
+        winner (Player): Le gagnant du tournoi
+
+    Returns:
+        str: Le gagnant du tournoi
+    '''
     winner_str = render_to_string(
         'tournament/bracket/winner.html',
         {
@@ -73,6 +100,15 @@ def generate_winner(request: HttpRequest, winner: Player) -> str:
 
 
 def _generate_tournament(request: HttpRequest, tournament: TournamentLogic) -> str:
+    '''Génère l'arbre du tournoi
+
+    Args:
+        request (HttpRequest): Requete http
+        tournament (TournamentLogic): Le tournoi
+
+    Returns:
+        str: L'arbre du tournoi
+    '''
     levels = []
     pile = [tournament.bracket]
     new_pile = []
