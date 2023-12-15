@@ -2,11 +2,11 @@
 <tr>
     <div class="row {{ cls }}">
         <td><p>{{ game.name }}</p></td>
-        <td><p>{{ game.game_configuration.map_size }}x{{ game.game_configuration.map_size }}</p></td>
-        <td><p>{{ game.game_configuration.counting_method }}</p></td>
-        <td><p>{{ game.game_configuration.clock_type }}</p></td>
-        <td><p>{{ game.game_configuration.handicap }}</p></td>
-        <td><p>{{ game.tournament.name }}</p></td>
+        <td><p>{{ game.map_size }}x{{ game.map_size }}</p></td>
+        <td><p>{{ game.counting_method }}</p></td>
+        <td><p>{{ game.clock_type }}</p></td>
+        <td><p>{{ game.handicap }}</p></td>
+        <td><p>{{ game.tournament }}</p></td>
         <td><a class="watch-game button" href="/game/{{ game.id }}"><img src="/static/icons/voir.png" />Regarder</a></td>
         <td><a class="export-game button" href="/game/{{ game.id }}"><img src="/static/icons/export.png" />Exporter</a></td>
     </div>
