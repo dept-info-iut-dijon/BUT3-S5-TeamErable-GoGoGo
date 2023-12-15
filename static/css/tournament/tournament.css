@@ -107,6 +107,7 @@
 }
 
 #players {
+    padding: 0 1rem;
     border: 1px solid #ccc;
     border-radius: var(--border-radius);
 }
