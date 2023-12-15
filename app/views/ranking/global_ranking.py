@@ -46,8 +46,8 @@ def _get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct
 
     history = {}
     for user in user_range:
-        nb_wins = count_total_game_ranked_win(user)
-        nb_losses = count_total_game_ranked_loose(user)
+        nb_wins = get_total_game_ranked_win(user)
+        nb_losses = get_total_game_ranked_loose(user)
         statistic = Statistic.objects.filter(id=user.stat_id).first()
         history[user] = (nb_wins,nb_wins+nb_losses, statistic)
 
@@ -74,7 +74,7 @@ def _get_as_ranking(history: dict)-> list[RankingStruct]:
            rate = player_data[0]*100/player_data[1] 
         ranking.append(RankingStruct(
             player,
-            player_data[2].rang,
+            player_data[2].rank,
             player_data[2].elo,
             player_data[1],
             player_data[0],
