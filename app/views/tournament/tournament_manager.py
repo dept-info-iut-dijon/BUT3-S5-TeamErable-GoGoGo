@@ -154,8 +154,6 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
     try:
         tournament_logic = TournamentStorage.load_tournament(tournament.tournament_status.path)
         tournament_res = _generate_tournament(request, tournament_logic)
-        from .tournament_game import update_tournament_games
-        update_tournament_games(tournament)
 
     except:
         tournament_res = ''
