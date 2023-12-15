@@ -1,8 +1,8 @@
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 import json
-from ..models import Game
-from ..logic import Board, Tile, Vector2
+from ..models import Game, CustomUser
+from ..logic import Board, Tile, Vector2, RankCalculator, GoRank
 from ..exceptions import InvalidMoveException
 from ..storage import GameStorage
 from ..utils import time2str
@@ -209,11 +209,27 @@ class GameJoinAndLeave(WebsocketConsumer):
                 white.stat.game_win += int(winner == Tile.White)
                 white.stat.game_loose += int(winner != Tile.White)
 
+            total_wins = black.stat.game_ranked_win
+            total_losses = black.stat.game_ranked_loose
+            total_games = total_wins+total_losses
+            rate = total_wins*100/total_games
+            
+            print(RankCalculator.calculate_rank(total_games, rate))
+            black.stat.rank = RankCalculator.calculate_rank(total_games, rate)
             black.stat.save()
+
+            total_wins = white.stat.game_ranked_win
+            total_losses = white.stat.game_ranked_loose
+            total_games = total_wins+total_losses
+            rate = total_wins*100/total_games
+            
+            print(RankCalculator.calculate_rank(total_games, rate))
+            white.stat.rank = RankCalculator.calculate_rank(total_games, rate)
             white.stat.save()
 
             async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
+    
 
     def receive_play(self, event: dict) -> None:
         '''Reçoit le coup du joueur.
