@@ -589,9 +589,26 @@ input:checked + .slider:before {
     position: sticky;
 }
 
-img.pfp{
+img.pfp {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
+}
+
+div.pfp-fusion > span {
+    display: inline-block;
+    border-radius: 50%;
+    overflow: hidden;
+    width: 3rem;
+}
+
+div.pfp-fusion > span:not(:first-child) {
+    margin-left: -1.5rem;
+    -webkit-mask: radial-gradient(circle 1.5rem at 0% 50%, transparent 99%, #fff 100%);
+            mask: radial-gradient(circle 1.5rem at 0% 50%, transparent 99%, #fff 100%);
+}
+
+div.pfp-fusion > span img.pfp {
+    display: block;
 }

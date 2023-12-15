@@ -8,7 +8,13 @@
     <li>
         <div class="row">
             <div class="row">
-                <img src="get-pfp?id={{game.game_participate.player1.id}}" alt="profile picture" class="pfp">
+                <div class="pfp-fusion">
+                    <span><img src="get-pfp?id={{game.game_participate.player1.id}}" alt="profile picture" class="pfp"></span>
+                    {% if game.game_participate.player2 %}
+                    <span><img src="get-pfp?id={{game.game_participate.player2.id}}" alt="profile picture" class="pfp"></span>
+                    {% endif %}
+                </div>
+                <div class="separator"></div>
                 <p>{{ game.name }}</p>
                 <p class="description">{{ game.description }}</p>
             </div>
