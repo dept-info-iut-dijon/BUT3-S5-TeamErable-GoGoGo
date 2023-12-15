@@ -42,11 +42,11 @@ class Bracket(implements(IMatch)):
 
     @property
     def player1(self) -> Player | None:
-        return self._bracket1.player1 if self._bracket1.winner is not None else None
+        return self._bracket1.winner if self._bracket1.winner is not None else None
 
     @property
     def player2(self) -> Player | None:
-        return self._bracket2.player2 if self._bracket2.winner is not None else None
+        return self._bracket2.winner if self._bracket2.winner is not None else None
 
     @property
     def winner(self) -> Player | None:
@@ -54,10 +54,14 @@ class Bracket(implements(IMatch)):
 
 
     def __str__(self) -> str:
-        addon = ' -> Match' if self._bracket1.winner is not None and self._bracket2.winner is not None else ''
-        s1 = '\t' + str(self._bracket1).replace('\n', '\n\t')
-        s2 = '\t' + str(self._bracket2).replace('\n', '\n\t')
-        return f'{__class__.__name__}{addon}(\n{s1},\n{s2}\n)'
+        if self._winner is not None: ret = f'{self._winner}'
+        else:
+            addon = ' -> Match' if self._bracket1.winner is not None and self._bracket2.winner is not None else ''
+            s1 = '\t' + str(self._bracket1).replace('\n', '\n\t')
+            s2 = '\t' + str(self._bracket2).replace('\n', '\n\t')
+            ret = f'{__class__.__name__}{addon}(\n{s1},\n{s2}\n)'
+
+        return ret
 
     def __repr__(self) -> str:
         return str(self)
