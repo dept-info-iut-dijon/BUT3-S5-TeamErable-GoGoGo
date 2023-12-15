@@ -1,4 +1,4 @@
-from ..game.create_game import construct_game, construct_participate
+from ..game.create_game import construct_game, construct_participate, construct_game_tournament
 from ...models import CustomUser
 from ..game.game_struct import GameStruct
 from .tournament_struct import TournamentStruct
@@ -6,7 +6,6 @@ from random import shuffle
 from ...models.game_participate import GameParticipate
 from ...models.tournament import Tournament
 from ...models.tournament import ParticipateTournament
-from ..game.game_configuration_to_game_configuration_struct import game_configuration_to_game_configuration_struct
 from ...tournament_logic import Tournament as TournamentLogic, Player as TournamentPlayer
 from ...models.game import Game
 from ...storage import TournamentStorage
@@ -47,13 +46,7 @@ def create_tournament_game(id_player1: int, id_player2: int, tournament: Tournam
     player2 = CustomUser.objects.get(id=id_player2)
     game_name = f'{player1.username} vs {player2.username}'
     game_desc = f'Match du tournois {game_name} oposant {player1.username} et {player2.username}'
-    game_struct = GameStruct(
-        game_name,
-        game_desc,
-        game_configuration_to_game_configuration_struct(tournament.game_configuration),
-    )
-    game = construct_game(game_struct, construct_participate(id_player1, id_player2), tournament.id)
-    tournament_cls = Tournament.objects.get(id=tournament.id)
+    construct_game_tournament(game_name, game_desc, tournament.game_configuration, construct_participate(id_player1, id_player2), tournament.id)
 
 
 def update_tournament_games(tournament: Tournament) -> None:
