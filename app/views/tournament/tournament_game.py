@@ -31,7 +31,8 @@ def start_tournament(tournament: Tournament, participants: list[CustomUser]) -> 
             tournament.save()
 
         except:
-            pass
+            import traceback
+            print(traceback.format_exc())
 
 
 def create_tournament_game(id_player1: int, id_player2: int, tournament: Tournament) -> None:
@@ -46,7 +47,7 @@ def create_tournament_game(id_player1: int, id_player2: int, tournament: Tournam
     player2 = CustomUser.objects.get(id=id_player2)
     game_name = f'{player1.username} vs {player2.username}'
     game_desc = f'Match du tournois {game_name} oposant {player1.username} et {player2.username}'
-    construct_game_tournament(game_name, game_desc, tournament.game_configuration, construct_participate(id_player1, id_player2), tournament.id)
+    construct_game_tournament(game_name, game_desc, tournament.game_configuration, construct_participate(id_player1, id_player2), tournament)
 
 
 def update_tournament_games(tournament: Tournament) -> None:

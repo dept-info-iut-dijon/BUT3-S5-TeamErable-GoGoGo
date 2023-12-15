@@ -12,6 +12,7 @@ from .game_configuration import create_game_config
 from datetime import timedelta
 from ...logic.timer.TimerFactory import TimerFactory
 from ...models.game_configuration import GameConfiguration
+from ...models.tournament import Tournament
 
 def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tournament: int) -> HttpRequest:
     '''Fonction permettant de creer une nouvelle partie
@@ -96,7 +97,7 @@ def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tou
     return game
 
 
-def construct_game_tournament(name: str, desc: str, game_configuration: GameConfiguration, participate: GameParticipate, id_tournament: int = None) -> Game:
+def construct_game_tournament(name: str, desc: str, game_configuration: GameConfiguration, participate: GameParticipate,tournament: Tournament) -> Game:
     '''Fonction permettant de construire une nouvelle partie dans la BDD
     
     Args:
@@ -107,6 +108,7 @@ def construct_game_tournament(name: str, desc: str, game_configuration: GameConf
     Returns:
         Game: La nouvelle partie
     '''
+    print(game_configuration, participate, tournament, name, desc)
     code = CodeManager().generate_game_code()
     game = Game.objects.create(
         name = name,
@@ -115,8 +117,8 @@ def construct_game_tournament(name: str, desc: str, game_configuration: GameConf
         start_date = datetime.now(),
         duration = 0,
         done = False,
-        tournament = id_tournament,
-        game_configuration = create_game_config(game_configuration),
+        tournament = tournament,
+        game_configuration = game_configuration,
         game_participate = participate
     )
 

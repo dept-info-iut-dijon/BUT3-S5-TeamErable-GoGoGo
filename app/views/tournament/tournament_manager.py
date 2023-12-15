@@ -144,7 +144,7 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
         Returns:
             HttpResponse: Reponse Http de la page demandee
     '''
-    tournament = get_object_or_404(Tournament, id=id)
+    tournament = Tournament.objects.get(id=id)
     user = _get_organisator_user(tournament)
     participants = _get_tournament_participants(tournament)
 
@@ -157,6 +157,8 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
         tournament_res = _generate_tournament(request, tournament_logic)
 
     except:
+        import traceback
+        traceback.print_exc()
         tournament_res = ''
 
     context = {
