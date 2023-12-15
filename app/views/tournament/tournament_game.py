@@ -54,9 +54,7 @@ def update_tournament_games(tournament: Tournament) -> None:
     matches = tournament_logic.get_current_matches()
 
     for match in matches:
-        print(match.player1.id, 'vs', match.player2.id)
         if match.id is None:
-            print('-> create game')
             game = create_tournament_game(match.player1.id, match.player2.id, tournament)
             match.id = game.id_game
 
