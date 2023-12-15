@@ -177,6 +177,29 @@ class GameJoinAndLeave(WebsocketConsumer):
                     }
                 })
             }
+
+            # Mise a jour des stats joueur
+            # Qualite code: a terme c'est a deplacer dans une classe specialisee
+            white = game.game_participate.player1
+            black = game.game_participate.player2
+
+            added_wins_black = int(winner == Tile.Black) - int(winner == Tile.White)
+            added_wins_black = int(winner == Tile.White) - int(winner == Tile.Black)
+
+            if game.game_configuration.ranked:
+                black.stat.game_ranked_win += int(winner == Tile.Black)
+                black.stat.game_ranked_loose += int(winner != Tile.Black)
+                white.stat.game_ranked_win += int(winner == Tile.White)
+                white.stat.game_ranked_loose += int(winner != Tile.White)
+            else:
+                black.stat.game_win += int(winner == Tile.Black)
+                black.stat.game_loose += int(winner != Tile.Black)
+                white.stat.game_win += int(winner == Tile.White)
+                white.stat.game_loose += int(winner != Tile.White)
+
+            black.stat.save()
+            white.stat.save()
+
             async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
 
