@@ -31,8 +31,7 @@ def start_tournament(tournament: Tournament, participants: list[CustomUser]) -> 
             tournament.save()
 
         except:
-            import traceback
-            print(traceback.format_exc())
+            pass
 
 
 def create_tournament_game(id_player1: int, id_player2: int, tournament: Tournament) -> Game:

@@ -156,8 +156,6 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
         tournament_res = _generate_tournament(request, tournament_logic)
 
     except:
-        import traceback
-        traceback.print_exc()
         tournament_res = ''
 
     context = {
