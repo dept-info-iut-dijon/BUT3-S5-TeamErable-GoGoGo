@@ -29,6 +29,7 @@ def start_tournament(tournament: Tournament, participants: list[CustomUser]) -> 
 
             TournamentStorage.save_tournament(tl, f)
             tournament.tournament_status = f
+            tournament.save()
 
         except:
             pass
