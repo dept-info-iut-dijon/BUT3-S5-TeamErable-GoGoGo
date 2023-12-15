@@ -54,9 +54,12 @@
                 </div>
                 <div>
                     <h3>Organisateur</h3>
-                    <div class="row profile">
-                        <img src="/header-pfp" alt="Icône de profil" class="pfp" />
-                        <p>{{organisator.username}}</p>
+                    <div>
+                        <h4 class="no-margin">{{organisator}}</h4>
+                        <div class="row profile">
+                            <img src="/get-pfp?id={{ creator.id }}" alt="Icône de profil" class="pfp" />
+                            <p>{{creator.username}}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -66,20 +69,6 @@
             </div>
         </section>
         <section id="tree-section">
-            {% comment %} <div class="tournament-tree row">
-                {% for match_round in tree %}
-                    <div class="column">
-                        <div class="tour-label">Tour {{ forloop.counter }}</div>
-                        {% for match in match_round %}
-                            <div class="match">
-                                <div class="team{% if match.2 == 0 %} winner{% endif %}">{{ match.0.username }}</div>
-                                <div class="team{% if match.2 == 1 %} winner{% endif %}">{{ match.1.username }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-            </div> {% endcomment %}
-
             {{ tree | safe }}
         </section>
     </main>

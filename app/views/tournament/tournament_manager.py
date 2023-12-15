@@ -145,7 +145,6 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
             HttpResponse: Reponse Http de la page demandee
     '''
     tournament = Tournament.objects.get(id=id)
-    user = _get_organisator_user(tournament)
     participants = _get_tournament_participants(tournament)
 
     game_count = Game.objects.filter(tournament=tournament).count()
@@ -163,7 +162,8 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
 
     context = {
         'tournament': tournament,
-        'organisator': user,
+        'organisator': tournament.organisator,
+        'creator': tournament.creator,
         'tree': tournament_res,
         'in_tournament': request.user in participants,
         'ongoing': tournament.ongoing()
@@ -171,20 +171,6 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
 
     return render(request, 'tournament/tournament_manager.html', context)
 
-def _get_organisator_user(tournament: Tournament)->CustomUser:
-    '''
-        Permet d'obtenir l'organisateur du tournois
-        Args:
-            tournament (Tournament): le tournois
-
-        Returns:
-            CustomUser: L'organisateur du tournois
-    '''
-    try:
-        user = get_user_model().objects.get(username=tournament.organisator)
-    except get_user_model().DoesNotExist:
-        user = None
-    return user
 
 def _get_tournament_participants(tournament:Tournament)->list[CustomUser]:
     '''
