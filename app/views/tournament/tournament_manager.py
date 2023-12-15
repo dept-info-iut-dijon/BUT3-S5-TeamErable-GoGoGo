@@ -3,11 +3,12 @@ from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
-from app.models import CustomUser, Game, GameParticipate, Tournament, ParticipateTournament
+from app.models import CustomUser, Game, Tournament, ParticipateTournament
 from ..decorators import login_required
 from ...http import HttpResponseNotifError
-from ...tournament_logic import Tournament as TournamentLogic, IMatch, Bracket, Match, FakeMatch, Player
-from random import shuffle
+from ...tournament_logic import Tournament as TournamentLogic, IMatch, Bracket, Match, Player
+from .tournament_game import start_tournament
+from ...storage import TournamentStorage
 
 
 def generate_match(request: HttpRequest, match: Match) -> str:
@@ -147,21 +148,16 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
     user = _get_organisator_user(tournament)
     participants = _get_tournament_participants(tournament)
 
-    nb_players = 15
+    game_count = Game.objects.filter(tournament=tournament).count()
+    if tournament.ongoing() and not tournament.terminated() and game_count == 0:
+        start_tournament(tournament, participants)
 
-    list_of_players = [Player(i + 1) for i in range(nb_players)]
-    # shuffle(list_of_players)
+    try:
+        tournament_logic = TournamentStorage.load_tournament(tournament.tournament_status.path)
+        tournament_res = _generate_tournament(request, tournament_logic)
 
-    tournament_logic = TournamentLogic(list_of_players)
-    tournament_logic.do_win(Player(2))
-    tournament_logic.do_win(Player(5))
-    tournament_logic.do_win(Player(7))
-    tournament_logic.do_win(Player(9))
-    tournament_logic.do_win(Player(11))
-    tournament_logic.do_win(Player(13))
-    tournament_res = _generate_tournament(request, tournament_logic)
-
-    print(tournament_logic)
+    except:
+        tournament_res = ''
 
     context = {
         'tournament': tournament,
@@ -217,7 +213,7 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
     ret = None
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
-    if tournament.ongoing() == True: 
+    if tournament.ongoing() == True:
         ret = HttpResponseNotifError('Les inscription pour ce tournois sont terminees')
 
     if len(ParticipateTournament.objects.filter(person=request.user, tournament=tournament).all()) < 1:
