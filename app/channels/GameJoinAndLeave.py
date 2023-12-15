@@ -6,6 +6,8 @@ from ..logic import Board, Tile, Vector2
 from ..exceptions import InvalidMoveException
 from ..storage import GameStorage
 from ..utils import time2str
+from ..views.tournament.tournament_game import update_tournament_games
+from ..storage import TournamentStorage
 
 class GameJoinAndLeave(WebsocketConsumer):
     '''Gère le websocket de la partie et le jeu.
@@ -108,6 +110,13 @@ class GameJoinAndLeave(WebsocketConsumer):
             game.done = board.ended
             game.save()
 
+            if game.tournament is not None:
+                tournament_logic = TournamentStorage.load_tournament(game.tournament.tournament_status.path)
+                points = board.get_points()
+                winner = game.game_participate.player1 if points[Tile.White] > points[Tile.Black] else game.game_participate.player2
+                tournament_logic.do_win(winner.id)
+                update_tournament_games(game.tournament)
+
 
     def _save_game_board(self, game: Game, board: Board) -> None:
         '''Sauvegarde la partie.
@@ -168,6 +177,29 @@ class GameJoinAndLeave(WebsocketConsumer):
                     }
                 })
             }
+
+            # Mise a jour des stats joueur
+            # Qualite code: a terme c'est a deplacer dans une classe specialisee
+            white = game.game_participate.player1
+            black = game.game_participate.player2
+
+            added_wins_black = int(winner == Tile.Black) - int(winner == Tile.White)
+            added_wins_black = int(winner == Tile.White) - int(winner == Tile.Black)
+
+            if game.game_configuration.ranked:
+                black.stat.game_ranked_win += int(winner == Tile.Black)
+                black.stat.game_ranked_loose += int(winner != Tile.Black)
+                white.stat.game_ranked_win += int(winner == Tile.White)
+                white.stat.game_ranked_loose += int(winner != Tile.White)
+            else:
+                black.stat.game_win += int(winner == Tile.Black)
+                black.stat.game_loose += int(winner != Tile.Black)
+                white.stat.game_win += int(winner == Tile.White)
+                white.stat.game_loose += int(winner != Tile.White)
+
+            black.stat.save()
+            white.stat.save()
+
             async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
 
