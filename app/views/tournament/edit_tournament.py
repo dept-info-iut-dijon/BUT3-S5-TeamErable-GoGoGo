@@ -81,8 +81,6 @@ def edit_tournament_post(request: HttpRequest, tournament: Tournament) -> HttpRe
         ret = HttpResponse(f'/tournament?id={tournament_edited.id}')
 
     except:
-        import traceback
-        traceback.print_exc()
         return HttpResponseNotifError('Erreur lors de la modification du tournois.')
 
     
