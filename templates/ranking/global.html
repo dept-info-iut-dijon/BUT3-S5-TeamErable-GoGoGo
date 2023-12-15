@@ -50,8 +50,8 @@
                             <td>{{ forloop.counter }}</td>
                             <td><img src="get-pfp?id={{player.user.id}}" class="pfp"></td>
                             <td>{{ player.user.username }}</td>
-                            <td></td> 
-                            <td></td>  
+                            <td>{{ player.rank }}</td> 
+                            <td>{{ player.elo }}</td>  
                             <td>{{ player.nb_games }}</td>
                             <td>{{ player.nb_victory }}</td>
                             <td>{{ player.nb_defeats  }}</td>  {# Assuming total_games is the total number of games and total_wins is the number of wins #}
