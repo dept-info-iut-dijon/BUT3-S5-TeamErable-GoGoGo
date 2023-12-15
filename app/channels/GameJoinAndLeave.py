@@ -99,6 +99,15 @@ class GameJoinAndLeave(WebsocketConsumer):
         return game, board, Tile.White if self._player_id == 0 else Tile.Black
 
 
+    def _update_tournament_data(self, game: Game, board: Board) -> None:
+        if game.tournament is not None:
+            tournament_logic = TournamentStorage.load_tournament(game.tournament.tournament_status.path)
+            points = board.get_points()
+            winner = game.game_participate.player1 if points[Tile.White] > points[Tile.Black] else game.game_participate.player2
+            tournament_logic.do_win(winner.id)
+            update_tournament_games(game.tournament)
+
+
     def _update_game(self, game: Game, board: Board) -> None:
         '''Mettre a jour le jeu.
         
@@ -110,12 +119,7 @@ class GameJoinAndLeave(WebsocketConsumer):
             game.done = board.ended
             game.save()
 
-            if game.tournament is not None:
-                tournament_logic = TournamentStorage.load_tournament(game.tournament.tournament_status.path)
-                points = board.get_points()
-                winner = game.game_participate.player1 if points[Tile.White] > points[Tile.Black] else game.game_participate.player2
-                tournament_logic.do_win(winner.id)
-                update_tournament_games(game.tournament)
+            self._update_tournament_data(game, board)
 
 
     def _save_game_board(self, game: Game, board: Board) -> None:

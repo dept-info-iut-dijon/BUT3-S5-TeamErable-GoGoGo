@@ -24,9 +24,9 @@ def start_tournament(tournament: Tournament, participants: list[CustomUser]) -> 
         try:
             game = create_tournament_game(match.player1.id, match.player2.id, tournament)
 
-            match.id = game.id
+            match.id = game.id_game
 
-            TournamentStorage.save_tournament(tl, f)
+            TournamentStorage.save_tournament(f, tl)
             tournament.tournament_status = f
             tournament.save()
 
@@ -35,7 +35,7 @@ def start_tournament(tournament: Tournament, participants: list[CustomUser]) -> 
             print(traceback.format_exc())
 
 
-def create_tournament_game(id_player1: int, id_player2: int, tournament: Tournament) -> None:
+def create_tournament_game(id_player1: int, id_player2: int, tournament: Tournament) -> Game:
     '''Fonction permettant de creer une nouvelle partie dans le tournoi
 
     Args:
@@ -47,7 +47,7 @@ def create_tournament_game(id_player1: int, id_player2: int, tournament: Tournam
     player2 = CustomUser.objects.get(id=id_player2)
     game_name = f'{player1.username} vs {player2.username}'
     game_desc = f'Match du tournois {game_name} oposant {player1.username} et {player2.username}'
-    construct_game_tournament(game_name, game_desc, tournament.game_configuration, construct_participate(id_player1, id_player2), tournament)
+    return construct_game_tournament(game_name, game_desc, tournament.game_configuration, construct_participate(id_player1, id_player2), tournament)
 
 
 def update_tournament_games(tournament: Tournament) -> None:

@@ -1,5 +1,5 @@
 from ..tournament_logic import Tournament
-import json
+import json, os
 
 class TournamentStorage:
     def __new__(cls) -> None:
@@ -29,5 +29,8 @@ class TournamentStorage:
             path (str): Le chemin vers le tournois
             tournament (Tournament): Le tournois
         '''
+        if not os.path.exists(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
+
         with open(path, 'w', encoding = 'utf-8') as f:
             json.dump(tournament.export(), f)
