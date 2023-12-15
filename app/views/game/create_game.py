@@ -28,26 +28,6 @@ def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tourname
     partcipate = construct_participate(request.user.id)
     game = construct_game(game_struct, partcipate, id_tournament)
 
-    file = f'dynamic/games/{game.id_game:X}.json'
-
-    if not os.path.exists('dynamic/games'):
-        os.makedirs('dynamic/games')
-    with open(file, 'w') as f:
-        b = Board(
-            int(game_struct.game_configuration.map_size),
-            float(game_struct.game_configuration.komi),
-            RuleFactory().get(game_struct.game_configuration.counting_method),
-            int(game_struct.game_configuration.byo_yomi),
-            timedelta(seconds = game.game_configuration.clock_value),
-            None,
-            TimerFactory().get(game.game_configuration.clock_type),
-            None,
-        )
-        json.dump(b.export(), f)
-
-    game.move_list = file
-    game.save()
-
     ret = HttpResponse(f'/game?id={game.id_game}')
 
     return ret
@@ -70,6 +50,30 @@ def construct_participate(id_player1: int, id_player2: int = None) -> GamePartic
     )
     return participate
 
+
+def create_move_list(game: Game) -> None:
+    file = f'dynamic/games/{game.id_game:X}.json'
+
+    if not os.path.exists('dynamic/games'):
+        os.makedirs('dynamic/games')
+
+    with open(file, 'w') as f:
+        b = Board(
+            int(game.game_configuration.map_size),
+            float(game.game_configuration.komi),
+            RuleFactory().get(game.game_configuration.counting_method),
+            int(game.game_configuration.byo_yomi),
+            timedelta(seconds = game.game_configuration.clock_value),
+            None,
+            TimerFactory().get(game.game_configuration.clock_type),
+            None,
+        )
+        json.dump(b.export(), f)
+
+    game.move_list = file
+    game.save()
+
+
 def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tournament: int = None) -> Game:
     '''Fonction permettant de construire une nouvelle partie dans la BDD
     
@@ -86,13 +90,15 @@ def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tou
         name = game_struct.name,
         description = game_struct.description,
         code = code,
-        start_date = datetime.now(),
+        start_date = datetime.now().date(),
         duration = 0,
         done = False,
         tournament = id_tournament,
         game_configuration = create_game_config(game_struct.game_configuration),
         game_participate = participate
     )
+
+    create_move_list(game)
 
     return game
 
@@ -108,19 +114,20 @@ def construct_game_tournament(name: str, desc: str, game_configuration: GameConf
     Returns:
         Game: La nouvelle partie
     '''
-    print(game_configuration, participate, tournament, name, desc)
     code = CodeManager().generate_game_code()
     game = Game.objects.create(
         name = name,
         description = desc,
         code = code,
-        start_date = datetime.now(),
+        start_date = datetime.now().date(),
         duration = 0,
         done = False,
         tournament = tournament,
         game_configuration = game_configuration,
         game_participate = participate
     )
+
+    create_move_list(game)
 
     return game
 
