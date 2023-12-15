@@ -74,7 +74,8 @@ class GameJoinAndLeave(WebsocketConsumer):
             self.send(text_data = json.dumps({'type': 'error', 'data': str(e)}))
 
         except Exception as e:
-            pass
+            import traceback
+            traceback.print_exc()
 
 
     def disconnect(self, code: int) -> None:
@@ -102,6 +103,7 @@ class GameJoinAndLeave(WebsocketConsumer):
 
     def _update_tournament_data(self, game: Game, board: Board) -> None:
         if game.tournament is not None:
+            print('update tournament data')
             tournament_logic = TournamentStorage.load_tournament(game.tournament.tournament_status.path)
             points = board.get_points()
             winner = game.game_participate.player1 if points[Tile.White] > points[Tile.Black] else game.game_participate.player2
@@ -338,6 +340,8 @@ class GameJoinAndLeave(WebsocketConsumer):
             GameStorage.save_game(game.move_list.path, board)
             game.done = board.ended
             game.save()
+
+            self._update_tournament_data(game, board)
 
             self._check_end_game(game, board, looser)
 
