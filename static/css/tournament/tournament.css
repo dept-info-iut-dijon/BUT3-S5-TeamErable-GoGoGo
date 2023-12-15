@@ -33,7 +33,7 @@
     margin-right: 5rem;
 }
 
-.button-section a {
+.button-section a, .button-section button {
     display: flex;
     height: 3.5rem;
     width: 14rem;
@@ -46,15 +46,15 @@
     text-decoration: none;
 }
 
-.button-section a:hover {
+.button-section a:hover, .button-section button:hover {
     background-color: #f5b38b;
 }
 
-.button-section a:first-child:hover {
+.button-section a:first-child:hover, .button-section button:first-child:hover {
     background-color: #edf2f5;
 }
 
-.button-section a:first-child {
+.button-section a:first-child, .button-section button:first-child {
     background-color: #dfe4e8;
     color: black;
 }
