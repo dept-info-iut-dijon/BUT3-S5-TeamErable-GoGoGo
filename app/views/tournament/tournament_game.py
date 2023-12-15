@@ -50,6 +50,11 @@ def create_tournament_game(id_player1: int, id_player2: int, tournament: Tournam
 
 
 def update_tournament_games(tournament: Tournament) -> None:
+    '''Fonction permettant de mettre à jour les matchs du tournoi
+
+    Args:
+        tournament (Tournament): Le tournoi
+    '''
     tournament_logic = TournamentStorage.load_tournament(tournament.tournament_status.path)
     matches = tournament_logic.get_current_matches()
 

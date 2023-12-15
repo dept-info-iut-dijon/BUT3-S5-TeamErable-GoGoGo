@@ -101,6 +101,12 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def _update_tournament_data(self, game: Game, board: Board) -> None:
+        '''Met a jour les données du tournoi si la partie est finie.
+
+        Args:
+            game (Game): Partie
+            board (Board): Plateau
+        '''
         if game.tournament is not None:
             tournament_logic = TournamentStorage.load_tournament(game.tournament.tournament_status.path)
             points = board.get_points()

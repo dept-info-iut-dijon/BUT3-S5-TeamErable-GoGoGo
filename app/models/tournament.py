@@ -2,6 +2,7 @@ from django.db import models
 from .custom_user import CustomUser
 from .game_configuration import GameConfiguration
 from datetime import datetime
+from ..storage import TournamentStorage
 
 class Tournament(models.Model):
     '''Classe permettant de creer un tournoi'''
@@ -36,6 +37,10 @@ class Tournament(models.Model):
 
         if(self.end_date <= datetime.now().date()):
             ret = True
+
+        if not ret:
+            tl = TournamentStorage.load_tournament(self.tournament_status.path)
+            ret = tl.winner is not None
 
         return ret
 
