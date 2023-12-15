@@ -8,6 +8,7 @@ from ..storage import GameStorage
 from ..utils import time2str
 from ..views.tournament.tournament_game import update_tournament_games
 from ..storage import TournamentStorage
+from ..tournament_logic import Player
 
 class GameJoinAndLeave(WebsocketConsumer):
     '''Gère le websocket de la partie et le jeu.
@@ -104,7 +105,8 @@ class GameJoinAndLeave(WebsocketConsumer):
             tournament_logic = TournamentStorage.load_tournament(game.tournament.tournament_status.path)
             points = board.get_points()
             winner = game.game_participate.player1 if points[Tile.White] > points[Tile.Black] else game.game_participate.player2
-            tournament_logic.do_win(winner.id)
+            tournament_logic.do_win(Player(winner.id))
+            TournamentStorage.save_tournament(game.tournament.tournament_status.path, tournament_logic)
             update_tournament_games(game.tournament)
 
 
