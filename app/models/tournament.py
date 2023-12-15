@@ -26,8 +26,8 @@ class Tournament(models.Model):
     def ongoing(self):
         ret = False
 
-        if(self.start_date <= datetime.now().date() <= self.end_date):
-            ret = True
+        if(self.start_date <= datetime.now().date() <= self.end_date and ParticipateTournament.objects.filter(tournament=self).count() >= self.player_min):
+            ret = not self.terminated()
 
         return ret
 
