@@ -166,7 +166,8 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
         'creator': tournament.creator,
         'tree': tournament_res,
         'in_tournament': request.user in participants,
-        'ongoing': tournament.ongoing()
+        'ongoing': tournament.ongoing(),
+        'is_creator': request.user == tournament.creator,
     }
 
     return render(request, 'tournament/tournament_manager.html', context)
