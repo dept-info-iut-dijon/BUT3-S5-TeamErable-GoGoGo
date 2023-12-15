@@ -88,7 +88,7 @@ class Bracket(implements(IMatch)):
         if (self._bracket1.winner is None): ret += self._bracket1.get_current_matches()
         if (self._bracket2.winner is None): ret += self._bracket2.get_current_matches()
 
-        if self._bracket1.winner is not None and self._bracket2.winner is not None: ret.append(self)
+        if self._bracket1.winner is not None and self._bracket2.winner is not None and self._winner is None: ret.append(self)
 
         return ret
 
@@ -98,6 +98,7 @@ class Bracket(implements(IMatch)):
             'type': 'Bracket',
             'id': self._id,
             'brackets': [self._bracket1.export(), self._bracket2.export()],
+            'winner': self._winner.id if self._winner is not None else None
         }
 
 
@@ -114,4 +115,5 @@ class Bracket(implements(IMatch)):
         brackets = [MatchFactory.MatchFactory.import_(bracket) for bracket in data['brackets']]
         ret = Bracket(*brackets)
         ret.id = data['id']
+        ret._winner = Player(data['winner']) if data.get('winner', None) is not None else None
         return ret

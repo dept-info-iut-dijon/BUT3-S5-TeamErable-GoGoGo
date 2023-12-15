@@ -54,8 +54,10 @@ def update_tournament_games(tournament: Tournament) -> None:
     matches = tournament_logic.get_current_matches()
 
     for match in matches:
-        try:
-            Game.objects.get(id=match.id)
+        print(match.player1.id, 'vs', match.player2.id)
+        if match.id is None:
+            print('-> create game')
+            game = create_tournament_game(match.player1.id, match.player2.id, tournament)
+            match.id = game.id_game
 
-        except Game.DoesNotExist:
-            create_tournament_game(match.player1.id, match.player2.id, tournament)
+    TournamentStorage.save_tournament(tournament.tournament_status.path, tournament_logic)
