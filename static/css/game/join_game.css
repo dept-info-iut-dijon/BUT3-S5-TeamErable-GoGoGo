@@ -134,3 +134,7 @@ form#join-by-code .form-control {
 form#join-by-code input[type="text"] {
     text-align: center;
 }
+
+td.width-fix {
+    width: inherit;
+}
