@@ -4,6 +4,15 @@ class RankCalculator:
     
     @staticmethod
     def calculate_rank(nb_games:int, win_rate:float)->str:
+        '''Calcule le rang en fonction du nombre de parties et du taux de victoires
+
+            Args:
+                nb_games (int): le nombre de parties du joueur
+                win_rate (int): le taux de victoire du joueur
+
+            Returns:
+                (str): le rang                
+        '''
         WINRATE_TOLERANCE = 0.7
         STEP_INCREMENT = 5
         rank = 0
@@ -15,6 +24,8 @@ class RankCalculator:
             rank += 1
             if (rank/10).is_integer():
                 step += STEP_INCREMENT
+
+        if rank == 0 : rank = 1
         return str(GoRank(rank))
 
     @staticmethod
