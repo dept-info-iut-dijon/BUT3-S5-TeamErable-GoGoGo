@@ -3,8 +3,8 @@
     <div class="row {{ cls }}">
         <td><p>{{ game.name }}</p></td>
         <td><p>{{ game.map_size }}x{{ game.map_size }}</p></td>
-        <td><p>{{ game.counting_method }}</p></td>
-        <td><p>{{ game.clock_type }}</p></td>
+        <td><p>{{ game.counting_method|translation }}</p></td>
+        <td><p>{{ game.clock_type|translation }}</p></td>
         <td><p>{{ game.handicap }}</p></td>
         <td><p>{{ game.tournament }}</p></td>
         <td class="row">
