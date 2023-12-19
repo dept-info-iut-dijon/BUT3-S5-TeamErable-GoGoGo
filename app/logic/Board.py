@@ -7,6 +7,7 @@ from .GoConstants import GoConstants
 from .rules import RuleBase, RuleFactory
 from .timer import TimerBase, TimerFactory
 from .Grid import Grid
+from .Move import Move
 from datetime import datetime, timedelta
 
 class Board:
@@ -51,7 +52,7 @@ class Board:
         self._ended: bool = False
         self._skip_list: list[Tile] = []
         self._illegal_moves: list[Vector2] = []
-        self._history: list[Vector2] = []
+        self._history: list[Move] = []
 
         self._timer = timer_cls(self, byo_yomi, time, player_time, last_action_time)
 
@@ -105,7 +106,7 @@ class Board:
         )
 
     @property
-    def history(self) -> list[Vector2]:
+    def history(self) -> list[Move]:
         return self._history.copy()
 
     @property
@@ -200,7 +201,7 @@ class Board:
         if self.get(coords) is not None: raise InvalidMoveException('Impossible de jouer ici, la case est déjà occupée.')
         if any(coords == pos for pos in self._illegal_moves): raise InvalidMoveException('Impossible de jouer ici, la case s\'est déjà retrouvée entourée lors du dernier tour.')
 
-        self._timer.play(tile)
+        timestamp = self._timer.play(tile)
         if self._timer.timed_out is not None:
             self.end_game()
             return {}
@@ -242,7 +243,7 @@ class Board:
         if self.get(coords) is not None:
             ret[tile].append(coords)
 
-        self._history.append(coords)
+        self._history.append(Move(coords, timestamp))
         self._current_player = tile.next
         self._skip_list = []
 
@@ -273,11 +274,13 @@ class Board:
         if self._timer.timed_out is not None:
             self.end_game()
             return
+        
+        timestamp = self._timer.play(tile)
 
         self._skip_list.append(tile)
 
         self._current_player = tile.next
-        self._history.append(None)
+        self._history.append(Move(None, timestamp))
         self._illegal_moves = []
 
         if set(self._skip_list) == set(Tile):
@@ -404,10 +407,10 @@ class Board:
             Vector2(*pos) if pos else None
             for pos in data.get('illegal-moves', [])
         ]
+        history = data.get('history', '')
         self._history = [
-            Vector2(*pos) if pos else None
-            for pos in data.get('history', [])
-        ]
+            Move(move) for move in history.split('\n')
+        ] if history else []
 
         timer_data = data.get('timer', {
             'key': 'chinese',
@@ -464,7 +467,7 @@ class Board:
             'ended': self._ended,
             'skip-list': [str(tile) for tile in self._skip_list],
             'illegal-moves': [[pos.x, pos.y] if pos else None for pos in self._illegal_moves],
-            'history': [[pos.x, pos.y] if pos else None for pos in self._history],
+            'history': '\n'.join([move.export() for move in self._history]),
             'timer': self._timer.export(),
         }
 
@@ -492,7 +495,7 @@ class Board:
         b._ended = self._ended
         b._skip_list = self._skip_list.copy()
         b._illegal_moves = [pos.copy() for pos in self._illegal_moves]
-        b._history = [pos.copy() for pos in self._history]
+        b._history = [move.copy() for move in self._history]
 
         return b
 
