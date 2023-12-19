@@ -160,8 +160,7 @@ def import_JSON(request : HttpRequest) -> HttpResponse:
         ret = HttpResponseNotifError('Fichier manquant')
         if uploaded_file:
             # Lit le fichier
-            with open(uploaded_file, 'r') as f:
-                json_data = json.loads(f.read())
+            json_data = json.loads(uploaded_file.file.read())
 
             game_save = GameSave(
                 user = request.user,
