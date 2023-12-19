@@ -156,9 +156,11 @@ class GameJoinAndLeave(WebsocketConsumer):
         total_wins = player.stat.game_ranked_win
         total_losses = player.stat.game_ranked_loose
         total_games = total_wins+total_losses
-        rate = total_wins*100/total_games
-            
+        rate = 0
+        if (total_games != 0):
+            rate = total_wins*100/total_games        
         player.stat.rank = RankCalculator.calculate_rank(total_games, rate)
+
         return player
 
     def _update_player_stats(self, game:Game)->None:

@@ -23,17 +23,11 @@ document.getElementById('importForm').addEventListener('submit', function (event
 
     const formData = new FormData(this);
 
-    fetch('/import_JSON/', {
+    fetch('/import_game/', {
         method: 'POST',
         body: formData,
     })
         .then(response => response.json())
-        .then(data => {
-            console.log('Réponse du serveur :', data);
-        })
-        .catch(error => {
-            console.error('Erreur lors de la requête :', error);
-        });
 });
 
 
@@ -60,7 +54,7 @@ function uploadFile(file) {
 
     // Effectuez une requête Ajax vers le serveur avec le fichier
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/import-JSON', true);
+    xhr.open('POST', '/import-game', true);
     xhr.setRequestHeader('X-CSRFToken', csrf_token);
     xhr.onload = function () {
         if (xhr.status === 200) {
