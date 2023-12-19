@@ -16,3 +16,24 @@ class RankCalculator:
             if (rank/10).is_integer():
                 step += STEP_INCREMENT
         return str(GoRank(rank))
+
+    @staticmethod
+    def calculate_elo(winner_elo: int, loser_elo: int, k_factor=32)->tuple[int, int]:
+        """
+        Calcule les nouveaux elos de chaque joueurs
+
+        Args:
+            winner_elo (int): Le elo du gagnant
+            loser_elo (int): Le elo du perdant
+            k_factor (int): Le facteur k permettant de calculer le elo (par defaut 32)
+
+        Returns:
+            int, int: Les nouveaux elos
+        """
+        expected_win = 1 / (1 + 10**((loser_elo - winner_elo) / 400))
+        expected_lose = 1 / (1 + 10**((winner_elo - loser_elo) / 400))
+
+        updated_winner_elo = winner_elo + k_factor * (1 - expected_win)
+        updated_loser_elo = loser_elo + k_factor * (0 - expected_lose)
+
+        return int(updated_winner_elo), int(updated_loser_elo)

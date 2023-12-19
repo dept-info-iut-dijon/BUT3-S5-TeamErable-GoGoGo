@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.db.models.functions import Coalesce
 from django.db import models
 from ...models import CustomUser, Game,GameParticipate, Statistic
+from ...logic import GoRank
 from ..decorators import login_required, request_type, RequestType
 from .ranking_struct import RankingStruct
 from ..profil.career.career import *
@@ -26,8 +27,11 @@ def global_ranking(request: HttpRequest) -> HttpResponse:
     friends.append(request.user)
     friends_ranking = _get_top_rank(friends, 1)
 
+    same_ranked_users = list(CustomUser.objects.filter(stat__rank=request.user.stat.rank))
+    same_ranked = _get_top_rank(same_ranked_users, 1)
+
     return render(request, 'ranking/global.html', {'user': request.user, 'friends_ranked': friends_ranking, 
-        'top_ranked': global_ranking})
+        'top_ranked': global_ranking, 'same_ranked': same_ranked})
 
 def _get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]:
     '''
@@ -67,11 +71,12 @@ def _get_as_ranking(history: dict)-> list[RankingStruct]:
         Returns:
             list[RankingStruct]: liste des lignes du classement
     '''
+
     ranking = []
     for player,player_data in history.items():
         rate = 0
         if(player_data[1]) != 0:
-           rate = player_data[0]*100/player_data[1] 
+           rate = round(player_data[0]*100/player_data[1], 2)
         ranking.append(RankingStruct(
             player,
             player_data[2].rank,
@@ -94,4 +99,5 @@ def _sorting_key(ranking_data:RankingStruct)->tuple:
         Returns:
             tuple: cle de tri
     '''
-    return (ranking_data.taux_victory, ranking_data.nb_games)
+    rank = GoRank.from_string(ranking_data.rank)
+    return (int(rank), ranking_data.taux_victory)
