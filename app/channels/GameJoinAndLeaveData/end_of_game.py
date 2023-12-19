@@ -30,7 +30,6 @@ def _convert_game_to_game_save(game: Game, board: Board) -> None:
             if old_game_saves.exists(): old_game_saves.delete()
 
             GameSave.objects.create(
-                id_game_save = game.id_game,
                 user = player,
                 name = game.name,
                 player1 = game.game_participate.player1,
@@ -49,10 +48,11 @@ def _convert_game_to_game_save(game: Game, board: Board) -> None:
                 handicap = game.game_configuration.handicap,
             )
 
-            _delete_game(game)
+        _delete_game(game)
 
     except Exception as e:
-        print(e)
+        import traceback
+        traceback.print_exc()
 
 
 def end_of_game_callback(game: Game, board: Board) -> None:
