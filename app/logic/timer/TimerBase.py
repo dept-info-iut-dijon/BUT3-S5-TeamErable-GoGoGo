@@ -191,11 +191,14 @@ class TimerBase(ABC):
 
 
     @abstractmethod
-    def play(self, tile: Tile) -> None:
+    def play(self, tile: Tile) -> timedelta:
         '''Joue un coup.
 
         Args:
             tile (Tile): Couleur du joueur.
+
+        Returns:
+            timedelta: Timestamp du dernier placement.
         '''
         pass
 
