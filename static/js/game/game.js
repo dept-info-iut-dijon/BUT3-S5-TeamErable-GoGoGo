@@ -4,7 +4,12 @@ const game_id = document.querySelector("#game-id").value;
 const websocket = new WebSocket("ws://" + base_url + "game/" + game_id + "/");
 const player_color = document.querySelector("#player-color").value;
 let game_ended = document.querySelector("#game-ended").value === "True" ? true : false;
-const has_second_player_element = document.querySelector("#has-second-player");
+let has_second_player = document.querySelector("#has-second-player").value === "True" ? true : false;
+
+const pause_count_element = document.querySelector("#span-pause-count");
+const resume_timer_element = document.querySelector("#span-resume-timer");
+const resume_button = document.querySelector("#resume-button");
+let game_is_paused = document.querySelector("#game-paused").value === "True" ? true : false;
 
 
 /**
@@ -60,14 +65,14 @@ websocket.onmessage = function(event) {
         case 'end-game':
             receivedEndGame(data); break;
 
-        case 'pause-count':
-            receivedPauseCount(data); break;
-
         case 'pause':
             receivedPause(data); break;
 
-        case 'unpause':
-            receivedUnpause(data); break;
+        case 'resume':
+            receivedResume(data); break;
+
+        case 'pause-timer':
+            receivedPauseTimer(data); break;
 
         case 'error':
             notify('<p class="error">' + data + '</p>'); break;
@@ -82,7 +87,7 @@ websocket.onmessage = function(event) {
  * @param {string} data Données reçues par le serveur
  */
 function receivedConnect(data) {
-    has_second_player_element.value = "True";
+    has_second_player = true;
 
     let user_id = data.id;
     let color = data.color;
@@ -235,30 +240,43 @@ function receivedEndGame(data) {
 }
 
 /**
- * Message de compteur de pause reçu par le serveur
- * @param {string} data Données reçues par le serveur
- */
-function receivedPauseCount(data) {
-    let element = document.querySelector("#band-pause-count");
-    element.innerHTML = data;
-}
-
-/**
  * Message de pause reçu par le serveur
  * @param {string} data Données reçues par le serveur
  */
 function receivedPause(data) {
-    let element = document.querySelector("#band-pause");
-    if (element.classList.contains("hidden")) element.classList.remove("hidden");
+    pause_count_element.innerHTML = data.pause_count.toString();
+    game_is_paused = data.is_paused;
+
+    if (data.is_paused) {
+        let element = document.querySelector("#band-pause");
+        if (element.classList.contains("hidden")) element.classList.remove("hidden");
+    }
 }
 
 /**
  * Message de reprise reçu par le serveur
  * @param {string} data Données reçues par le serveur
  */
-function receivedUnpause(data) {
-    let element = document.querySelector("#band-pause");
-    if (!element.classList.contains("hidden")) element.classList.add("hidden");
+function receivedResume(data) {
+    pause_count_element.innerHTML = data.pause_count.toString();
+    game_is_paused = data.is_paused;
+
+    if (!data.is_paused) {
+        let element = document.querySelector("#band-pause");
+        if (!element.classList.contains("hidden")) element.classList.add("hidden");
+    }
+}
+
+
+/**
+ * Message de pause du timer reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
+function receivedPauseTimer(data) {
+    resume_timer_element.innerHTML = data.timer;
+    if (!resume_button.classList.contains("hidden")) {
+        resume_button.classList.add("hidden");
+    }
 }
 
 
@@ -334,17 +352,17 @@ function askPause() {
 /**
  * Envoie un message demander à reprendre
  */
-function askUnpause() {
+function askResume() {
     websocket.send(JSON.stringify({
-        'type': 'unpause',
+        'type': 'resume',
         'data': null
     }));
 }
 
 document.querySelector("#skip-button").addEventListener("click", skip);
 document.querySelector("#give-up-button").addEventListener("click", giveUp);
-// document.querySelector("#pause-button").addEventListener("click", askPause); // TODO: Ajouter la pause au sprint 5
-// document.querySelector("#unpause-button").addEventListener("click", askUnpause); // TODO: Ajouter la pause au sprint 5
+document.querySelector("#pause-button").addEventListener("click", askPause);
+document.querySelector("#resume-button").addEventListener("click", askResume);
 
 
 /**

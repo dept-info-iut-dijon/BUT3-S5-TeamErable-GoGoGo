@@ -1,14 +1,17 @@
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 import json
-from ..models import Game
-from ..logic import Board, Tile, Vector2
+from ..models import Game, CustomUser
+from ..logic import Board, Tile, Vector2, RankCalculator, GoRank
 from ..exceptions import InvalidMoveException
 from ..storage import GameStorage
 from ..utils import time2str
+from ..views.tournament.tournament_game import update_tournament_games
+from ..storage import TournamentStorage
+from ..tournament_logic import Player
 
 class GameJoinAndLeave(WebsocketConsumer):
-    '''Gère le websocket de la partie.
+    '''Gère le websocket de la partie et le jeu.
 
     Args:
         WebsocketConsumer (_type_): Classe de base du websocket.
@@ -58,12 +61,14 @@ class GameJoinAndLeave(WebsocketConsumer):
                 case 'check-state':
                     self.receive_check_state(data)
 
-                case 'pause': pass # TODO: Faire la pause au Sprint 5
+                case 'pause':
+                    self.receive_pause(data)
 
-                case 'unpause': pass # TODO: Faire la pause au Sprint 5
+                case 'resume':
+                    self.receive_resume(data)
 
                 case _:
-                    raise ValueError('Une erreur est survenue.')
+                    raise ValueError('Une commande non valide a été envoyée.')
 
         except (InvalidMoveException, ValueError) as e:
             self.send(text_data = json.dumps({'type': 'error', 'data': str(e)}))
@@ -73,7 +78,11 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def disconnect(self, code: int) -> None:
-        '''Enlève le joueur de la salle s'il n'est plus connecté.'''
+        '''Enlève le joueur de la salle s'il n'est plus connecté.
+        
+        Args:
+            code (int): Code de l'erreur.
+        '''
         async_to_sync(self.channel_layer.group_discard)(f'game_{self._game_id}', self.channel_name)
         self.close()
 
@@ -91,6 +100,22 @@ class GameJoinAndLeave(WebsocketConsumer):
         return game, board, Tile.White if self._player_id == 0 else Tile.Black
 
 
+    def _update_tournament_data(self, game: Game, board: Board) -> None:
+        '''Met a jour les données du tournoi si la partie est finie.
+
+        Args:
+            game (Game): Partie
+            board (Board): Plateau
+        '''
+        if game.tournament is not None:
+            tournament_logic = TournamentStorage.load_tournament(game.tournament.tournament_status.path)
+            points = board.get_points()
+            winner = game.game_participate.player1 if points[Tile.White] > points[Tile.Black] else game.game_participate.player2
+            tournament_logic.do_win(Player(winner.id))
+            TournamentStorage.save_tournament(game.tournament.tournament_status.path, tournament_logic)
+            update_tournament_games(game.tournament)
+
+
     def _update_game(self, game: Game, board: Board) -> None:
         '''Mettre a jour le jeu.
         
@@ -101,6 +126,8 @@ class GameJoinAndLeave(WebsocketConsumer):
         if board.ended != game.done:
             game.done = board.ended
             game.save()
+
+            self._update_tournament_data(game, board)
 
 
     def _save_game_board(self, game: Game, board: Board) -> None:
@@ -123,13 +150,13 @@ class GameJoinAndLeave(WebsocketConsumer):
         Returns:
             int: 1 si le joueur peut bouger, 0 sinon, -1 si la partie est finie.
         '''
-        can_play = 0 if board.current_player == Tile.White else 1
-        can_play = -1 if board.ended else can_play
-        return can_play
+        current_player = 0 if board.current_player == Tile.White else 1
+        current_player = -1 if board.ended else current_player
+        return current_player
 
 
     def _check_end_game(self, game: Game, board: Board, looser: Tile = None) -> None:
-        '''Verifie si la partie est finie.
+        '''Verifie si la partie est finie et met a jour le jeu.
 
         Args:
             game (Game): Le jeu
@@ -162,8 +189,47 @@ class GameJoinAndLeave(WebsocketConsumer):
                     }
                 })
             }
+
+            # Mise a jour des stats joueur
+            # Qualite code: a terme c'est a deplacer dans une classe specialisee
+            white = game.game_participate.player1
+            black = game.game_participate.player2
+
+            added_wins_black = int(winner == Tile.Black) - int(winner == Tile.White)
+            added_wins_black = int(winner == Tile.White) - int(winner == Tile.Black)
+
+            if game.game_configuration.ranked:
+                black.stat.game_ranked_win += int(winner == Tile.Black)
+                black.stat.game_ranked_loose += int(winner != Tile.Black)
+                white.stat.game_ranked_win += int(winner == Tile.White)
+                white.stat.game_ranked_loose += int(winner != Tile.White)
+            else:
+                black.stat.game_win += int(winner == Tile.Black)
+                black.stat.game_loose += int(winner != Tile.Black)
+                white.stat.game_win += int(winner == Tile.White)
+                white.stat.game_loose += int(winner != Tile.White)
+
+            total_wins = black.stat.game_ranked_win
+            total_losses = black.stat.game_ranked_loose
+            total_games = total_wins+total_losses
+            rate = total_wins*100/total_games
+            
+            print(RankCalculator.calculate_rank(total_games, rate))
+            black.stat.rank = RankCalculator.calculate_rank(total_games, rate)
+            black.stat.save()
+
+            total_wins = white.stat.game_ranked_win
+            total_losses = white.stat.game_ranked_loose
+            total_games = total_wins+total_losses
+            rate = total_wins*100/total_games
+            
+            print(RankCalculator.calculate_rank(total_games, rate))
+            white.stat.rank = RankCalculator.calculate_rank(total_games, rate)
+            white.stat.save()
+
             async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
+    
 
     def receive_play(self, event: dict) -> None:
         '''Reçoit le coup du joueur.
@@ -295,6 +361,8 @@ class GameJoinAndLeave(WebsocketConsumer):
             game.done = board.ended
             game.save()
 
+            self._update_tournament_data(game, board)
+
             self._check_end_game(game, board, looser)
 
 
@@ -321,6 +389,90 @@ class GameJoinAndLeave(WebsocketConsumer):
         Args:
             event (dict): Déconnexion du joueur.
         '''
-        data: str = event['data']
-        print('disconnect', data)
         self.send(text_data = json.dumps(event))
+
+
+    def receive_pause(self, event: dict) -> None:
+        '''Reçoit la demande de pause du joueur.
+
+        Args:
+            event (dict): Demande de pause du joueur.
+        '''
+        game, board, tile = self._get_game_board()
+        if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
+        if board.is_paused: raise InvalidMoveException('Le minuteur est déjà en pause.')
+
+        board.pause(tile)
+
+        self._save_game_board(game, board)
+
+        new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+        new_event = {'type': 'send_pause', 'data': {'pause_count': board.pause_count, 'is_paused': board.is_paused}}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+        if board.is_paused:
+            new_event = {'type': 'send_pause_timer', 'data': {'timer': time2str(board.pause_time_left)}}
+            async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+
+    def send_pause_timer(self, event: dict) -> None:
+        '''Envoie le timer de la pause.
+
+        Args:
+            event (dict): Timer de la pause.
+        '''
+        new_event = {'type': 'pause-timer', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))
+
+
+    def receive_resume(self, event: dict) -> None:
+        '''Reçoit la demande de reprise du joueur.
+
+        Args:
+            event (dict): Demande de reprise du joueur.
+        '''
+        game, board, tile = self._get_game_board()
+        if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
+        if not board.is_paused: raise InvalidMoveException('Le minuteur n\'est pas en pause.')
+
+        board.resume(tile)
+
+        self._save_game_board(game, board)
+
+        new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+        new_event = {'type': 'send_resume', 'data': {'pause_count': board.pause_count, 'is_paused': board.is_paused}}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+
+    def send_pause(self, event: dict) -> None:
+        '''Envoie la demande de pause du joueur.
+
+        Args:
+            event (dict): Demande de pause du joueur.
+        '''
+        new_event = {'type': 'pause', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))
+
+
+    def send_pause_timer(self, event: dict) -> None:
+        '''Envoie le timer de la pause.
+
+        Args:
+            event (dict): Timer de la pause.
+        '''
+        new_event = {'type': 'pause-timer', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))
+
+
+    def send_resume(self, event: dict) -> None:
+        '''Envoie la demande de reprise du joueur.
+
+        Args:
+            event (dict): Demande de reprise du joueur.
+        '''
+        new_event = {'type': 'resume', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))

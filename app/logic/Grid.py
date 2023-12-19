@@ -5,6 +5,7 @@ from .GoConstants import GoConstants
 import math
 
 class Grid:
+    '''Grille de jeu.'''
     def __init__(self, size: int) -> None:
         '''Initialise une grille de taille spécifiée.
 
@@ -29,6 +30,7 @@ class Grid:
 
     @property
     def raw(self) -> list[list[Tile | None]]:
+        '''Renvoie la grille sous forme de liste de liste de couleurs.'''
         l: list[list[Tile | None]] = []
 
         for y in range(self.size.y):
@@ -245,7 +247,7 @@ class Grid:
         for island in self.get_islands():
             if island.tile == tile and coords in island.coords:
                 return island
-            
+
         return None
 
 
@@ -472,6 +474,13 @@ class Grid:
                 for this_territory in territories[tile].copy():
                     if other_territory.contains(this_territory) and other_territory in territories[tile.next]:
                         territories[tile.next].remove(other_territory)
+
+        for tile in Tile:
+            for other_territory in territories[tile.next].copy():
+                for this_territory in territories[tile].copy():
+                    if other_territory.overlaps(this_territory):
+                        if other_territory in territories[tile.next]: territories[tile.next].remove(other_territory)
+                        if this_territory in territories[tile]: territories[tile].remove(this_territory)
 
         return {tile: tuple(territories[tile]) for tile in Tile}
 

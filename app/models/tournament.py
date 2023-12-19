@@ -1,7 +1,8 @@
 from django.db import models
 from .custom_user import CustomUser
 from .game_configuration import GameConfiguration
-import datetime
+from datetime import datetime
+from ..storage import TournamentStorage
 
 class Tournament(models.Model):
     '''Classe permettant de creer un tournoi'''
@@ -17,11 +18,31 @@ class Tournament(models.Model):
     player_min = models.IntegerField()
     start = models.BooleanField(default=False)
     private = models.BooleanField(default=False)
+    tournament_status = models.FileField(upload_to='dynamic/tournaments', null=True)
+
+    def get_filename(self) -> str:
+        return f'dynamic/tournaments/{self.id}.json'
 
     #Permet de verifier si le tournois est en cours
     def ongoing(self):
-        if(self.start_date <= datetime.datetime.now().date() <= self.end_date): return True
-        else: return False
+        ret = False
+
+        if(self.start_date <= datetime.now().date() <= self.end_date and ParticipateTournament.objects.filter(tournament=self).count() >= self.player_min):
+            ret = not self.terminated()
+
+        return ret
+
+    def terminated(self):
+        ret = False
+
+        if(self.end_date <= datetime.now().date()):
+            ret = True
+
+        if not ret:
+            tl = TournamentStorage.load_tournament(self.tournament_status.path)
+            ret = tl.winner is not None
+
+        return ret
 
     def __str__(self):
         return self.name

@@ -124,6 +124,22 @@ class Board:
     def initial_time(self) -> timedelta:
         return self._timer.initial_time
 
+    @property
+    def is_paused(self) -> bool:
+        return self._timer.is_paused
+
+    @property
+    def pause_count(self) -> int:
+        return self._timer.pause_count
+
+    @property
+    def can_resume(self) -> bool:
+        return self._timer.can_resume
+
+    @property
+    def pause_time_left(self) -> timedelta:
+        return self._timer.pause_time_left
+
 
     def get(self, coords: Vector2) -> Tile:
         '''Renvoie la tuile à la position donnée.
@@ -178,6 +194,7 @@ class Board:
             InvalidMoveException: Si l'île serait entourée (Si le joueur n'est pas autorisé à jouer dans les zones mortes).
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
+        if self._timer.is_paused: raise InvalidMoveException('La partie est en pause.')
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
         if self._grid.is_outside(coords): raise InvalidMoveException('Impossible de jouer ici, les coordonnées sont en dehors du plateau.')
         if self.get(coords) is not None: raise InvalidMoveException('Impossible de jouer ici, la case est déjà occupée.')
@@ -250,6 +267,7 @@ class Board:
             InvalidMoveException: Si le joueur n'est pas le joueur courant.
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
+        if self._timer.is_paused: raise InvalidMoveException('La partie est en pause.')
         if self._current_player != tile: raise InvalidMoveException('Ce n\'est pas à vous de jouer.')
 
         if self._timer.timed_out is not None:
@@ -266,28 +284,65 @@ class Board:
             self.end_game()
 
 
+    def pause(self, tile: Tile) -> None:
+        '''Met en pause la partie.
+
+        Args:
+            tile (Tile): Tuile du joueur.
+
+        Raises:
+            InvalidMoveException: Si la partie est terminée.
+        '''
+        if self._ended: raise InvalidMoveException('La partie est terminée.')
+
+        self._timer.pause(tile)
+
+
+    def resume(self, tile: Tile) -> None:
+        '''Reprend la partie.
+
+        Args:
+            tile (Tile): Tuile du joueur.
+
+        Raises:
+            InvalidMoveException: Si la partie est terminée.
+        '''
+        if self._ended: raise InvalidMoveException('La partie est terminée.')
+
+        self._timer.resume(tile)
+
+
     def update_game_state(self) -> Tile | None:
         '''Met à jour l'état de la partie.
 
         Returns:
             Tile | None: Couleur du joueur qui a perdu, None si aucun joueur n'a perdu.
         '''
-        if (ret := self._timer.timed_out) is not None and not self._ended:
+        ret = None
+        if self._timer.timed_out is not None and not self._ended:
+            ret = self._timer.timed_out
             self.end_game()
 
         return ret
 
 
     def end_game(self) -> None:
-        '''Termine la partie.'''
+        '''Termine la partie.
+        
+        Raises:
+            InvalidMoveException: Si la partie est terminée.
+        '''
         if self._ended: raise InvalidMoveException('La partie est déjà terminée.')
+        if self._timer.is_paused: raise InvalidMoveException('La partie est en pause.')
         self._ended = True
 
 
     def __str__(self) -> str:
+        '''Renvoie le plateau de jeu sous forme de chaine de caractères.'''
         return str(self._grid)
 
     def __repr__(self) -> str:
+        '''Surcharge de l'opérateur str.'''
         return str(self)
 
 
@@ -362,7 +417,12 @@ class Board:
                 Tile.White.value.value: 3600.0,
                 Tile.Black.value.value: 3600.0
             },
-            'last-action-time': 0.0
+            'last-action-time': 0.0,
+        })
+        timer_pause_data = timer_data.get('pause', {
+            'ask-pause': [],
+            'is-paused': False,
+            'timer-offset': 0.0,
         })
         self._timer = TimerFactory().get(timer_data.get('key', 'chinese'))(
             self,
@@ -372,6 +432,10 @@ class Board:
                 Tile.from_value(k): timedelta(seconds = v) for k, v in timer_data.get('player-time', {}).items()
             },
             datetime.fromtimestamp(timer_data.get('last-action-time', datetime.now().timestamp())),
+            timer_pause_data.get('is-paused', False),
+            [Tile.from_value(t) for t in timer_pause_data.get('ask-pause', [])],
+            timedelta(seconds = timer_pause_data.get('timer-offset', 0.0)),
+            datetime.fromtimestamp(timer_pause_data.get('date-pause', datetime.now().timestamp())),
         )
 
 
