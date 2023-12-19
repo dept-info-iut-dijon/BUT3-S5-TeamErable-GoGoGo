@@ -1,19 +1,5 @@
 htmx.config.useTemplateFragments = true;
 
-document.getElementById('importForm').addEventListener('submit', function (event) {
-    event.preventDefault();
-
-    const formData = new FormData(this);
-
-    fetch('/import_game/', {
-        method: 'POST',
-        body: formData,
-    })
-        .then(response => response.json())
-});
-
-
-
 function importGame() {
     var fileInput = document.createElement('input');
     fileInput.type = 'file';
