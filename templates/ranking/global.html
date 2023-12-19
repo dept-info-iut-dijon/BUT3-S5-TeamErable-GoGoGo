@@ -58,7 +58,6 @@
                             <td>{{ player.taux_victory }}%</td>
                         </tr>
                         {% endfor %}
-                        <!-- Ajoutez plus de lignes selon votre besoin -->
                     </tbody>
                 </table>
 
@@ -69,6 +68,7 @@
                     <thead>
                         <tr>
                             <th>Position</th>
+                            <th></th>
                             <th>Joueur</th>
                             <th>Rang</th>
                             <th>Elo</th>
@@ -82,9 +82,10 @@
                         {% for player in friends_ranked %}
                         <tr {% if player.user.id is user.id%}id="current" {% endif %}>
                             <td>{{ forloop.counter }}</td>
+                            <td><img src="get-pfp?id={{player.user.id}}" class="pfp"></td>
                             <td>{{ player.user.username }}</td>
-                            <td></td>
-                            <td></td>
+                            <td>{{ player.rank }}</td>
+                            <td>{{ player.elo }}</td>
                             <td>{{ player.nb_games }}</td>
                             <td>{{ player.nb_victory }}</td>
                             <td>{{ player.nb_defeats  }}</td>  {# Assuming total_games is the total number of games and total_wins is the number of wins #}
@@ -96,6 +97,36 @@
             </section>
             <section id="rank" class="">
                 <h1>Classement de votre rang</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th></th>
+                            <th>Joueur</th>
+                            <th>Rang</th>
+                            <th>Elo</th>
+                            <th>Parties</th>
+                            <th>Victoires</th>
+                            <th>Défaites</th>
+                            <th>Taux de Victoires</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in same_ranked %}
+                        <tr {% if player.user.id is user.id%}id="current" {% endif %}>
+                            <td>{{ forloop.counter }}</td>
+                            <td><img src="get-pfp?id={{player.user.id}}" class="pfp"></td>
+                            <td>{{ player.user.username }}</td>
+                            <td>{{ player.rank }}</td>
+                            <td>{{ player.elo }}</td>
+                            <td>{{ player.nb_games }}</td>
+                            <td>{{ player.nb_victory }}</td>
+                            <td>{{ player.nb_defeats  }}</td>  {# Assuming total_games is the total number of games and total_wins is the number of wins #}
+                            <td>{{ player.taux_victory }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </section>
         </div>
     </main>
