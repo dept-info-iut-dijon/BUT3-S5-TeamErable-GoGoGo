@@ -9,8 +9,31 @@
 .statistics{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    margin-bottom: 2em;
+
 }
+
+.statistics div p{
+    border-top: 1px solid var(--main-color);
+    border-bottom: 1px solid var(--main-color);
+    padding: 0.5rem 0;
+    border-left: 1px solid var(--main-color);
+    border-right: 1px solid var(--main-color);
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.statistics div:first-child p{
+    border-top-left-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}
+
+.statistics div:last-child p{
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
 
 .search-games-historic{
     margin-bottom: 1rem;
@@ -90,4 +113,9 @@
     width: 1.5rem;
     height: 1.5rem;
     margin-right: 0.5rem;
+}
+
+.border-radius{
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius); ;
 }
