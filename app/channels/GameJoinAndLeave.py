@@ -1,7 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 import json
-from ..models import Game
+from ..models import Game, CustomUser
 from ..logic import Board, Tile, Vector2, RankCalculator
 from ..exceptions import InvalidMoveException
 from ..storage import GameStorage
@@ -144,7 +144,7 @@ class GameJoinAndLeave(WebsocketConsumer):
         current_player = -1 if board.ended else current_player
         return current_player
 
-    def _update_rank_player(self, player:CustomUser)->CustomUser:
+    def _update_rank_player(self, player: CustomUser) -> CustomUser:
         '''Mets a jour les rangs des joueurs
 
         Args:

@@ -26,6 +26,9 @@ def _convert_game_to_game_save(game: Game, board: Board) -> None:
         players = (game.game_participate.player1, game.game_participate.player2)
         points = board.get_points()
         for player in players:
+            old_game_saves = GameSave.objects.filter(user = player).order_by('-id_game_save')[5:]
+            if old_game_saves.exists(): old_game_saves.delete()
+
             GameSave.objects.create(
                 id_game_save = game.id_game,
                 user = player,
