@@ -1,6 +1,6 @@
 {% if not games %}
 <tr>
-    <td colspan="10">{{ error }}</td>
+    <td colspan="11">{{ error }}</td>
 </tr>
 {% endif %}
 {% for game in games %}
@@ -9,8 +9,21 @@
         <td><p>{{ game.name }}</p></td>
         <td><p>{{ game.description }}</p></td>
         <td><p>{{ game.start_date }}</p></td>
-        <td><p>{{ game.game_participate.player1.username }}</p></td>
-        <td><p>{{ game.game_participate.player2.username }}</p></td>
+        <td>
+            <div class="pfp-fusion">
+                <span><img src="get-pfp?id={{game.game_participate.player1.id}}" alt="profile picture" class="pfp"></span>
+                {% if game.game_participate.player2 %}
+                <span><img src="get-pfp?id={{game.game_participate.player2.id}}" alt="profile picture" class="pfp"></span>
+                {% endif %}
+            </div>
+        </td>
+        <td>
+            {% if game.game_participate.player2 %}
+            <p>{{ game.game_participate.player1.username }} vs {{ game.game_participate.player2.username }}</p>
+            {% else %}
+            <p>{{ game.game_participate.player1.username }} vs ???</p>
+            {% endif %}
+        </td>
         <td><p>{{ game.game_configuration.map_size }}x{{ game.game_configuration.map_size }}</p></td>
         <td><p>{{ game.game_configuration.counting_method }}</p></td>
         <td><p>{{ game.game_configuration.clock_type }}</p></td>
