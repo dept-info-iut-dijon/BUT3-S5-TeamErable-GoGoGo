@@ -8,6 +8,7 @@ import json
 from django.db.models import Q
 import random
 import string
+from ....translations import Translations
 
 def career(request: HttpRequest) -> HttpResponse:
     '''Constructeur de la page de carriere
