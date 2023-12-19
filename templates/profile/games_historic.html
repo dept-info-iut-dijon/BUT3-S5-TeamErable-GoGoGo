@@ -7,7 +7,17 @@
         <td><p>{{ game.clock_type }}</p></td>
         <td><p>{{ game.handicap }}</p></td>
         <td><p>{{ game.tournament }}</p></td>
-        <td class="row"><a class="watch-game button" href="/game/{{ game.id }}"><img src="/static/icons/voir.png" />Regarder</a><div class="separator"></div><a class="export-game button" href="/game/{{ game.id }}"><img src="/static/icons/export.png" />Exporter</a></td>
+        <td class="row">
+            <a class="watch-game button" href="/">
+                <img src="/static/icons/voir.png" />
+                Regarder
+            </a>
+            <div class="separator"></div>
+            <a id="export-game" class="export-game button" href="/export-game/{{ game.id_game_save }}/" download="exported_data.json">
+                <img src="/static/icons/export.png" />
+                Exporter
+            </a>
+        </td>
     </div>
 </tr>
 {% endfor %}
