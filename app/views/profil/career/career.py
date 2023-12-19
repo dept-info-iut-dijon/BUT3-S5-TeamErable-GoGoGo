@@ -6,6 +6,8 @@ from django.core.files.storage import default_storage
 from ....models import Game, CustomUser, GameParticipate, GameSave
 import json
 from django.db.models import Q
+import random
+import string
 
 def career(request: HttpRequest) -> HttpResponse:
     '''Constructeur de la page de carriere
@@ -142,6 +144,18 @@ def search_games_historic(request: HttpRequest) -> HttpResponse:
         ({'error': 'Aucune partie n\'est disponible pour le moment ou correspond à vos critères de recherche.'} if len(games) == 0 else {})
     )
 
+def _generate_random_string(length : int = 16) -> str:
+    '''Génère une chaine aléatoire
+
+    Args:
+        length (int, optional): Longueur de la chaine. Défaut à 16.
+
+    Returns:
+        str: La chaine aléatoire
+    '''
+    letters = string.ascii_latters
+    return ''.join(random.choice(letters) for _ in range(length))
+
 @request_type(RequestType.POST)
 def import_JSON(request : HttpRequest) -> HttpResponse:
     ''' Importe un fichier JSON
@@ -157,30 +171,30 @@ def import_JSON(request : HttpRequest) -> HttpResponse:
         uploaded_file = request.FILES.get('json_file')
         ret = HttpResponseNotifError('Fichier manquant')
         if uploaded_file:
-            file_path = default_storage.save(uploaded_file.name, uploaded_file)
-
-            with default_storage.open(file_path) as f:
+            # Lit le fichier
+            with open(uploaded_file, 'r') as f:
                 json_data = json.loads(f.read())
-                game_save = GameSave(
-                    user = request.user,
-                    name = json_data['name'],
-                    player1 = json_data['player1'],
-                    player2 = json_data['player2'],
-                    score_player1 = json_data['score_player1'],
-                    score_player2 = json_data['score_player2'],
-                    duration = json_data['duration'],
-                    move_list = json_data['move_list'],
-                    tournament = json_data['tournament'],
-                    map_size = json_data['map_size'],
-                    komi = json_data['komi'],
-                    counting_method = json_data['counting_method'],
-                    clock_type = json_data['clock_type'],
-                    clock_value = json_data['clock_value'],
-                    byo_yomi = json_data['byo_yomi'],
-                    handicap = json_data['handicap'],
-                )
-                game_save.save()
-                ret = HttpResponseNotifSuccess('Fichier JSON importé')
+
+            game_save = GameSave(
+                user = request.user,
+                name = json_data['name'],
+                player1 = json_data['player1'],
+                player2 = json_data['player2'],
+                score_player1 = json_data['score_player1'],
+                score_player2 = json_data['score_player2'],
+                duration = json_data['duration'],
+                move_list = json_data['move_list'],
+                tournament = json_data['tournament'],
+                map_size = json_data['map_size'],
+                komi = json_data['komi'],
+                counting_method = json_data['counting_method'],
+                clock_type = json_data['clock_type'],
+                clock_value = json_data['clock_value'],
+                byo_yomi = json_data['byo_yomi'],
+                handicap = json_data['handicap'],
+            )
+            game_save.save()
+            ret = HttpResponseNotifSuccess('Fichier JSON importé')
 
     except Exception:
         ret = HttpResponseNotifError("Le fichier JSON est corrompu")
