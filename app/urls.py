@@ -58,5 +58,5 @@ urlpatterns = [
     #Classement
     path("classement-global", views.global_ranking, name="classement_global"),
 
-
+    
 ]

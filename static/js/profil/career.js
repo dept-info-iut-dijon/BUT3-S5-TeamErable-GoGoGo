@@ -35,3 +35,43 @@ document.getElementById('importForm').addEventListener('submit', function (event
             console.error('Erreur lors de la requête :', error);
         });
 });
+
+
+
+function importGame() {
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json';
+
+    // Ajoutez un événement onchange pour déclencher l'envoi du fichier une fois sélectionné
+    fileInput.addEventListener('change', function () {
+        uploadFile(fileInput.files[0]);
+    });
+
+    // Cliquez sur le champ de fichier virtuel
+    fileInput.click();
+}
+
+function uploadFile(file) {
+    var formData = new FormData();
+    let csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+    formData.append('json_file', file);
+
+    // Effectuez une requête Ajax vers le serveur avec le fichier
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/import-JSON', true);
+    xhr.setRequestHeader('X-CSRFToken', csrf_token);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // Succès de la requête, effectuez des actions supplémentaires si nécessaire
+            notify('<p class="success">Le jeu a été importé avec succès.</p>');
+        } else {
+            // Gestion des erreurs
+            notify('<p class="error">Une erreur est survenue lors de l\'importation du fichier.</p>');
+        }
+    };
+
+    // Envoyez la requête avec le formulaire de données contenant le fichier
+    xhr.send(formData);
+}
