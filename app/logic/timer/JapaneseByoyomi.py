@@ -35,7 +35,7 @@ class JapaneseByoyomi(TimerBase):
 		)
 
 
-	def play(self, tile: Tile) -> None:
+	def play(self, tile: Tile) -> timedelta:
 		delta = datetime.now() - self._last_action_time
 		self._player_time[tile] -= delta
 
@@ -44,6 +44,8 @@ class JapaneseByoyomi(TimerBase):
 
 		self.update_last_action_time()
 		self.reset_timer_offset()
+
+		return self.initial_time - self._player_time[tile]
 
 
 TimerFactory().register(JapaneseByoyomi)
