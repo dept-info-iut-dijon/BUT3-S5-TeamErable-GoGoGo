@@ -25,8 +25,8 @@
             {% endif %}
         </td>
         <td><p>{{ game.game_configuration.map_size }}x{{ game.game_configuration.map_size }}</p></td>
-        <td><p>{{ game.game_configuration.counting_method }}</p></td>
-        <td><p>{{ game.game_configuration.clock_type }}</p></td>
+        <td><p>{{ game.game_configuration.counting_method|translate }}</p></td>
+        <td><p>{{ game.game_configuration.clock_type|translate }}</p></td>
         <td><p>{{ game.game_configuration.handicap }}</p></td>
         {% if game.tournament != None %}
         <td><p>{{ game.tournament.name }}</p></td>
