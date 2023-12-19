@@ -1,14 +1,12 @@
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 import json
-from ..models import Game, CustomUser
-from ..logic import Board, Tile, Vector2, RankCalculator, GoRank
+from ..models import Game
+from ..logic import Board, Tile, Vector2, RankCalculator
 from ..exceptions import InvalidMoveException
 from ..storage import GameStorage
 from ..utils import time2str
-from ..views.tournament.tournament_game import update_tournament_games
-from ..storage import TournamentStorage
-from ..tournament_logic import Player
+from .GameJoinAndLeaveData.end_of_game import end_of_game_callback
 
 class GameJoinAndLeave(WebsocketConsumer):
     '''Gère le websocket de la partie et le jeu.
@@ -100,20 +98,14 @@ class GameJoinAndLeave(WebsocketConsumer):
         return game, board, Tile.White if self._player_id == 0 else Tile.Black
 
 
-    def _update_tournament_data(self, game: Game, board: Board) -> None:
-        '''Met a jour les données du tournoi si la partie est finie.
+    def _end_of_game_callback(self, game: Game, board: Board) -> None:
+        '''Met a jour les données liées à la fin de la partie.
 
         Args:
             game (Game): Partie
             board (Board): Plateau
         '''
-        if game.tournament is not None:
-            tournament_logic = TournamentStorage.load_tournament(game.tournament.tournament_status.path)
-            points = board.get_points()
-            winner = game.game_participate.player1 if points[Tile.White] > points[Tile.Black] else game.game_participate.player2
-            tournament_logic.do_win(Player(winner.id))
-            TournamentStorage.save_tournament(game.tournament.tournament_status.path, tournament_logic)
-            update_tournament_games(game.tournament)
+        end_of_game_callback(game, board)
 
 
     def _update_game(self, game: Game, board: Board) -> None:
@@ -126,8 +118,6 @@ class GameJoinAndLeave(WebsocketConsumer):
         if board.ended != game.done:
             game.done = board.ended
             game.save()
-
-            self._update_tournament_data(game, board)
 
 
     def _save_game_board(self, game: Game, board: Board) -> None:
@@ -238,6 +228,7 @@ class GameJoinAndLeave(WebsocketConsumer):
             
             async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
+            self._end_of_game_callback(game, board)
 
 
 
@@ -370,8 +361,6 @@ class GameJoinAndLeave(WebsocketConsumer):
             GameStorage.save_game(game.move_list.path, board)
             game.done = board.ended
             game.save()
-
-            self._update_tournament_data(game, board)
 
             self._check_end_game(game, board, looser)
 
