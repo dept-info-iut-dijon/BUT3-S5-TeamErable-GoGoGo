@@ -9,7 +9,7 @@
         <td><p>{{ game.name }}</p></td>
         <td><p>{{ game.description }}</p></td>
         <td><p>{{ game.start_date }}</p></td>
-        <td>
+        <td class="width-fix">
             <div class="pfp-fusion">
                 <span><img src="get-pfp?id={{game.game_participate.player1.id}}" alt="profile picture" class="pfp"></span>
                 {% if game.game_participate.player2 %}

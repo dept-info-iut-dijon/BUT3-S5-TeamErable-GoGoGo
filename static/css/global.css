@@ -247,6 +247,14 @@ input[type="submit"]:disabled, input[type="button"]:disabled, button:disabled {
     height: max-content;
 }
 
+.width-ineherit {
+    width: inherit;
+}
+
+.height-inherit {
+    height: inherit;
+}
+
 .margin-auto {
     margin: auto;
 }
