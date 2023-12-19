@@ -65,10 +65,10 @@ function uploadFile(file) {
     xhr.onload = function () {
         if (xhr.status === 200) {
             // Succès de la requête, effectuez des actions supplémentaires si nécessaire
-            notify('<p class="success">Le jeu a été importé avec succès.</p>');
+            notify(xhr.responseText);
         } else {
             // Gestion des erreurs
-            notify('<p class="error">Une erreur est survenue lors de l\'importation du fichier.</p>');
+            notify(xhr.responseText);
         }
     };
 
