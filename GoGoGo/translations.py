@@ -3,7 +3,7 @@ from app.translations import Translations
 from django.template.defaulttags import register
 
 @register.filter
-def translation(key: str) -> str:
+def translate(key: str) -> str:
     '''Récupère une traduction
 
     Args:

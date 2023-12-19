@@ -3,10 +3,14 @@
     <div class="row {{ cls }}">
         <td><p>{{ game.name }}</p></td>
         <td><p>{{ game.map_size }}x{{ game.map_size }}</p></td>
-        <td><p>{{ game.counting_method|translation }}</p></td>
-        <td><p>{{ game.clock_type|translation }}</p></td>
+        <td><p>{{ game.counting_method|translate }}</p></td>
+        <td><p>{{ game.clock_type|translate }}</p></td>
         <td><p>{{ game.handicap }}</p></td>
-        <td><p>{{ game.tournament }}</p></td>
+        {% if game.tournament %}
+            <td><p>{{ game.tournament.name }}</p></td>
+        {% else %}
+            <td><p>-</p></td>
+        {% endif %}
         <td class="row">
             <a class="watch-game button" href="/">
                 <img src="/static/icons/voir.png" />
