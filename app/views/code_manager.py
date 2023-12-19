@@ -1,8 +1,6 @@
 import random
 import string
-from django.db.models import QuerySet
-from ..models.game import Game
-from ..models.tournament import Tournament
+from ..models import Tournament, Game
 from datetime import datetime
 
 # Classe qui s'occupe de la gestion des codes unique des parties et tournois

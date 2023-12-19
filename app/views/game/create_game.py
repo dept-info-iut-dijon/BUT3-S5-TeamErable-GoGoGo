@@ -1,20 +1,18 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
-from ...models.game import Game
-from ...models.tournament import Tournament
-from ...models.game_participate import GameParticipate
-from ...models.game_configuration import GameConfiguration
+from django.http import HttpResponse, HttpRequest
+from ...models import Game, GameParticipate, CustomUser
 from datetime import datetime
-import random, string, os, json
+import os, json
 from ...logic import Board, RuleFactory
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
 from ..code_manager import CodeManager
 from .game_struct import GameStruct
 from .game_configuration import create_game_config
-from ...models.custom_user import CustomUser
 from datetime import timedelta
 from ...logic.timer.TimerFactory import TimerFactory
+from ...models.game_configuration import GameConfiguration
+from ...models.tournament import Tournament
 
 def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tournament: int) -> HttpRequest:
     '''Fonction permettant de creer une nouvelle partie
@@ -29,26 +27,6 @@ def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tourname
     '''
     partcipate = construct_participate(request.user.id)
     game = construct_game(game_struct, partcipate, id_tournament)
-
-    file = f'dynamic/games/{game.id_game:X}.json'
-
-    if not os.path.exists('dynamic/games'):
-        os.makedirs('dynamic/games')
-    with open(file, 'w') as f:
-        b = Board(
-            int(game_struct.game_configuration.map_size),
-            float(game_struct.game_configuration.komi),
-            RuleFactory().get(game_struct.game_configuration.counting_method),
-            int(game_struct.game_configuration.byo_yomi),
-            timedelta(seconds = game.game_configuration.clock_value),
-            None,
-            TimerFactory().get(game.game_configuration.clock_type),
-            None,
-        )
-        json.dump(b.export(), f)
-
-    game.move_list = file
-    game.save()
 
     ret = HttpResponse(f'/game?id={game.id_game}')
 
@@ -72,6 +50,30 @@ def construct_participate(id_player1: int, id_player2: int = None) -> GamePartic
     )
     return participate
 
+
+def create_move_list(game: Game) -> None:
+    file = f'dynamic/games/{game.id_game:X}.json'
+
+    if not os.path.exists('dynamic/games'):
+        os.makedirs('dynamic/games')
+
+    with open(file, 'w') as f:
+        b = Board(
+            int(game.game_configuration.map_size),
+            float(game.game_configuration.komi),
+            RuleFactory().get(game.game_configuration.counting_method),
+            int(game.game_configuration.byo_yomi),
+            timedelta(seconds = game.game_configuration.clock_value),
+            None,
+            TimerFactory().get(game.game_configuration.clock_type),
+            None,
+        )
+        json.dump(b.export(), f)
+
+    game.move_list = file
+    game.save()
+
+
 def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tournament: int = None) -> Game:
     '''Fonction permettant de construire une nouvelle partie dans la BDD
     
@@ -88,13 +90,44 @@ def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tou
         name = game_struct.name,
         description = game_struct.description,
         code = code,
-        start_date = datetime.now(),
+        start_date = datetime.now().date(),
         duration = 0,
         done = False,
         tournament = id_tournament,
         game_configuration = create_game_config(game_struct.game_configuration),
         game_participate = participate
     )
+
+    create_move_list(game)
+
+    return game
+
+
+def construct_game_tournament(name: str, desc: str, game_configuration: GameConfiguration, participate: GameParticipate,tournament: Tournament) -> Game:
+    '''Fonction permettant de construire une nouvelle partie dans la BDD
+    
+    Args:
+        game_struct (GameStruct): La nouvelle partie
+        participate (GameParticipate): Les joueurs et les scores de la partie
+        id_tournament (int): L'id du tournoi ou None
+        
+    Returns:
+        Game: La nouvelle partie
+    '''
+    code = CodeManager().generate_game_code()
+    game = Game.objects.create(
+        name = name,
+        description = desc,
+        code = code,
+        start_date = datetime.now().date(),
+        duration = 0,
+        done = False,
+        tournament = tournament,
+        game_configuration = game_configuration,
+        game_participate = participate
+    )
+
+    create_move_list(game)
 
     return game
 

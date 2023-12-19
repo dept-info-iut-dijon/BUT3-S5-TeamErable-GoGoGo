@@ -39,3 +39,7 @@ from .game.game import game, game_code, game_view_player
 from .game.game_struct import GameStruct
 from .game.game_configuration_struct import GameConfigurationStruct
 from .game.game_configuration import create_game_config
+# Import classement
+from .ranking.global_ranking import global_ranking
+# Imports carrière
+from .profil.career.career import search_games_historic, career, import_JSON

@@ -1,7 +1,6 @@
 from .RuleBase import RuleBase, Board, Tile
 from .RuleFactory import RuleFactory
 from .JapaneseRule import JapaneseRule
-from ..Vector2 import Vector2
 
 class ChineseRule(RuleBase):
     '''Règle chinoise.'''
