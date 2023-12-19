@@ -144,18 +144,6 @@ def search_games_historic(request: HttpRequest) -> HttpResponse:
         ({'error': 'Aucune partie n\'est disponible pour le moment ou correspond à vos critères de recherche.'} if len(games) == 0 else {})
     )
 
-def _generate_random_string(length : int = 16) -> str:
-    '''Génère une chaine aléatoire
-
-    Args:
-        length (int, optional): Longueur de la chaine. Défaut à 16.
-
-    Returns:
-        str: La chaine aléatoire
-    '''
-    letters = string.ascii_latters
-    return ''.join(random.choice(letters) for _ in range(length))
-
 @request_type(RequestType.POST)
 def import_JSON(request : HttpRequest) -> HttpResponse:
     ''' Importe un fichier JSON
@@ -198,5 +186,40 @@ def import_JSON(request : HttpRequest) -> HttpResponse:
 
     except Exception:
         ret = HttpResponseNotifError("Le fichier JSON est corrompu")
+
+    return ret
+
+@request_type(RequestType.POST)
+def export_game(request : HttpRequest, game_id : int) -> HttpResponse:
+    ''' Exporte la partie actuelle
+    
+    Args:
+        request (HttpRequest): La requête HTTP
+    
+    Returns:
+        HttpResponse: La réponse HTTP à la requête d'exportation de partie
+    '''
+    ret = HttpResponseNotifError('Erreur lors de l\'exportation de la partie')
+    game = GameSave.objects.get(id = game_id)
+    if request.user == game.user:
+        game_data = {
+            'name' : game.name,
+            'player1' : game.player1,
+            'player2' : game.player2,
+            'score_player1' : game.score_player1,
+            'score_player2' : game.score_player2,
+            'duration' : game.duration,
+            'move_list' : game.move_list,
+            'tournament' : game.tournament,
+            'map_size' : game.map_size,
+            'komi' : game.komi,
+            'counting_method' : game.counting_method,
+            'clock_type' : game.clock_type,
+            'clock_value' : game.clock_value,
+            'byo_yomi' : game.byo_yomi,
+            'handicap' : game.handicap
+        }
+
+        ret = JsonResponse(game_data)
 
     return ret
