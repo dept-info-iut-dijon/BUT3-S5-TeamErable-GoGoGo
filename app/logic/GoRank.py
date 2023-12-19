@@ -1,66 +1,66 @@
 from enum import Enum, auto
 
 class GoRank(Enum):
-    _30_KYU = auto()
-    _29_KYU = auto()
-    _28_KYU = auto()
-    _27_KYU = auto()
-    _26_KYU = auto()
-    _25_KYU = auto()
-    _24_KYU = auto()
-    _23_KYU = auto()
-    _22_KYU = auto()
-    _21_KYU = auto()
-    _20_KYU = auto()
-    _19_KYU = auto()
-    _18_KYU = auto()
-    _17_KYU = auto()
-    _16_KYU = auto()
-    _15_KYU = auto()
-    _14_KYU = auto()
-    _13_KYU = auto()
-    _12_KYU = auto()
-    _11_KYU = auto()
-    _10_KYU = auto()
-    _9_KYU = auto()
-    _8_KYU = auto()
-    _7_KYU = auto()
-    _6_KYU = auto()
-    _5_KYU = auto()
-    _4_KYU = auto()
-    _3_KYU = auto()
-    _2_KYU = auto()
-    _1_KYU = auto()
+    _30_Kyu = auto()
+    _29_Kyu = auto()
+    _28_Kyu = auto()
+    _27_Kyu = auto()
+    _26_Kyu = auto()
+    _25_Kyu = auto()
+    _24_Kyu = auto()
+    _23_Kyu = auto()
+    _22_Kyu = auto()
+    _21_Kyu = auto()
+    _20_Kyu = auto()
+    _19_Kyu = auto()
+    _18_Kyu = auto()
+    _17_Kyu = auto()
+    _16_Kyu = auto()
+    _15_Kyu = auto()
+    _14_Kyu = auto()
+    _13_Kyu = auto()
+    _12_Kyu = auto()
+    _11_Kyu = auto()
+    _10_Kyu = auto()
+    _9_Kyu = auto()
+    _8_Kyu = auto()
+    _7_Kyu = auto()
+    _6_Kyu = auto()
+    _5_Kyu = auto()
+    _4_Kyu = auto()
+    _3_Kyu = auto()
+    _2_Kyu = auto()
+    _1_Kyu = auto()
 
-    _1_DAN = auto()
-    _2_DAN = auto()
-    _3_DAN = auto()
-    _4_DAN = auto()
-    _5_DAN = auto()
-    _6_DAN = auto()
-    _7_DAN = auto()
-    _8_DAN = auto()
-    _9_DAN = auto()
+    _1_Dan = auto()
+    _2_Dan = auto()
+    _3_Dan = auto()
+    _4_Dan = auto()
+    _5_Dan = auto()
+    _6_Dan = auto()
+    _7_Dan = auto()
+    _8_Dan = auto()
+    _9_Dan = auto()
 
-    """@classmethod
+    @classmethod
     def from_string(cls, rank_str):
-        rank_number, rank_type = rank_str.split('ème ')
+        if('ème ' in rank_str):
+            rank_number, rank_type = rank_str.split('ème ')
+        else:
+            rank_number, rank_type = rank_str.split('er ')
         rank_number = int(rank_number)
 
-        if rank_type == 'Kyu':
-            return cls[f'NEUVIEME_DAN']
-        elif rank_type == 'Dan':
-            return cls[f'NEUVIEME_DAN']
-        else:
-            raise ValueError("Invalid rank type")
-        return cls[f'NEUVIEME_DAN']"""
+        return cls[f'_{rank_number}_{rank_type}']
 
     def __str__(self):
         rank_number = self.name.split('_')[1]
         suffix = "ème"
-        if rank_number == 1:
+        if rank_number == str(1):
             suffix = "er"
-        if 'KYU' in self.name:
+        if 'Kyu' in self.name:
             return f"{rank_number}{suffix} Kyu"
-        elif 'DAN' in self.name:
+        elif 'Dan' in self.name:
             return f"{rank_number}{suffix} Dan"
+
+    def __int__(self):
+        return self.value
