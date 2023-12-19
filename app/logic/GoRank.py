@@ -1,46 +1,46 @@
 from enum import Enum, auto
 
 class GoRank(Enum):
-    TRENTE_KYU = auto()
-    VINGT_NEUF_KYU = auto()
-    VINGT_HUIT_KYU = auto()
-    VINGT_SEPT_KYU = auto()
-    VINGT_SIX_KYU = auto()
-    VINGT_CINQ_KYU = auto()
-    VINGT_QUATRE_KYU = auto()
-    VINGT_TROIS_KYU = auto()
-    VINGT_DEUX_KYU = auto()
-    VINGT_ET_UN_KYU = auto()
-    VINGT_KYU = auto()
-    DIX_NEUF_KYU = auto()
-    DIX_HUIT_KYU = auto()
-    DIX_SEPT_KYU = auto()
-    SEIZE_KYU = auto()
-    QUINZE_KYU = auto()
-    QUATORZE_KYU = auto()
-    TREIZE_KYU = auto()
-    DOUZE_KYU = auto()
-    ONZE_KYU = auto()
-    DIX_KYU = auto()
-    NEUF_KYU = auto()
-    HUIT_KYU = auto()
-    SEPT_KYU = auto()
-    SIX_KYU = auto()
-    CINQ_KYU = auto()
-    QUATRE_KYU = auto()
-    TROIS_KYU = auto()
-    DEUX_KYU = auto()
-    UN_KYU = auto()
+    _30_KYU = auto()
+    _29_KYU = auto()
+    _28_KYU = auto()
+    _27_KYU = auto()
+    _26_KYU = auto()
+    _25_KYU = auto()
+    _24_KYU = auto()
+    _23_KYU = auto()
+    _22_KYU = auto()
+    _21_KYU = auto()
+    _20_KYU = auto()
+    _19_KYU = auto()
+    _18_KYU = auto()
+    _17_KYU = auto()
+    _16_KYU = auto()
+    _15_KYU = auto()
+    _14_KYU = auto()
+    _13_KYU = auto()
+    _12_KYU = auto()
+    _11_KYU = auto()
+    _10_KYU = auto()
+    _9_KYU = auto()
+    _8_KYU = auto()
+    _7_KYU = auto()
+    _6_KYU = auto()
+    _5_KYU = auto()
+    _4_KYU = auto()
+    _3_KYU = auto()
+    _2_KYU = auto()
+    _1_KYU = auto()
 
-    PREMIER_DAN = auto()
-    DEUXIEME_DAN = auto()
-    TROISIEME_DAN = auto()
-    QUATRIEME_DAN = auto()
-    CINQUIEME_DAN = auto()
-    SIXIEME_DAN = auto()
-    SEPTIEME_DAN = auto()
-    HUITIEME_DAN = auto()
-    NEUVIEME_DAN = auto()
+    _1_DAN = auto()
+    _2_DAN = auto()
+    _3_DAN = auto()
+    _4_DAN = auto()
+    _5_DAN = auto()
+    _6_DAN = auto()
+    _7_DAN = auto()
+    _8_DAN = auto()
+    _9_DAN = auto()
 
     """@classmethod
     def from_string(cls, rank_str):
@@ -56,8 +56,11 @@ class GoRank(Enum):
         return cls[f'NEUVIEME_DAN']"""
 
     def __str__(self):
-        rank_number = self.name.split('_')[0]
+        rank_number = self.name.split('_')[1]
+        suffix = "ème"
+        if rank_number == 1:
+            suffix = "er"
         if 'KYU' in self.name:
-            return f"{rank_number}ème Kyu"
+            return f"{rank_number}{suffix} Kyu"
         elif 'DAN' in self.name:
-            return f"{rank_number}er Dan"
+            return f"{rank_number}{suffix} Dan"
