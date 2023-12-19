@@ -154,6 +154,47 @@ class GameJoinAndLeave(WebsocketConsumer):
         current_player = -1 if board.ended else current_player
         return current_player
 
+    def _update_rank_player(self, player:CustomUser)->CustomUser:
+        '''Mets a jour les rangs des joueurs
+
+        Args:
+            player (CustomUser): Le joueur
+
+        Returns:
+            CustomUser: le joueur avec son nouveau rang
+        '''
+        total_wins = player.stat.game_ranked_win
+        total_losses = player.stat.game_ranked_loose
+        total_games = total_wins+total_losses
+        rate = total_wins*100/total_games
+            
+        player.stat.rank = RankCalculator.calculate_rank(total_games, rate)
+        return player
+
+    def _update_player_stats(self, game:Game)->None:
+        '''Mets a jour les stats des joueurs
+
+        Args:
+            game (Game): Le jeu
+        '''
+        winner = game.game_participate.player1
+        loser = game.game_participate.player2
+        if(winner != Tile.Black):
+            winner = game.game_participate.player2
+            loser = game.game_participate.player1
+
+        if game.game_configuration.ranked:
+            winner.stat.game_ranked_win += 1
+            loser.stat.game_ranked_loose += 1
+            winner.stat.elo, loser.stat.elo = RankCalculator.calculate_elo(winner.stat.elo, loser.stat.elo, 32)
+        else:
+            winner.stat.game_win += 1
+            loser.stat.game_loose += 1
+            
+        winner = self._update_rank_player(winner)
+        loser = self._update_rank_player(loser)
+        winner.stat.save()
+        loser.stat.save()
 
     def _check_end_game(self, game: Game, board: Board, looser: Tile = None) -> None:
         '''Verifie si la partie est finie et met a jour le jeu.
@@ -191,44 +232,14 @@ class GameJoinAndLeave(WebsocketConsumer):
             }
 
             # Mise a jour des stats joueur
-            # Qualite code: a terme c'est a deplacer dans une classe specialisee
-            winner = game.game_participate.player1
-            loser = game.game_participate.player2
-            if(winner != Tile.Black):
-                winner = game.game_participate.player2
-                loser = game.game_participate.player1
+            self._update_player_stats(game)
 
             # Mise a jour des nombres de parties gagnees/perdues
-            if game.game_configuration.ranked:
-                winner.stat.game_ranked_win += 1
-                loser.stat.game_ranked_loose += 1
-            else:
-                winner.stat.game_win += 1
-                loser.stat.game_loose += 1
             
-            winner.stat.elo, loser.stat.elo = RankCalculator.calculate_elo(winner.stat.elo, loser.stat.elo, 32)
-            print(winner.username)
-            print(loser.username)
-
-            total_wins = winner.stat.game_ranked_win
-            total_losses = winner.stat.game_ranked_loose
-            total_games = total_wins+total_losses
-            rate = total_wins*100/total_games
-            
-            winner.stat.rank = RankCalculator.calculate_rank(total_games, rate)
-            winner.stat.save()
-
-            total_wins = loser.stat.game_ranked_win
-            total_losses = loser.stat.game_ranked_loose
-            total_games = total_wins+total_losses
-            rate = total_wins*100/total_games
-            
-            loser.stat.rank = RankCalculator.calculate_rank(total_games, rate)
-            loser.stat.save()
-
             async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
-    
+
+
 
     def receive_play(self, event: dict) -> None:
         '''Reçoit le coup du joueur.
