@@ -12,7 +12,7 @@ class GameSave(models.Model):
     score_player2 = models.FloatField(default=0.0, null=False)
     duration = models.IntegerField(null=False)
     move_list = models.TextField(null=False)
-    tournament = models.CharField(max_length=255, null=False)
+    tournament = models.CharField(max_length=255, null=True)
     map_size = models.IntegerField(null=False)
     komi = models.FloatField(null=False)
     counting_method = models.CharField(max_length=255, null=False)

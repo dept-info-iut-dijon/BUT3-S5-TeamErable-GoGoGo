@@ -124,6 +124,8 @@ def _get_rank(user : CustomUser) -> str:
     '''
     return CustomUser.objects.filter(id = user.id).first().stat.rank
 
+@request_type(RequestType.POST)
+@login_required
 def search_games_historic(request: HttpRequest) -> HttpResponse:
     '''Recherche les 5 dernières parties que le joueur à jouées
 
@@ -145,7 +147,8 @@ def search_games_historic(request: HttpRequest) -> HttpResponse:
     )
 
 @request_type(RequestType.POST)
-def import_JSON(request : HttpRequest) -> HttpResponse:
+@login_required
+def import_game(request : HttpRequest) -> HttpResponse:
     ''' Importe un fichier JSON
     
     Args:
@@ -188,8 +191,9 @@ def import_JSON(request : HttpRequest) -> HttpResponse:
 
     return ret
 
-@request_type(RequestType.POST)
-def export_game(request : HttpRequest, game_id : int) -> HttpResponse:
+@request_type(RequestType.POST, RequestType.GET)
+@login_required
+def export_game(request : HttpRequest, id_game : int) -> HttpResponse:
     ''' Exporte la partie actuelle
     
     Args:
@@ -199,8 +203,11 @@ def export_game(request : HttpRequest, game_id : int) -> HttpResponse:
         HttpResponse: La réponse HTTP à la requête d'exportation de partie
     '''
     ret = HttpResponseNotifError('Erreur lors de l\'exportation de la partie')
-    game = GameSave.objects.get(id = game_id)
-    if request.user == game.user:
+
+    if (game := GameSave.objects.get(id_game_save = id_game)) is None:
+        ret = HttpResponseNotifError('La partie n\'existe pas')
+
+    elif request.user == game.user:
         game_data = {
             'name' : game.name,
             'player1' : game.player1,
@@ -220,5 +227,9 @@ def export_game(request : HttpRequest, game_id : int) -> HttpResponse:
         }
 
         ret = JsonResponse(game_data)
+        ret['Content-Disposition'] = f'attachment; filename="{game.name}.json"'
+
+    else:
+        ret = HttpResponseNotifError('Vous n\'avez pas la permission d\'exporter cette partie')
 
     return ret
