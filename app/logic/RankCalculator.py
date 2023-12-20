@@ -3,7 +3,7 @@ from .GoRank import GoRank
 class RankCalculator:
     
     @staticmethod
-    def calculate_rank(nb_games:int, win_rate:float)->str:
+    def calculate_rank(nb_games:int, win_rate:float, elo: int, nb_tournament_wins: int)->str:
         '''Calcule le rang en fonction du nombre de parties et du taux de victoires
 
             Args:
@@ -15,18 +15,30 @@ class RankCalculator:
         '''
         WINRATE_TOLERANCE = 0.7
         STEP_INCREMENT = 5
-        rank = 0
+        TOURNAMENT_WIN_WEIGHT = 25
+        ELO_WEIGHT = 0.5
+
+        experience = 0
         step = STEP_INCREMENT
+
+        # Calcul de l'experience
         nb_games_count = nb_games
-        while nb_games_count > 0 and win_rate > 0 and rank < 39:
+        while nb_games_count > 0 and win_rate > 0:
             win_rate -= (step*100/nb_games)*WINRATE_TOLERANCE
             nb_games_count -= step
-            rank += 1
-            if (rank/10).is_integer():
+            experience += 100
+            if (experience/1000).is_integer():
                 step += STEP_INCREMENT
-
-        if rank == 0 : rank = 1
-        return str(GoRank(rank))
+            print(str(nb_games_count)+" games with "+str(win_rate)+" left and "+str(experience)+" gained")
+        experience += nb_games_count
+        # Ajout du bonus tournois
+        experience += nb_tournament_wins * TOURNAMENT_WIN_WEIGHT
+        # Ajout du bonus/malus de elo       
+        experience += ELO_WEIGHT * (elo - 1000)
+        
+        rank = round(experience/100, 0)
+        if rank > 38 : rank = 38
+        return str(GoRank(rank+1))
 
     @staticmethod
     def calculate_elo(winner_elo: int, loser_elo: int, k_factor=32)->tuple[int, int]:
