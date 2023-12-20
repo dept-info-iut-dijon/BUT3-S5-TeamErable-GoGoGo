@@ -21,19 +21,13 @@
                     <img src="/header-pfp" alt="Icone de profil" />
                     <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username</h3>
                 </div>
-                <div class="tournois-container">
-                    <p>999 Defaites</p>
-                    <p>0 Victoires</p>
-                    <p>3 Tournois</p>
-                </div>
-                <div class="tournois-container">
-                    <p>100%</p>
-                    <p>0%</p>
-                    <p>3 Tournois</p>
-                </div>
+                
+                <section id="stats" hx-get="/stats" hx-swap="innerHTML" hx-trigger="load">
+                </section>
+
             </div>
 
-            <a href="/profile" class="button height-fit-content">Consulter mon profil</a>
+            <a id="profile-link" href="/profile" class="button height-fit-content">Consulter mon profil</a>
         </section>
 
         <div class="table-section">
