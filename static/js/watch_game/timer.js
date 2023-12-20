@@ -1,15 +1,4 @@
 /**
- * Récupérer l'élément par son ID
- * @param {string} color Couleur du joueur
- * @returns {boolean} Si on a plus de temps
- */
-function getTimerElement(color) {
-    // Récupérer l'élément par son ID
-    var countdownElement = document.querySelector("#timer-" + color);
-    return updateCountdown(countdownElement, -1);
-}
-
-/**
  * Met à jour le temps
  * @param {HTMLElement} countdownElement Elemennt du temps
  */
@@ -61,6 +50,20 @@ function secondsToTime(seconds) {
 }
 
 /**
+ * Convertir le temps en secondes
+ * @param {string} time Le temps au format "hh:mm:ss"
+ * @returns {number} Le nombre de secondes
+ */
+function timeToSeconds(time) {
+    var timeArray = time.split(":");
+    var hours = parseInt(timeArray[0], 10);
+    var minutes = parseInt(timeArray[1], 10);
+    var seconds = parseInt(timeArray[2], 10);
+
+    return hours * 3600 + minutes * 60 + seconds;
+}
+
+/**
  * Formater le temps
  * @param {number} time Le chiffre à formater
  * @returns {string} Le temps avec un 0 devant le chiffre
@@ -79,12 +82,26 @@ setInterval( function() {
 
     if (pause === false) {
         updateCountdown(duration_time, 1);
-        duration_slider.value = parseInt(duration_slider.value, 10) + 1;
-        // getTimerElement(color);
+
+        let dslider = parseInt(duration_slider.value, 10);
+
+        websocket.send(JSON.stringify({
+            'type': 'get',
+            'data': {
+                'from': dslider,
+                'to': dslider + 1
+            }
+        }));
+
+        duration_slider.value = dslider + 1;
     }
 }, 1000);
 
 // Mettre à jour le temps en fonction de la valeur du slider
 duration_slider.addEventListener("input", () => {
-    duration_time.innerText = secondsToTime(duration_slider.value);
+    let time = timeToSeconds(duration_time.innerText);
+    let new_time = parseInt(duration_slider.value, 10);
+    duration_time.innerText = secondsToTime(new_time);
+
+    slider_send(time, new_time);
 });
