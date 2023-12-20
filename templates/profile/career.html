@@ -8,7 +8,7 @@
 
     <div class="row space-between">
         <h2>Historique</h2>
-        <button class="button row height-fit-content align-self-center import-hidden" onclick="importGame()" value="Importer">
+        <button id="import" class="button row height-fit-content align-self-center import-hidden" onclick="importGame()" value="Importer">
             <img src="/static/icons/import.png"/>
             Importer
         </button>
@@ -35,7 +35,7 @@
                         <th>Nom du tournoi</th>
                         <th></th>
                 </thead>
-                <tbody id="games-historic-list" hx-post="/search-games-historic/{{ user.id }}/" hx-swap="innerHTML" hx-trigger="load">
+                <tbody id="games-historic-list" hx-post="/search-games-historic/{{ user.id }}/" hx-swap="innerHTML" hx-trigger="load, reload from:body">
                 </tbody>
             </table>
 
