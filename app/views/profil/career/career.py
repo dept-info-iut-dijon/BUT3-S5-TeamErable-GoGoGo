@@ -6,7 +6,7 @@ from ....models import CustomUser, GameSave
 import json
 from .stats_struct import StatsStruct
 
-def career(request: HttpRequest) -> HttpResponse:
+def career(request: HttpRequest , id_user : int = None) -> HttpResponse:
     '''Constructeur de la page de carriere
 
     Args:
@@ -16,12 +16,14 @@ def career(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: La page de carriere
     '''
-    stats = _get_stats(request.user.id)
+    user = CustomUser.objects.get(id=id_user) if id_user is not None else request.user
+
+    stats = _get_stats(user.id)
 
     return render(
         request, 
         'profile/career.html',
-        {'total_tournaments': stats.total_tournaments, 'total_wins_tournaments': stats.total_wins_tournaments, 'total_loses_tournaments': stats.total_loses_tournaments,'total_games': stats.total_games, 'total_wins': stats.total_games_wins, 'total_loses': stats.total_games_loses, 'total_classed_games': stats.total_ranked_games, 'total_classed_wins': stats.total_ranked_wins, 'total_classed_loses': stats.total_ranked_loses, 'elo': stats.elo, 'rank': stats.rank}
+        {'total_tournaments': stats.total_tournaments, 'total_wins_tournaments': stats.total_wins_tournaments, 'total_loses_tournaments': stats.total_loses_tournaments,'total_games': stats.total_games, 'total_wins': stats.total_games_wins, 'total_loses': stats.total_games_loses, 'total_classed_games': stats.total_ranked_games, 'total_classed_wins': stats.total_ranked_wins, 'total_classed_loses': stats.total_ranked_loses, 'elo': stats.elo, 'rank': stats.rank, 'user': user}
     )
 
 def stats(request: HttpRequest) -> HttpResponse:
@@ -51,6 +53,7 @@ def public_career(request: HttpRequest, id_user : int = None) -> HttpResponse:
     Returns:
         HttpResponse: La page de carriere
     '''
+
     if id_user is None:
         id_user = request.user.id
 
@@ -59,7 +62,7 @@ def public_career(request: HttpRequest, id_user : int = None) -> HttpResponse:
     return render(
         request, 
         'public_profile/public_career.html',
-        {'total_tournaments': stats.total_tournaments, 'total_wins_tournaments': stats.total_wins_tournaments, 'total_loses_tournaments': stats.total_loses_tournaments,'total_games': stats.total_games, 'total_wins': stats.total_games_wins, 'total_loses': stats.total_games_loses, 'total_classed_games': stats.total_ranked_games, 'total_classed_wins': stats.total_ranked_wins, 'total_classed_loses': stats.total_ranked_loses, 'elo': stats.elo, 'rank': stats.rank}
+        {'total_tournaments': stats.total_tournaments, 'total_wins_tournaments': stats.total_wins_tournaments, 'total_loses_tournaments': stats.total_loses_tournaments,'total_games': stats.total_games, 'total_wins': stats.total_games_wins, 'total_loses': stats.total_games_loses, 'total_classed_games': stats.total_ranked_games, 'total_classed_wins': stats.total_ranked_wins, 'total_classed_loses': stats.total_ranked_loses, 'elo': stats.elo, 'rank': stats.rank, 'user': CustomUser.objects.get(id=id_user)}
     )
 
 
@@ -192,6 +195,7 @@ def search_games_historic(request: HttpRequest, id_user : int = None) -> HttpRes
     Returns:
         HttpResponse: La réponse HTTP à la requête de recherche de parties
     '''
+    
     if id_user is None:
         id_user = request.user.id
 

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carriere Publique</title>
+</head>
+<body>
+    <div class="tournois-container">
+        <img src="/header-pfp" alt="Icone de profil" />
+        <h3 hx-get="/header-profile-name" hx-swap="innerHTML" hx-trigger="load">Username</h3>
+    </div>
+
+    <section id="stats" hx-get="/career/{id}"id hx-swap="innerHTML" hx-trigger="load"></section>
+
+</body>
+</html>

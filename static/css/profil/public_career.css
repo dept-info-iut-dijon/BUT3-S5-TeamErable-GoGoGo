@@ -1,0 +1,26 @@
+.upper-section {
+    display: flex;
+    margin-top: 1.5em;
+    margin-left: 5rem;
+    margin-right: 1.5rem;
+    justify-content: space-between;
+}
+
+.public-career-container {
+    text-align: center;
+    margin-right: 5rem;
+}
+
+.public-career-header img {
+    border-radius: 50%;
+    object-fit: cover;
+    display: flex;
+    flex: 0 0 calc(65% - 10px);
+    justify-content: center;
+    margin-top: 10rem;
+    height: 10rem;
+}
+
+.import-hidden {
+    display: none !important; 
+}

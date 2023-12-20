@@ -10,6 +10,7 @@
             <th>Victoires</th>
             <th>Défaites</th>
             <th>Taux de Victoires</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -24,6 +25,7 @@
             <td>{{ player.nb_victory }}</td>
             <td>{{ player.nb_defeats  }}</td> 
             <td>{{ player.taux_victory }}%</td>
+            <td><a class="button" href="/public-career/{{ player.user.id }}/"><img src="/static/icons/voir.png"/>Voir le profil</a></td>
         </tr>
         {% endfor %}
     </tbody>
