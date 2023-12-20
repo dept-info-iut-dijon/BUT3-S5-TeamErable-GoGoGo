@@ -8,6 +8,7 @@
     <link rel="shortcut icon" type="image/svg" href="{% static 'icons/favicon.svg' %}" >
     <link rel="stylesheet" href="/static/css/global.css">
     <link rel="stylesheet" href="/static/css/game/game.css">
+    <link rel="stylesheet" href="/static/css/watch_game/watch_game.css">
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% include 'reusable/header.html' %}
@@ -16,6 +17,7 @@
     <main>
         {% csrf_token %}
         <input type="text" id="game-save-id" value="{{ id }}" hidden>
+        <input type="text" id="color" value="{{ color }}" hidden>
 
         <div class="separator-2"></div>
 
@@ -53,14 +55,15 @@
                 <div class="center row">
                     <div class="center transition {{ action_buttons_class }}" id="action-buttons">
                         <div class="row width-fit-content">
-                            {% comment %} <button class="margin-side" id="skip-button">Passer le Tour</button>
-                            <button class="margin-side" id="give-up-button">Déclarer Forfait</button> {% endcomment %}
+                            <input id="duration-slider" type="range" min="0" max="{{ duration }}" value="0">
+                            <div class="separator"></div>
+                            <p class="no-margin margin-side"><span id="duration-time">00:00:00</span> / {{ duration_formatted }}</p>
                         </div>
                     </div>
-                    {% comment %} <div class="margin-side row">
-                        <button id="pause-button">Mettre en pause</button>
-                        <p id="pause-count" class="no-margin"><span id="span-pause-count">{{ pause_count }}</span> / 2</p>
-                    </div> {% endcomment %}
+                    <div class="margin-side row">
+                        <button id="play"><img src="/static/icons/play.png" alt="jouer"></button>
+                        <button id="pause" class="hidden"><img src="/static/icons/pause.png" alt="pause"></button>
+                    </div>
                 </div>
             </div>
         </div>
