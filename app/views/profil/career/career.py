@@ -1,14 +1,9 @@
-from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponse, HttpRequest, JsonResponse
 from ...decorators import login_required, request_type, RequestType
 from django.shortcuts import render
 from ....http import HttpResponseNotifError, HttpResponseNotifSuccess
-from django.core.files.storage import default_storage
-from ....models import Game, CustomUser, GameParticipate, GameSave
+from ....models import CustomUser, GameSave
 import json
-from django.db.models import Q
-import random
-import string
-from ....translations import Translations
 
 def career(request: HttpRequest) -> HttpResponse:
     '''Constructeur de la page de carriere
