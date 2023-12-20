@@ -30,103 +30,17 @@
         <div class="content">
             <section id="global" class="active">
                 <h1>Classement global</h1>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Position</th>
-                            <th></th>
-                            <th>Joueur</th>
-                            <th>Rang</th>
-                            <th>Elo</th>
-                            <th>Parties</th>
-                            <th>Victoires</th>
-                            <th>Défaites</th>
-                            <th>Taux de Victoires</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for player in top_ranked %}
-                        <tr {% if player.user.id is user.id%}id="current"{% endif %}>
-                            <td>{{ forloop.counter }}</td>
-                            <td><img src="get-pfp?id={{player.user.id}}" class="pfp"></td>
-                            <td>{{ player.user.username }}</td>
-                            <td>{{ player.rank }}</td> 
-                            <td>{{ player.elo }}</td>  
-                            <td>{{ player.nb_games }}</td>
-                            <td>{{ player.nb_victory }}</td>
-                            <td>{{ player.nb_defeats  }}</td>  {# Assuming total_games is the total number of games and total_wins is the number of wins #}
-                            <td>{{ player.taux_victory }}%</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                {% include 'reusable/ranking.html' with top_ranked=top_ranked user=request.user %}
 
             </section>
             <section id="friends" class="">
                 <h1>Classement de votre liste d'amis</h1>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Position</th>
-                            <th></th>
-                            <th>Joueur</th>
-                            <th>Rang</th>
-                            <th>Elo</th>
-                            <th>Parties</th>
-                            <th>Victoires</th>
-                            <th>Défaites</th>
-                            <th>Taux de Victoires</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for player in friends_ranked %}
-                        <tr {% if player.user.id is user.id%}id="current" {% endif %}>
-                            <td>{{ forloop.counter }}</td>
-                            <td><img src="get-pfp?id={{player.user.id}}" class="pfp"></td>
-                            <td>{{ player.user.username }}</td>
-                            <td>{{ player.rank }}</td>
-                            <td>{{ player.elo }}</td>
-                            <td>{{ player.nb_games }}</td>
-                            <td>{{ player.nb_victory }}</td>
-                            <td>{{ player.nb_defeats  }}</td>  {# Assuming total_games is the total number of games and total_wins is the number of wins #}
-                            <td>{{ player.taux_victory }}%</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                {% include 'reusable/ranking.html' with top_ranked=friends_ranked user=request.user %}
             </section>
             <section id="rank" class="">
                 <h1>Classement de votre rang</h1>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Position</th>
-                            <th></th>
-                            <th>Joueur</th>
-                            <th>Rang</th>
-                            <th>Elo</th>
-                            <th>Parties</th>
-                            <th>Victoires</th>
-                            <th>Défaites</th>
-                            <th>Taux de Victoires</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for player in same_ranked %}
-                        <tr {% if player.user.id is user.id%}id="current" {% endif %}>
-                            <td>{{ forloop.counter }}</td>
-                            <td><img src="get-pfp?id={{player.user.id}}" class="pfp"></td>
-                            <td>{{ player.user.username }}</td>
-                            <td>{{ player.rank }}</td>
-                            <td>{{ player.elo }}</td>
-                            <td>{{ player.nb_games }}</td>
-                            <td>{{ player.nb_victory }}</td>
-                            <td>{{ player.nb_defeats  }}</td>  {# Assuming total_games is the total number of games and total_wins is the number of wins #}
-                            <td>{{ player.taux_victory }}%</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                {% include 'reusable/ranking.html' with top_ranked=same_ranked user=request.user %}
+                
             </section>
         </div>
     </main>

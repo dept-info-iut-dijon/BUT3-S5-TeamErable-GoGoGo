@@ -21,19 +21,19 @@ def global_ranking(request: HttpRequest) -> HttpResponse:
         HttpResponse: Reponse HTTP de la page de classement global
     '''
     users = list(CustomUser.objects.all())
-    global_ranking = _get_top_rank(users, 1)
+    global_ranking = get_top_rank(users, 1)
 
     friends = list(request.user.friends.all())
     friends.append(request.user)
-    friends_ranking = _get_top_rank(friends, 1)
+    friends_ranking = get_top_rank(friends, 1)
 
     same_ranked_users = list(CustomUser.objects.filter(stat__rank=request.user.stat.rank))
-    same_ranked = _get_top_rank(same_ranked_users, 1)
+    same_ranked = get_top_rank(same_ranked_users, 1)
 
     return render(request, 'ranking/global.html', {'user': request.user, 'friends_ranked': friends_ranking, 
         'top_ranked': global_ranking, 'same_ranked': same_ranked})
 
-def _get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]:
+def get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]:
     '''
         Permet d'obtenir un classement selon une certaine liste d'utilisateurs
 

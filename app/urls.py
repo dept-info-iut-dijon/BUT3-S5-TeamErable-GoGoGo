@@ -61,6 +61,6 @@ urlpatterns = [
 
     #Classement
     path("classement-global", views.global_ranking, name="classement_global"),
-
+    path("classement-tournament/<id_tournament>/", views.tournament_ranking, name="classement_tournament"),
     
 ]
