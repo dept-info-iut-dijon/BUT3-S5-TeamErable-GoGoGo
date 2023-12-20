@@ -27,7 +27,8 @@ def watch_game(request: HttpRequest) -> HttpResponse:
     else:
         try:
             game_inst = GameSave.objects.get(id_game_save = game_id)
-            if not game_inst: ret = HttpResponseRedirect('/')
+            if not game_inst: raise Exception()
+            if not game_inst.user == request.user: raise Exception()
 
         except:
             return HttpResponseRedirect('/')
@@ -51,7 +52,7 @@ def watch_game_view_players(request: HttpRequest, game: GameSave) -> tuple[str, 
 
     player1_html = render(
         request,
-        'reusable/game_player.html',
+        'watch_game/watch_game_player.html',
         {
             'player': game.player1,
             'color': Tile.White.value.color,
@@ -63,7 +64,7 @@ def watch_game_view_players(request: HttpRequest, game: GameSave) -> tuple[str, 
 
     player2_html = render(
         request,
-        'reusable/game_player.html',
+        'watch_game/watch_game_player.html',
         {
             'player': game.player2,
             'color': Tile.Black.value.color,
@@ -90,14 +91,14 @@ def watch_game_view(request: HttpRequest, game: GameSave) -> HttpResponse:
     board = Board(
         game.map_size,
         game.komi,
-        RuleFactory.get(game.counting_method),
+        RuleFactory().get(game.counting_method),
         game.byo_yomi,
         timedelta(seconds = game.clock_value),
         {
             Tile.White: timedelta(seconds = game.clock_value),
             Tile.Black: timedelta(seconds = game.clock_value),
         },
-        TimerFactory.get(game.clock_type),
+        TimerFactory().get(game.clock_type),
         datetime.now()
     )
 
@@ -124,5 +125,8 @@ def watch_game_view(request: HttpRequest, game: GameSave) -> HttpResponse:
             ],
             'player1_html': player1_html,
             'player2_html': player2_html,
+            'duration': game.duration,
+            'duration_formatted': time2str(timedelta(seconds = game.duration)),
+            'color': Tile.White.value.color,
         }
     )
