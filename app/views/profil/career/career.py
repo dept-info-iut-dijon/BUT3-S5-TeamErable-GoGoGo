@@ -5,29 +5,33 @@ from ....http import HttpResponseNotifError, HttpResponseNotifSuccess
 from ....models import CustomUser, GameSave
 import json
 
-def career(request: HttpRequest) -> HttpResponse:
+def career(request: HttpRequest, id_user : int = None) -> HttpResponse:
     '''Constructeur de la page de carriere
 
     Args:
         request (HttpRequest): Requête HTTP
+        id_user (int, optional): L'id du joueur. Par défaut, l'id du joueur connecté
 
     Returns:
         HttpResponse: La page de carriere
     '''
-    total_wins = _get_total_game_win(request.user)
-    total_loses = _get_total_game_loose(request.user)
+    if id_user is None:
+        id_user = request.user.id
+
+    total_wins = _get_total_game_win(id_user)
+    total_loses = _get_total_game_loose(id_user)
     total_games = total_wins + total_loses
 
-    total_win_tournaments = _get_total_tournament_win(request.user)
-    total_lose_tournaments = _get_total_tournament_loose(request.user)
+    total_win_tournaments = _get_total_tournament_win(id_user)
+    total_lose_tournaments = _get_total_tournament_loose(id_user)
     total_tournaments = total_win_tournaments + total_lose_tournaments
     
-    total_wins_ranked = get_total_game_ranked_win(request.user)
-    total_loses_ranked = get_total_game_ranked_loose(request.user)
+    total_wins_ranked = get_total_game_ranked_win(id_user)
+    total_loses_ranked = get_total_game_ranked_loose(id_user)
     total_game_ranked = total_wins_ranked + total_loses_ranked
 
-    elo = _get_elo(request.user)
-    rank = _get_rank(request.user)
+    elo = _get_elo(id_user)
+    rank = _get_rank(id_user)
 
     return render(
         request, 
@@ -35,105 +39,110 @@ def career(request: HttpRequest) -> HttpResponse:
         {'total_tournaments': total_tournaments, 'total_wins_tournaments': total_win_tournaments, 'total_loses_tournaments': total_lose_tournaments,'total_games': total_games, 'total_wins': total_wins, 'total_loses': total_loses, 'total_classed_games': total_game_ranked, 'total_classed_wins': total_wins_ranked, 'total_classed_loses': total_loses_ranked, 'elo': elo, 'rank': rank}
     )
 
-def get_total_game_ranked_win(user : CustomUser) -> int:
+def get_total_game_ranked_win(id : int) -> int:
     '''Recupère le nombre de parties classées gagnées par un joueur
 
     Args:
-        user (CustomUser): Le joueur
+        id (int): L'id du joueur
 
     Returns:
         int: Le nombre de parties classées gagnées
     '''
-    return CustomUser.objects.filter(id = user.id).first().stat.game_ranked_win
+    return CustomUser.objects.filter(id = id).first().stat.game_ranked_win
 
-def get_total_game_ranked_loose(user : CustomUser) -> int:
+def get_total_game_ranked_loose(id : int) -> int:
     '''Recupère le nombre de parties classées perdu par un joueur
 
     Args:
-        user (CustomUser): Le joueur
+        id (int): L'id du joueur
 
     Returns:
         int: Le nombre de parties classées perdu
     '''
-    return CustomUser.objects.filter(id = user.id).first().stat.game_ranked_loose
+    return CustomUser.objects.filter(id = id).first().stat.game_ranked_loose
 
-def _get_total_game_win(user : CustomUser) -> int:
+def _get_total_game_win(id : int) -> int:
     '''Recupère le nombre de parties gagnées par un joueur
 
     Args:
-        user (CustomUser): Le joueur
+        id (int): L'id du joueur
 
     Returns:
         int: Le nombre de parties gagnées
     '''
-    return CustomUser.objects.filter(id = user.id).first().stat.game_win
+    return CustomUser.objects.filter(id = id).first().stat.game_win
 
-def _get_total_game_loose(user : CustomUser) -> int:
+def _get_total_game_loose(id : int) -> int:
     '''Recupère le nombre de parties perdu par un joueur
+
+    Args:
+        id (int): L'id du joueur
 
     Returns:
         int: Le nombre de parties perdu
     '''
-    return CustomUser.objects.filter(id = user.id).first().stat.game_loose
+    return CustomUser.objects.filter(id = id).first().stat.game_loose
 
-def _get_total_tournament_win(user : CustomUser) -> int:
+def _get_total_tournament_win(id : int) -> int:
     '''Recupère le nombre de tournois gagnés par un joueur
 
     Args:
-        user (CustomUser): Le joueur
+        id (int): L'id du joueur
 
     Returns:
         int: Le nombre de tournois gagnés
     '''
-    return CustomUser.objects.filter(id = user.id).first().stat.tournament_win
+    return CustomUser.objects.filter(id = id).first().stat.tournament_win
 
-def _get_total_tournament_loose(user : CustomUser) -> int:
+def _get_total_tournament_loose(id : int) -> int:
     '''Recupère le nombre de tournois perdu par un joueur
 
     Args:
-        user (CustomUser): Le joueur
+        id (int): L'id du joueur
 
     Returns:
         int: Le nombre de tournois perdu
     '''
-    return CustomUser.objects.filter(id = user.id).first().stat.tournament_loose
+    return CustomUser.objects.filter(id = id).first().stat.tournament_loose
 
-def _get_elo(user : CustomUser) -> int:
+def _get_elo(id : int) -> int:
     '''Recupère l'elo du joueur
 
     Args:
-        user (CustomUser): Le joueur
+        id (int): L'id du joueur
 
     Returns:
         int: L'elo du joueur
     '''
-    return CustomUser.objects.filter(id = user.id).first().stat.elo
+    return CustomUser.objects.filter(id = id).first().stat.elo
 
-def _get_rank(user : CustomUser) -> str:
+def _get_rank(id : int) -> str:
     '''Recupère le rang du joueur
 
     Args:
-        user (CustomUser): Le joueur
+        id (int): L'id du joueur
 
     Returns:
         str: Le rang du joueur
     '''
-    return CustomUser.objects.filter(id = user.id).first().stat.rank
+    return CustomUser.objects.filter(id = id).first().stat.rank
 
 @request_type(RequestType.POST)
 @login_required
-def search_games_historic(request: HttpRequest) -> HttpResponse:
+def search_games_historic(request: HttpRequest, id_user : int = None) -> HttpResponse:
     '''Recherche les 5 dernières parties que le joueur à jouées
 
     Args:
         request (HttpRequest): Requête HTTP
+        id_user (int, optional): L'id du joueur. Par défaut, l'id du joueur connecté
 
     Returns:
         HttpResponse: La réponse HTTP à la requête de recherche de parties
     '''
-    query = request.POST.get('game_name','')
+    if id_user is None:
+        id_user = request.user.id
 
-    games = GameSave.objects.filter(user = request.user).order_by('-name')[:12]
+    games = GameSave.objects.filter(user = CustomUser.objects.get(id = id_user)).order_by('-id_game_save')[:5]
 
     return render(
         request,
@@ -209,27 +218,33 @@ def create_game_save(user, json_data) -> None:
     Args:
         user (CustomUser): Le joueur
         json_data (dict): Le fichier JSON
+
+    Raises:
+        HttpResponseNotifError: Erreur lors de la sauvegarde de la partie
     '''
-    _delete_old_games(user)
-    game_save = GameSave(
-        user = user,
-        name = json_data['name'],
-        player1 = json_data['player1'],
-        player2 = json_data['player2'],
-        score_player1 = json_data['score_player1'],
-        score_player2 = json_data['score_player2'],
-        duration = json_data['duration'],
-        move_list = json_data['move_list'],
-        tournament = json_data['tournament'],
-        map_size = json_data['map_size'],
-        komi = json_data['komi'],
-        counting_method = json_data['counting_method'],
-        clock_type = json_data['clock_type'],
-        clock_value = json_data['clock_value'],
-        byo_yomi = json_data['byo_yomi'],
-        handicap = json_data['handicap'],
-    )
-    game_save.save()
+    try:
+        game_save = GameSave(
+            user = user,
+            name = json_data['name'],
+            player1 = json_data['player1'],
+            player2 = json_data['player2'],
+            score_player1 = json_data['score_player1'],
+            score_player2 = json_data['score_player2'],
+            duration = json_data['duration'],
+            move_list = json_data['move_list'],
+            tournament = json_data['tournament'],
+            map_size = json_data['map_size'],
+            komi = json_data['komi'],
+            counting_method = json_data['counting_method'],
+            clock_type = json_data['clock_type'],
+            clock_value = json_data['clock_value'],
+            byo_yomi = json_data['byo_yomi'],
+            handicap = json_data['handicap'],
+        )
+        game_save.save()
+        _delete_old_games(user)
+    except Exception:
+        raise HttpResponseNotifError('Erreur lors de la sauvegarde de la partie. Veuillez reessayer.')
 
 @request_type(RequestType.POST, RequestType.GET)
 @login_required
@@ -238,6 +253,7 @@ def export_game(request : HttpRequest, id_game : int) -> HttpResponse:
     
     Args:
         request (HttpRequest): La requête HTTP
+        id_game (int): L'id de la partie
     
     Returns:
         HttpResponse: La réponse HTTP à la requête d'exportation de partie
@@ -246,7 +262,7 @@ def export_game(request : HttpRequest, id_game : int) -> HttpResponse:
         if (game := GameSave.objects.get(id_game_save = id_game)) is None:
             ret = HttpResponseNotifError('La partie n\'existe pas')
 
-        elif request.user == game.user:
+        else:
             game_data = {
                 'name' : game.name,
                 'player1' : game.player1,
@@ -267,9 +283,6 @@ def export_game(request : HttpRequest, id_game : int) -> HttpResponse:
 
             ret = JsonResponse(game_data)
             ret['Content-Disposition'] = f'attachment; filename="{game.name}.json"'
-
-        else:
-            ret = HttpResponseNotifError('Vous n\'avez pas la permission d\'exporter cette partie')
 
     except Exception:
         ret = HttpResponseNotifError('La partie n\'existe pas')
