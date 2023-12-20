@@ -193,6 +193,16 @@ def import_game(request : HttpRequest) -> HttpResponse:
 
     return ret
 
+def _delete_old_games(user : CustomUser) -> None:
+    '''Supprime les dernières parties sauvegardées du joueur
+
+    Args:
+        user (CustomUser): Le joueur
+    '''
+    old_game_saves = GameSave.objects.filter(user = user).order_by('-id_game_save')[4:]
+    for old_game_save in old_game_saves:
+        old_game_save.delete()
+
 def create_game_save(user, json_data) -> None:
     '''Creer une nouvelle partie sauvegarde à partir d'un fichier JSON
 
@@ -200,6 +210,7 @@ def create_game_save(user, json_data) -> None:
         user (CustomUser): Le joueur
         json_data (dict): Le fichier JSON
     '''
+    _delete_old_games(user)
     game_save = GameSave(
         user = user,
         name = json_data['name'],
