@@ -203,34 +203,36 @@ def export_game(request : HttpRequest, id_game : int) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête d'exportation de partie
     '''
-    ret = HttpResponseNotifError('Erreur lors de l\'exportation de la partie')
+    try:
+        if (game := GameSave.objects.get(id_game_save = id_game)) is None:
+            ret = HttpResponseNotifError('La partie n\'existe pas')
 
-    if (game := GameSave.objects.get(id_game_save = id_game)) is None:
+        elif request.user == game.user:
+            game_data = {
+                'name' : game.name,
+                'player1' : game.player1,
+                'player2' : game.player2,
+                'score_player1' : game.score_player1,
+                'score_player2' : game.score_player2,
+                'duration' : game.duration,
+                'move_list' : game.move_list,
+                'tournament' : game.tournament,
+                'map_size' : game.map_size,
+                'komi' : game.komi,
+                'counting_method' : game.counting_method,
+                'clock_type' : game.clock_type,
+                'clock_value' : game.clock_value,
+                'byo_yomi' : game.byo_yomi,
+                'handicap' : game.handicap
+            }
+
+            ret = JsonResponse(game_data)
+            ret['Content-Disposition'] = f'attachment; filename="{game.name}.json"'
+
+        else:
+            ret = HttpResponseNotifError('Vous n\'avez pas la permission d\'exporter cette partie')
+
+    except Exception:
         ret = HttpResponseNotifError('La partie n\'existe pas')
-
-    elif request.user == game.user:
-        game_data = {
-            'name' : game.name,
-            'player1' : game.player1,
-            'player2' : game.player2,
-            'score_player1' : game.score_player1,
-            'score_player2' : game.score_player2,
-            'duration' : game.duration,
-            'move_list' : game.move_list,
-            'tournament' : game.tournament,
-            'map_size' : game.map_size,
-            'komi' : game.komi,
-            'counting_method' : game.counting_method,
-            'clock_type' : game.clock_type,
-            'clock_value' : game.clock_value,
-            'byo_yomi' : game.byo_yomi,
-            'handicap' : game.handicap
-        }
-
-        ret = JsonResponse(game_data)
-        ret['Content-Disposition'] = f'attachment; filename="{game.name}.json"'
-
-    else:
-        ret = HttpResponseNotifError('Vous n\'avez pas la permission d\'exporter cette partie')
 
     return ret
