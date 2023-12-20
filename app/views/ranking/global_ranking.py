@@ -50,13 +50,13 @@ def get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]
 
     history = {}
     for user in user_range:
-        nb_wins = get_total_game_ranked_win(user)
-        nb_losses = get_total_game_ranked_loose(user)
+        nb_wins = get_total_game_ranked_win(user.id)
+        nb_losses = get_total_game_ranked_loose(user.id)
         statistic = Statistic.objects.filter(id=user.stat_id).first()
         history[user] = (nb_wins,nb_wins+nb_losses, statistic)
 
     ranking = _get_as_ranking(history)
-
+    
     ranking = sorted(ranking, key=_sorting_key, reverse=True)[limit*LIMIT_RANGE-LIMIT_RANGE:limit*LIMIT_RANGE]
 
     return ranking
