@@ -151,17 +151,18 @@ def _verify_values(json_data : dict) -> bool:
     Returns:
         bool: True si les valeurs sont valides, False sinon
     '''
-    komi_values = [3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5, 20.5, 21.5, 22.5, 23.5, 24.5, 25.5]
-    country = ['japanese', 'chinese']
-    map_size = [19, 13, 9]
+    #Constantes à verifier
+    KOMI_VALUES = [3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5, 20.5, 21.5, 22.5, 23.5, 24.5, 25.5]
+    COUNTRY = ['japanese', 'chinese']
+    MAP_SIZE = [19, 13, 9]
 
     rules = {
         'duration': lambda x: x >= 0,
-        'map_size': lambda x: x in map_size,
-        'clock_type': lambda x: x in country,
-        'counting_method': lambda x: x in country,
+        'map_size': lambda x: x in MAP_SIZE,
+        'clock_type': lambda x: x in COUNTRY,
+        'counting_method': lambda x: x in COUNTRY,
         'handicap': lambda x: 0 <= x <= 9,
-        'komi': lambda x: x in komi_values,
+        'komi': lambda x: x in KOMI_VALUES,
         'byo_yomi': lambda x: 0 <= x <= 60,
     }
     return all(rules[key](json_data[key]) for key in rules)
