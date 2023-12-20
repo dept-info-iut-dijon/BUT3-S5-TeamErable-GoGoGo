@@ -43,5 +43,7 @@ from .game.game_configuration import create_game_config
 from .watch_game.watch_game import watch_game
 # Import classement
 from .ranking.global_ranking import global_ranking
+from .ranking.tournament_ranking import tournament_ranking
 # Imports carrière
-from .profil.career.career import search_games_historic, career, import_game, export_game
+from .profil.career.career import search_games_historic, career, import_game, export_game, stats
+from .profil.career.stats_struct import StatsStruct

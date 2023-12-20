@@ -28,16 +28,19 @@
             <div class="separator"></div>
             <div class="row space-between">
                 <h2>{{ tournament.name }}</h2>
-                {% if not tournament.ongoing or in_tournament %}
+                <div class="row">
+                    {% if not tournament.ongoing or in_tournament %}
                     {% if in_tournament %}
-                        <button class="button height-fit-content" disabled>Vous participez au tournoi</button>
+                    <button class="button height-fit-content" disabled>Vous participez au tournoi</button>
                     {% else %}
-                        <a hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="" hx-indicator="true" class="button row height-fit-content">
-                            <img src="/static/icons/joingame.png">
-                            Rejoindre le tournoi
-                        </a>
+                    <a hx-get="/tournament-join/{{ tournament.id }}/" hx-trigger="click" hx-swap="replace" hx-target="" hx-indicator="true" class="button row height-fit-content">
+                        <img src="/static/icons/joingame.png">
+                        Rejoindre le tournoi
+                    </a>
                     {% endif %}
-                {% endif %}
+                    {% endif %}
+                    <a href="/classement-tournament/{{ tournament.id }}/" class="button row height-fit-content"><img src="/static/icons/voir.png">Voir le classement</a>
+                </div>
             </div>
 
             <p id="desc">

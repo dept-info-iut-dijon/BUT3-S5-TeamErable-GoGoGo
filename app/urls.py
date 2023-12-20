@@ -56,11 +56,12 @@ urlpatterns = [
     #Carrière
     path("search-games-historic", views.search_games_historic, name="search_games_historic"),
     path("career", views.career, name="career"),
+    path("stats", views.stats, name="stats"),
     path("import-game", views.import_game, name="import_game"),
     path("export-game/<int:id_game>/", views.export_game, name="export_game"),
 
     #Classement
     path("classement-global", views.global_ranking, name="classement_global"),
-
+    path("classement-tournament/<id_tournament>/", views.tournament_ranking, name="classement_tournament"),
     
 ]
