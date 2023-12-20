@@ -3,6 +3,7 @@ from ...logic import Board, Tile
 from ...views.tournament.tournament_game import update_tournament_games
 from ...storage import TournamentStorage, GameStorage
 from ...tournament_logic import Player
+from math import ceil
 
 
 def _update_tournament_data(game: Game, board: Board) -> None:
@@ -37,7 +38,7 @@ def _convert_game_to_game_save(game: Game, board: Board) -> None:
                 player2 = game.game_participate.player2,
                 score_player1 = points[Tile.White],
                 score_player2 = points[Tile.Black],
-                duration = game.duration,
+                duration = ceil(((board.time - board.player_time[Tile.White]) + (board.time - board.player_time[Tile.Black])).total_seconds()),
                 move_list = '\n'.join([move.export() for move in board._history]),
                 tournament = game.tournament,
                 map_size = game.game_configuration.map_size,
