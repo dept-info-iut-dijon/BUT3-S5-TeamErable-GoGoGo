@@ -50,6 +50,9 @@ urlpatterns = [
     path("game-code", views.game_code, name="game_code"),
     path("game-view-player", views.game_view_player, name="game_view_player"),
 
+    # Regarder une partie
+    path("watch-game", views.watch_game, name="watch_game"),
+
     #Carrière
     path("search-games-historic", views.search_games_historic, name="search_games_historic"),
     path("career", views.career, name="career"),
