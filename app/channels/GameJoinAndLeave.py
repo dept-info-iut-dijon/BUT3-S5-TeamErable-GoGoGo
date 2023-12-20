@@ -159,7 +159,8 @@ class GameJoinAndLeave(WebsocketConsumer):
         rate = 0
         if (total_games != 0):
             rate = total_wins*100/total_games        
-        player.stat.rank = RankCalculator.calculate_rank(total_games, rate)
+        player.stat.rank = RankCalculator.calculate_rank(total_games, rate, 
+            player.stat.elo, player.stat.tournament_win)
 
         return player
 
