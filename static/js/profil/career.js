@@ -28,6 +28,7 @@ function uploadFile(file) {
         if (xhr.status === 200) {
             // Succès de la requête, effectuez des actions supplémentaires si nécessaire
             notify(xhr.responseText);
+            htmx.trigger('body', 'reload');
         } else {
             // Gestion des erreurs
             notify(xhr.responseText);
@@ -37,3 +38,4 @@ function uploadFile(file) {
     // Envoyez la requête avec le formulaire de données contenant le fichier
     xhr.send(formData);
 }
+

@@ -265,7 +265,7 @@ def _delete_old_games(user : CustomUser) -> None:
     Args:
         user (CustomUser): Le joueur
     '''
-    old_game_saves = GameSave.objects.filter(user = user).order_by('-id_game_save')[4:]
+    old_game_saves = GameSave.objects.filter(user = user).order_by('-id_game_save')[5:]
     for old_game_save in old_game_saves:
         old_game_save.delete()
 
