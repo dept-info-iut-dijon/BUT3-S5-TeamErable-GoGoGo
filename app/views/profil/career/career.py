@@ -4,8 +4,44 @@ from django.shortcuts import render
 from ....http import HttpResponseNotifError, HttpResponseNotifSuccess
 from ....models import CustomUser, GameSave
 import json
+from .stats_struct import StatsStruct
 
-def career(request: HttpRequest, id_user : int = None) -> HttpResponse:
+def career(request: HttpRequest) -> HttpResponse:
+    '''Constructeur de la page de carriere
+
+    Args:
+        request (HttpRequest): Requête HTTP
+        id_user (int, optional): L'id du joueur. Par défaut, l'id du joueur connecté
+
+    Returns:
+        HttpResponse: La page de carriere
+    '''
+    stats = _get_stats(request.user.id)
+
+    return render(
+        request, 
+        'profile/career.html',
+        {'total_tournaments': stats.total_tournaments, 'total_wins_tournaments': stats.total_wins_tournaments, 'total_loses_tournaments': stats.total_loses_tournaments,'total_games': stats.total_games, 'total_wins': stats.total_games_wins, 'total_loses': stats.total_games_loses, 'total_classed_games': stats.total_ranked_games, 'total_classed_wins': stats.total_ranked_wins, 'total_classed_loses': stats.total_ranked_loses, 'elo': stats.elo, 'rank': stats.rank}
+    )
+
+def stats(request: HttpRequest) -> HttpResponse:
+    '''Constructeur de la page de statistiques
+
+    Args:
+        request (HttpRequest): Requête HTTP
+
+    Returns:
+        HttpResponse: La page de statistiques
+    '''
+    stats = _get_stats(request.user.id)
+
+    return render(
+        request, 
+        'profile/stats.html',
+        {'total_tournaments': stats.total_tournaments, 'total_wins_tournaments': stats.total_wins_tournaments, 'total_loses_tournaments': stats.total_loses_tournaments,'total_games': stats.total_games, 'total_wins': stats.total_games_wins, 'total_loses': stats.total_games_loses, 'total_classed_games': stats.total_ranked_games, 'total_classed_wins': stats.total_ranked_wins, 'total_classed_loses': stats.total_ranked_loses, 'elo': stats.elo, 'rank': stats.rank}
+    )
+
+def public_career(request: HttpRequest, id_user : int = None) -> HttpResponse:
     '''Constructeur de la page de carriere
 
     Args:
@@ -17,6 +53,25 @@ def career(request: HttpRequest, id_user : int = None) -> HttpResponse:
     '''
     if id_user is None:
         id_user = request.user.id
+
+    stats = _get_stats(id_user)
+
+    return render(
+        request, 
+        'public_profile/public_career.html',
+        {'total_tournaments': stats.total_tournaments, 'total_wins_tournaments': stats.total_wins_tournaments, 'total_loses_tournaments': stats.total_loses_tournaments,'total_games': stats.total_games, 'total_wins': stats.total_games_wins, 'total_loses': stats.total_games_loses, 'total_classed_games': stats.total_ranked_games, 'total_classed_wins': stats.total_ranked_wins, 'total_classed_loses': stats.total_ranked_loses, 'elo': stats.elo, 'rank': stats.rank}
+    )
+
+
+def _get_stats(id_user : int) -> StatsStruct:
+    '''Recupère les statistiques d'un joueur
+
+    Args:
+        id (int): L'id du joueur
+
+    Returns:
+        dict: Les statistiques du joueur
+    '''
 
     total_wins = _get_total_game_win(id_user)
     total_loses = _get_total_game_loose(id_user)
@@ -33,11 +88,9 @@ def career(request: HttpRequest, id_user : int = None) -> HttpResponse:
     elo = _get_elo(id_user)
     rank = _get_rank(id_user)
 
-    return render(
-        request, 
-        'profile/career.html',
-        {'total_tournaments': total_tournaments, 'total_wins_tournaments': total_win_tournaments, 'total_loses_tournaments': total_lose_tournaments,'total_games': total_games, 'total_wins': total_wins, 'total_loses': total_loses, 'total_classed_games': total_game_ranked, 'total_classed_wins': total_wins_ranked, 'total_classed_loses': total_loses_ranked, 'elo': elo, 'rank': rank}
-    )
+    stats = StatsStruct(total_tournaments, total_win_tournaments, total_lose_tournaments, total_games, total_wins, total_loses, total_game_ranked, total_wins_ranked, total_loses_ranked, elo, rank)
+
+    return stats
 
 def get_total_game_ranked_win(id : int) -> int:
     '''Recupère le nombre de parties classées gagnées par un joueur
