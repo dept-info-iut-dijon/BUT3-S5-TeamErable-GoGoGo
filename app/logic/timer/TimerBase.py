@@ -3,6 +3,7 @@ from ..Tile import Tile
 from .. import Board
 from datetime import timedelta, datetime
 from ...exceptions import InvalidMoveException
+from .PauseEnum import PauseEnum
 
 class TimerBase(ABC):
     '''Classe abstraite pour le minuteur'''
@@ -17,8 +18,9 @@ class TimerBase(ABC):
         initial_time: timedelta,
         player_time: dict[Tile, timedelta] | None,
         last_action_time: datetime | None,
-        is_paused: bool = False,
+        is_paused: PauseEnum = PauseEnum.Not,
         ask_pause: list[Tile] = [],
+        ask_resume: list[Tile] = [],
         timer_offset: timedelta = timedelta(seconds = 0),
         date_pause: datetime | None = None,
     ) -> None:
@@ -33,8 +35,9 @@ class TimerBase(ABC):
         self._initial_time = timedelta(seconds = initial_time.total_seconds())
         self._player_time = player_time if player_time is not None else {t: timedelta(seconds = initial_time.total_seconds()) for t in Tile}
         self._last_action_time = last_action_time if last_action_time is not None else datetime.now()
-        self._is_paused = is_paused
+        self._is_paused = is_paused if isinstance(is_paused, PauseEnum) else PauseEnum(is_paused)
         self._ask_pause: list[Tile] = ask_pause.copy()
+        self._ask_resume: list[Tile] = ask_resume.copy()
         self._timer_offset: timedelta = timedelta(seconds = timer_offset.total_seconds())
         self._date_pause = datetime.now() if date_pause is None else datetime.fromtimestamp(date_pause.timestamp())
 
@@ -102,11 +105,11 @@ class TimerBase(ABC):
         return None
 
     @property
-    def is_paused(self) -> bool:
+    def is_paused(self) -> PauseEnum:
         '''Indique si le minuteur est en pause.
 
         Returns:
-            bool: True si le minuteur est en pause, False sinon.
+            PauseEnum: Indique si le minuteur est en pause.
         '''
         return self._is_paused
 
@@ -118,6 +121,15 @@ class TimerBase(ABC):
             int: Nombre de demande de pause.
         '''
         return len(self._ask_pause)
+
+    @property
+    def resume_count(self) -> int:
+        '''Nombre de demande de reprise.
+
+        Returns:
+            int: Nombre de demande de reprise.
+        '''
+        return len(self._ask_resume)
 
     @property
     def date_pause(self) -> datetime:
@@ -173,7 +185,8 @@ class TimerBase(ABC):
             'last-action-time': self._last_action_time.timestamp(),
             'pause': {
                 'ask-pause': [t.value.value for t in self._ask_pause],
-                'is-paused': self._is_paused,
+                'ask-resume': [t.value.value for t in self._ask_resume],
+                'is-paused': self._is_paused.export(),
                 'timer-offset': self._timer_offset.total_seconds(),
                 'date-pause': self._date_pause.timestamp(),
             }
@@ -215,21 +228,22 @@ class TimerBase(ABC):
         self._player_time[tile] += timedelta(seconds = time)
 
 
-    def pause(self, tile: Tile) -> None:
+    def pause(self, tile: Tile, force: bool = False) -> None:
         '''Met en pause le minuteur.
 
         Args:
             tile (Tile): Couleur du joueur.
+            force (bool, optional): Force la pause. Defaults to False.
         '''
         if self._is_paused: raise InvalidMoveException('Le minuteur est déjà en pause.')
         if tile in self._ask_pause: raise InvalidMoveException('La demande de pause a déjà été faite.')
 
-        self._ask_pause.append(tile)
-        if len(self._ask_pause) == len(Tile):
+        if not force: self._ask_pause.append(tile)
+        if len(self._ask_pause) == len(Tile) or force:
             self._date_pause = datetime.now()
             self._ask_pause = []
             self._timer_offset = self.last_action_time_diff
-            self._is_paused = True
+            self._is_paused = PauseEnum.Forced if force else PauseEnum.Normal
 
 
     def resume(self, tile: Tile) -> None:
@@ -240,9 +254,22 @@ class TimerBase(ABC):
         '''
         if not self._is_paused: raise InvalidMoveException('Le minuteur n\'est pas en pause.')
         if not self.can_resume: raise InvalidMoveException('Le minuteur ne peut pas encore reprendre.')
+        if tile in self._ask_resume: raise InvalidMoveException('La demande de reprise a déjà été faite.')
 
-        self._ask_pause = []
-        self.update_last_action_time()
-        self._player_time[self._board.current_player] -= self.last_action_time_diff
-        self._timer_offset = timedelta(seconds = 0)
-        self._is_paused = False
+        if self._is_paused == PauseEnum.Forced:
+            self._ask_resume.append(tile)
+            if len(self._ask_resume) == len(Tile):
+                self._ask_pause = []
+                self._ask_resume = []
+                self.update_last_action_time()
+                self._player_time[self._board.current_player] -= self.last_action_time_diff
+                self._timer_offset = timedelta(seconds = 0)
+                self._is_paused = PauseEnum.Not
+
+        else:
+            self._ask_pause = []
+            self._ask_resume = []
+            self.update_last_action_time()
+            self._player_time[self._board.current_player] -= self.last_action_time_diff
+            self._timer_offset = timedelta(seconds = 0)
+            self._is_paused = PauseEnum.Not
