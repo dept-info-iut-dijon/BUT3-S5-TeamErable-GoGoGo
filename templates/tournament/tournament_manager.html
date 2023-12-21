@@ -17,7 +17,7 @@
         <section class="description-section">
             <div class="row space-between">
                 <a href="/tournament" class="button gray">🔙 Retour</a>
-                {% if tournament_unstarted == true and is_creator %}
+                {% if show_buttons %}
                 <div class="row">
                     <a href="/edit-tournament/{{ tournament.id }}/" class="button row"><img src="/static/icons/edit.png">Modifier le tournoi</a>
                     <div class="separator"></div>
@@ -26,10 +26,10 @@
                 {% endif %}
             </div>
             <div class="separator"></div>
-            <div class="row space-between">
+            <div class="row mobile-flex-direction space-between">
                 <h2>{{ tournament.name }}</h2>
                 <div class="row">
-                    {% if not tournament.ongoing or in_tournament %}
+                    {% if not has_started_in_theory or in_tournament %}
                     {% if in_tournament %}
                     <button class="button height-fit-content" disabled>Vous participez au tournoi</button>
                     {% else %}
@@ -46,7 +46,7 @@
             <p id="desc">
                 {{ tournament.description }}
             </p>
-            <div id="informations">
+            <div id="informations" class="row mobile-flex-direction">
                 <div class="form-control">
                     <label for="tournament-date-start">Date de début</label>
                     <input type="date" id="tournament-date-start" name="tournament-date-start" value="{{ tournament.start_date|date:'Y-m-d' }}" disabled>

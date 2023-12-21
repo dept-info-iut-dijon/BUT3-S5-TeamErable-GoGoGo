@@ -72,8 +72,8 @@
 
 
 .description-section {
-    margin-left: 15rem;
-    margin-right: 15rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
     margin-top: 3rem;
 }
 
@@ -109,7 +109,7 @@
 
 #informations > * {
     display: inline-grid;
-    width: 50%; /* Adjust the width as needed */
+    width: -webkit-fill-available;
     margin: 5px; /* Add spacing between the divs if desired */
     border: 1px solid #ccc; /* Optional: Add borders for separation */
     padding: 10px;
