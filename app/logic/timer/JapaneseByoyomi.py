@@ -2,6 +2,7 @@ from .TimerBase import TimerBase
 from .TimerFactory import TimerFactory
 from ...logic import Board, Tile
 from datetime import datetime, timedelta
+from .PauseEnum import PauseEnum
 
 class JapaneseByoyomi(TimerBase):
 	key: str = 'japanese'
@@ -13,12 +14,13 @@ class JapaneseByoyomi(TimerBase):
         initial_time: timedelta,
         player_time: dict[Tile, timedelta] | None,
         last_action_time: datetime | None,
-        is_paused: bool = False,
+        is_paused: PauseEnum = PauseEnum.Not,
         ask_pause: list[Tile] = [],
+		ask_resume: list[Tile] = [],
         timer_offset: timedelta = timedelta(seconds = 0),
         date_pause: datetime | None = None,
     ) -> None:
-		super().__init__(board, byo_yomi, initial_time, player_time, last_action_time, is_paused, ask_pause, timer_offset, date_pause)
+		super().__init__(board, byo_yomi, initial_time, player_time, last_action_time, is_paused, ask_pause, ask_resume, timer_offset, date_pause)
 
 
 	def copy(self) -> TimerBase:
@@ -30,6 +32,7 @@ class JapaneseByoyomi(TimerBase):
 			self._last_action_time,
 			self._is_paused,
 			self._ask_pause,
+			self._ask_resume,
 			self._timer_offset,
 			self._date_pause,
 		)

@@ -5,7 +5,7 @@ from .Island import Island
 from ..exceptions import InvalidMoveException
 from .GoConstants import GoConstants
 from .rules import RuleBase, RuleFactory
-from .timer import TimerBase, TimerFactory
+from .timer import TimerBase, TimerFactory, PauseEnum
 from .Grid import Grid
 from .Move import Move
 from datetime import datetime, timedelta
@@ -126,12 +126,16 @@ class Board:
         return self._timer.initial_time
 
     @property
-    def is_paused(self) -> bool:
+    def is_paused(self) -> PauseEnum:
         return self._timer.is_paused
 
     @property
     def pause_count(self) -> int:
         return self._timer.pause_count
+
+    @property
+    def resume_count(self) -> int:
+        return self._timer.resume_count
 
     @property
     def can_resume(self) -> bool:
@@ -287,18 +291,19 @@ class Board:
             self.end_game()
 
 
-    def pause(self, tile: Tile) -> None:
+    def pause(self, tile: Tile, force: bool = False) -> None:
         '''Met en pause la partie.
 
         Args:
             tile (Tile): Tuile du joueur.
+            force (bool, optional): Force la pause de la partie. Defaults to False.
 
         Raises:
             InvalidMoveException: Si la partie est terminée.
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
 
-        self._timer.pause(tile)
+        self._timer.pause(tile, force)
 
 
     def resume(self, tile: Tile) -> None:
@@ -437,6 +442,7 @@ class Board:
             datetime.fromtimestamp(timer_data.get('last-action-time', datetime.now().timestamp())),
             timer_pause_data.get('is-paused', False),
             [Tile.from_value(t) for t in timer_pause_data.get('ask-pause', [])],
+            [Tile.from_value(t) for t in timer_pause_data.get('ask-resume', [])],
             timedelta(seconds = timer_pause_data.get('timer-offset', 0.0)),
             datetime.fromtimestamp(timer_pause_data.get('date-pause', datetime.now().timestamp())),
         )

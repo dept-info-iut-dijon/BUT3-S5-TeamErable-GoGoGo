@@ -55,14 +55,21 @@ function formatTime(time) {
 
 // Exécuter la fonction updateCountdown toutes les secondes
 setInterval( function() {
-    if (!game_ended && has_second_player === true && game_is_paused === false) {
+    if (!game_ended && has_second_player === true && game_is_paused === 0) {
         let timed_out = getTimerElement(getCanPlay() ? player_color : getOpponentColor());
         if (timed_out) checkState();
     }
-    else if (game_is_paused === true) {
+    else if (game_is_paused === 1) {
         if (updateCountdown(resume_timer_element)) {
             if (resume_button.classList.contains("hidden")) {
                 resume_button.classList.remove("hidden");
+            }
+        }
+    }
+    else if (game_is_paused === 1) {
+        if (updateCountdown(resume_timer_element)) {
+            if (start_button.classList.contains("hidden")) {
+                start_button.classList.remove("hidden");
             }
         }
     }
