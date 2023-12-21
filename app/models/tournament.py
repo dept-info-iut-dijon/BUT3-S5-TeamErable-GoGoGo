@@ -27,10 +27,13 @@ class Tournament(models.Model):
     def ongoing(self):
         ret = False
 
-        if(self.start_date <= datetime.now().date() <= self.end_date and ParticipateTournament.objects.filter(tournament=self).count() >= self.player_min):
+        if (self.start_date <= datetime.now().date() <= self.end_date and ParticipateTournament.objects.filter(tournament=self).count() >= self.player_min):
             ret = not self.terminated()
 
         return ret
+
+    def has_started_in_theory(self) -> bool:
+        return self.start_date <= datetime.now().date()
 
     def terminated(self):
         ret = False
@@ -39,8 +42,12 @@ class Tournament(models.Model):
             ret = True
 
         if not ret:
-            tl = TournamentStorage.load_tournament(self.tournament_status.path)
-            ret = tl.winner is not None
+            if self.tournament_status:
+                tl = TournamentStorage.load_tournament(self.tournament_status.path)
+                ret = tl.winner is not None
+
+            else:
+                ret = False
 
         return ret
 

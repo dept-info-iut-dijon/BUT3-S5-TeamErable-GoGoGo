@@ -9,6 +9,7 @@ from ...http import HttpResponseNotifError
 from ...tournament_logic import Tournament as TournamentLogic, IMatch, Bracket, Match, Player
 from .tournament_game import start_tournament
 from ...storage import TournamentStorage
+from datetime import datetime
 
 
 def generate_match(request: HttpRequest, match: Match) -> str:
@@ -201,7 +202,13 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
         'tree': tournament_res,
         'in_tournament': request.user in participants,
         'ongoing': tournament.ongoing(),
-        'is_creator': request.user == tournament.creator,
+        'show_buttons': (
+            request.user == tournament.creator and
+            (not tournament.ongoing()) and
+            (not tournament.terminated()) and
+            (not tournament.has_started_in_theory())
+        ),
+        'has_started_in_theory': tournament.has_started_in_theory(),
     }
 
     return render(request, 'tournament/tournament_manager.html', context)
@@ -236,8 +243,8 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
     ret = None
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
-    if tournament.ongoing() == True:
-        ret = HttpResponseNotifError('Les inscription pour ce tournois sont terminees')
+    if tournament.has_started_in_theory() == True:
+        ret = HttpResponseNotifError('Les inscriptions pour ce tournoi sont termin"es')
 
     if len(ParticipateTournament.objects.filter(person=request.user, tournament=tournament).all()) < 1:
         ParticipateTournament.objects.create(
