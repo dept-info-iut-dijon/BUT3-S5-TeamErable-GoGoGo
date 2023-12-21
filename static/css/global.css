@@ -667,3 +667,7 @@ div.pfp-fusion > span:not(:first-child) {
 div.pfp-fusion > span img.pfp {
     display: block;
 }
+
+div:has(> table) {
+    overflow-x: auto;
+}

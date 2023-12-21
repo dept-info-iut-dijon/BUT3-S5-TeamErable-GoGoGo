@@ -1,11 +1,3 @@
-.historics{
-    width: 100%;
-}
-
-.historics thead{
-    width: 100%;
-}
-
 .statistics{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -40,7 +32,6 @@
 }
 
 #games-historic-table {
-    width: 100%;
     margin: 0;
     padding: 0;
     border: none;
@@ -49,7 +40,6 @@
 }
 
 #games-historic-table tr {
-    width: 100%;
     padding: 0.25rem 0;
     background-color: var(--main-color-light);
     margin: 0.5rem 0;
@@ -64,7 +54,6 @@
     content: "";
     display: block;
     height: 0rem;
-    width: 100%;
 }
 
 #games-historic-table tr td , #games-historic-table tr th {

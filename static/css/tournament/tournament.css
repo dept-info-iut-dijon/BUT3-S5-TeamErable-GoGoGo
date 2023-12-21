@@ -1,7 +1,9 @@
 .upper-section {
     display: flex;
     margin-top: 1.5em;
-    margin-left: 15rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    align-content: center;
 }
 
 .tournois-header-section {
@@ -9,6 +11,17 @@
     flex: 0 0 calc(65% - 10px);
     justify-content:center;
     margin-right: 10px;
+    overflow-x: auto;
+}
+
+@media screen and (max-width: 768px) {
+    .upper-section {
+        flex-direction: column-reverse;
+    }
+
+    .tournois-header-section {
+        flex-direction: column;
+    }
 }
 
 .button-section {
@@ -28,7 +41,6 @@
 
 .tournois-container{
     text-align: center;
-    margin-right: 5rem;
     margin-top: 3rem;
 }
 
@@ -286,7 +298,6 @@ form#join-by-code input[type="text"] {
 #profile-link {
     margin-top: 2rem;
     text-align: center;
-    margin-left: 5rem;
 }
 
 .border-radius{
