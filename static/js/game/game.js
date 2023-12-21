@@ -8,8 +8,10 @@ let has_second_player = document.querySelector("#has-second-player").value === "
 
 const pause_count_element = document.querySelector("#span-pause-count");
 const resume_timer_element = document.querySelector("#span-resume-timer");
+const start_count_element = document.querySelector("#span-start-count");
 const resume_button = document.querySelector("#resume-button");
-let game_is_paused = document.querySelector("#game-paused").value === "True" ? true : false;
+const start_button = document.querySelector("#resume-button");
+let game_is_paused = parseInt(document.querySelector("#game-paused").value, 10);
 
 
 /**

@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <div class="band transition {% if not game_paused %}hidden{% endif %}" id="band-pause">
+        <div class="band transition {% if game_paused != 1 %}hidden{% endif %}" id="band-pause">
             <div class="center flex-column">
                 <div>
                     <div class="center flex-column">
@@ -41,6 +41,23 @@
                             <p>Vous pourrez reprendre la partie dans <span id="span-resume-timer">{{ resume_timer }}</span></p>
                             <div class="center height-auto">
                                 <button class="big secondary {% if resume_timer != '00:00:00' %}hidden{% endif %}" id="resume-button">Reprendre la partie</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="band transition {% if game_paused != 2 %}hidden{% endif %}" id="band-start">
+            <div class="center flex-column">
+                <div>
+                    <div class="center flex-column">
+                        <p class="big" id="band-start-big-text">Partie en attente de commencement</p>
+                        <div class="column">
+                            <p>Vous pourrez commencer la partie dans <span id="span-starting-timer">{{ resume_timer }}</span></p>
+                            <div class="center height-auto">
+                                <button class="big secondary {% if resume_timer != '00:00:00' %}hidden{% endif %}" id="starting-button">Commencer la partie</button>
+                                <p id="start-count" class="no-margin"><span id="span-start-count">{{ start_count }}</span> / 2</p>
                             </div>
                         </div>
                     </div>
