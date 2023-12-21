@@ -65,6 +65,9 @@ class GameJoinAndLeave(WebsocketConsumer):
                 case 'resume':
                     self.receive_resume(data)
 
+                case 'start':
+                    self.receive_start(data)
+
                 case _:
                     raise ValueError('Une commande non valide a été envoyée.')
 
@@ -402,6 +405,8 @@ class GameJoinAndLeave(WebsocketConsumer):
         '''
         game, board, tile = self._get_game_board()
         if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
+        if game.tournament is not None: raise InvalidMoveException('Vous ne pouvez pas mettre en pause une partie de tournoi.')
+        if game.game_configuration.ranked: raise InvalidMoveException('Vous ne pouvez pas mettre en pause une partie classée.')
         if board.is_paused: raise InvalidMoveException('Le minuteur est déjà en pause.')
 
         board.pause(tile)
@@ -411,7 +416,7 @@ class GameJoinAndLeave(WebsocketConsumer):
         new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
-        new_event = {'type': 'send_pause', 'data': {'pause_count': board.pause_count, 'is_paused': board.is_paused}}
+        new_event = {'type': 'send_pause', 'data': {'pause_count': board.pause_count, 'is_paused': board.is_paused.value}}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
         if board.is_paused:
@@ -439,14 +444,14 @@ class GameJoinAndLeave(WebsocketConsumer):
         if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
         if not board.is_paused: raise InvalidMoveException('Le minuteur n\'est pas en pause.')
 
-        board.resume(tile)
+        board.resume(tile, True)
 
         self._save_game_board(game, board)
 
         new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
-        new_event = {'type': 'send_resume', 'data': {'pause_count': board.pause_count, 'is_paused': board.is_paused}}
+        new_event = {'type': 'send_resume', 'data': {'pause_count': board.pause_count, 'is_paused': board.is_paused.value}}
         async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
 
 
@@ -477,4 +482,36 @@ class GameJoinAndLeave(WebsocketConsumer):
             event (dict): Demande de reprise du joueur.
         '''
         new_event = {'type': 'resume', 'data': event['data']}
+        self.send(text_data = json.dumps(new_event))
+
+
+    def receive_start(self, event: dict) -> None:
+        '''Reçoit la demande de début de partie du joueur.
+
+        Args:
+            event (dict): Demande de début de partie du joueur.
+        '''
+        game, board, tile = self._get_game_board()
+        if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
+        if not board.is_paused: raise InvalidMoveException('Le minuteur n\'est pas en pause.')
+
+        board.resume(tile)
+        if (not board.is_paused): board.init_start()
+
+        self._save_game_board(game, board)
+
+        new_event = {'type': 'send_timers', 'data': json.dumps({t.value.color[0]: time2str(v) for t, v in board.player_time.items()})}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+        new_event = {'type': 'send_start', 'data': {'start_count': board.resume_count, 'is_paused': board.is_paused.value}}
+        async_to_sync(self.channel_layer.group_send)(f'game_{self._game_id}', new_event)
+
+
+    def send_start(self, event: dict) -> None:
+        '''Envoie la demande de début de partie du joueur.
+
+        Args:
+            event (dict): Demande de début de partie du joueur.
+        '''
+        new_event = {'type': 'start', 'data': event['data']}
         self.send(text_data = json.dumps(new_event))

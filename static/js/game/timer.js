@@ -66,8 +66,8 @@ setInterval( function() {
             }
         }
     }
-    else if (game_is_paused === 1) {
-        if (updateCountdown(resume_timer_element)) {
+    else if (game_is_paused === 2) {
+        if (updateCountdown(start_timer_element)) {
             if (start_button.classList.contains("hidden")) {
                 start_button.classList.remove("hidden");
             }
