@@ -244,7 +244,7 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
     if tournament.has_started_in_theory() == True:
-        ret = HttpResponseNotifError('Les inscriptions pour ce tournoi sont termin"es')
+        ret = HttpResponseNotifError('Les inscriptions pour ce tournoi sont terminées')
 
     if len(ParticipateTournament.objects.filter(person=request.user, tournament=tournament).all()) < 1:
         ParticipateTournament.objects.create(
