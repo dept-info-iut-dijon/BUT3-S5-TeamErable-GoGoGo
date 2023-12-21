@@ -7,10 +7,14 @@ let game_ended = document.querySelector("#game-ended").value === "True" ? true :
 let has_second_player = document.querySelector("#has-second-player").value === "True" ? true : false;
 
 const pause_count_element = document.querySelector("#span-pause-count");
+
 const resume_timer_element = document.querySelector("#span-resume-timer");
-const start_count_element = document.querySelector("#span-start-count");
 const resume_button = document.querySelector("#resume-button");
-const start_button = document.querySelector("#resume-button");
+
+const start_timer_element = document.querySelector("#span-start-timer");
+const start_button = document.querySelector("#start-div");
+const start_count_element = document.querySelector("#span-start-count");
+
 let game_is_paused = parseInt(document.querySelector("#game-paused").value, 10);
 
 
@@ -75,6 +79,9 @@ websocket.onmessage = function(event) {
 
         case 'pause-timer':
             receivedPauseTimer(data); break;
+
+        case 'start':
+            receivedStart(data); break;
 
         case 'error':
             notify('<p class="error">' + data + '</p>'); break;
@@ -282,6 +289,21 @@ function receivedPauseTimer(data) {
 }
 
 
+/**
+ * Message de début de partie reçu par le serveur
+ * @param {string} data Données reçues par le serveur
+ */
+function receivedStart(data) {
+    start_count_element.innerHTML = data.start_count.toString();
+    game_is_paused = data.is_paused;
+
+    if (!data.is_paused) {
+        let element = document.querySelector("#band-start");
+        if (!element.classList.contains("hidden")) element.classList.add("hidden");
+    }
+}
+
+
 // Place une pierre sur le plateau si on clique dessus et qu'on peut jouer
 document.querySelectorAll(".stone").forEach((element) => {
     element.addEventListener("click", () => {
@@ -361,10 +383,24 @@ function askResume() {
     }));
 }
 
+/**
+ * Envoie un message demander à commencer
+ */
+function askStart() {
+    websocket.send(JSON.stringify({
+        'type': 'start',
+        'data': null
+    }));
+}
+
 document.querySelector("#skip-button").addEventListener("click", skip);
 document.querySelector("#give-up-button").addEventListener("click", giveUp);
-document.querySelector("#pause-button").addEventListener("click", askPause);
+
+try { document.querySelector("#pause-button").addEventListener("click", askPause); }
+catch (e) { }
+
 document.querySelector("#resume-button").addEventListener("click", askResume);
+document.querySelector("#start-button").addEventListener("click", askStart);
 
 
 /**

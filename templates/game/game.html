@@ -54,9 +54,9 @@
                     <div class="center flex-column">
                         <p class="big" id="band-start-big-text">Partie en attente de commencement</p>
                         <div class="column">
-                            <p>Vous pourrez commencer la partie dans <span id="span-starting-timer">{{ resume_timer }}</span></p>
-                            <div class="center height-auto">
-                                <button class="big secondary {% if resume_timer != '00:00:00' %}hidden{% endif %}" id="starting-button">Commencer la partie</button>
+                            <p>Vous pourrez commencer la partie dans <span id="span-start-timer">{{ resume_timer }}</span></p>
+                            <div class="center height-auto {% if resume_timer != '00:00:00' %}hidden{% endif %}" id="start-div">
+                                <button class="big secondary" id="start-button">Commencer la partie</button>
                                 <p id="start-count" class="no-margin"><span id="span-start-count">{{ start_count }}</span> / 2</p>
                             </div>
                         </div>
@@ -113,10 +113,12 @@
                             <button class="margin-side" id="give-up-button">Déclarer Forfait</button>
                         </div>
                     </div>
+                    {% if not hide_pause %}
                     <div class="margin-side row">
                         <button id="pause-button">Mettre en pause</button>
                         <p id="pause-count" class="no-margin"><span id="span-pause-count">{{ pause_count }}</span> / 2</p>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
