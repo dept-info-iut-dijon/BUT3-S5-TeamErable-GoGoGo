@@ -37,6 +37,7 @@
     border: none;
     border-collapse: separate;
     border-spacing: 0 0.25rem;
+    width: -webkit-fill-available;
 }
 
 #games-historic-table tr {
