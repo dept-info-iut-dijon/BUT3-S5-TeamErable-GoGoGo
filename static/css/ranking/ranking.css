@@ -18,8 +18,8 @@
     border-radius: 25px;
     transition: background-color 0.3s ease, color 0.3s ease;
     width: 5em;
-    height: 1.8em;
     text-align: center;
+    vertical-align: middle;
 }
 
 .navbar-link:hover {
@@ -37,8 +37,8 @@ section {
     opacity: 0;
     height: 0;
     overflow: hidden;
-    width: 100%;
-    
+    margin-left: 1.5em;
+    margin-right: 1.5em;
 }
 
 section.active {
@@ -59,10 +59,7 @@ h1{
 }
 
 table {
-    width: 90%;
     border-collapse: collapse;
-    margin-top: 20px;
-    margin-left: 4.5em;
     margin-bottom: 7em;
 }
 
@@ -70,6 +67,16 @@ th, td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+}
+
+td a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+td a img {
+    margin-right: 0.5rem;
 }
 
 th {
@@ -129,11 +136,6 @@ td .pfp {
 
     h1 {
         margin-left: 0;
-    }
-
-    table {
-        margin-left: 0;
-        width: 100%;
     }
 
     td, th {
