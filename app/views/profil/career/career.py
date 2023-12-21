@@ -44,7 +44,7 @@ def stats(request: HttpRequest) -> HttpResponse:
     )
 
 def public_career(request: HttpRequest, id_user : int = None) -> HttpResponse:
-    '''Constructeur de la page de carriere
+    '''Constructeur de la page de carriere publique
 
     Args:
         request (HttpRequest): Requête HTTP

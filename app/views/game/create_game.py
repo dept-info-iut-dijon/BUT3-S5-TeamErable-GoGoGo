@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpRequest
 from ...models import Game, GameParticipate, CustomUser
 from datetime import datetime
 import os, json
-from ...logic import Board, RuleFactory
+from ...logic import Board, RuleFactory, Tile
 from ..decorators import login_required, request_type, RequestType
 from ...http import HttpResponseNotifError
 from ..code_manager import CodeManager
@@ -13,6 +13,7 @@ from datetime import timedelta
 from ...logic.timer.TimerFactory import TimerFactory
 from ...models.game_configuration import GameConfiguration
 from ...models.tournament import Tournament
+from ...storage import GameStorage
 
 def _create_new_game(request : HttpRequest, game_struct: GameStruct, id_tournament: int) -> HttpRequest:
     '''Fonction permettant de creer une nouvelle partie
@@ -51,27 +52,28 @@ def construct_participate(id_player1: int, id_player2: int = None) -> GamePartic
     return participate
 
 
-def create_move_list(game: Game) -> None:
+def create_move_list(game: Game) -> Board:
     file = f'dynamic/games/{game.id_game:X}.json'
 
     if not os.path.exists('dynamic/games'):
         os.makedirs('dynamic/games')
 
-    with open(file, 'w') as f:
-        b = Board(
-            int(game.game_configuration.map_size),
-            float(game.game_configuration.komi),
-            RuleFactory().get(game.game_configuration.counting_method),
-            int(game.game_configuration.byo_yomi),
-            timedelta(seconds = game.game_configuration.clock_value),
-            None,
-            TimerFactory().get(game.game_configuration.clock_type),
-            None,
-        )
-        json.dump(b.export(), f)
+    b = Board(
+        int(game.game_configuration.map_size),
+        float(game.game_configuration.komi),
+        RuleFactory().get(game.game_configuration.counting_method),
+        int(game.game_configuration.byo_yomi),
+        timedelta(seconds = game.game_configuration.clock_value),
+        None,
+        TimerFactory().get(game.game_configuration.clock_type),
+        None,
+    )
+    GameStorage.save_game(file, b)
 
     game.move_list = file
     game.save()
+
+    return b
 
 
 def construct_game(game_struct: GameStruct, participate: GameParticipate, id_tournament: int = None) -> Game:
@@ -127,7 +129,9 @@ def construct_game_tournament(name: str, desc: str, game_configuration: GameConf
         game_participate = participate
     )
 
-    create_move_list(game)
+    b = create_move_list(game)
+    b.pause(Tile.White, True)
+    GameStorage.save_game(game.move_list.path, b)
 
     return game
 

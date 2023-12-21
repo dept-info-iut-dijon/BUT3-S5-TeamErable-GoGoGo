@@ -185,9 +185,11 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
             'player2_html': player2_html,
             'code': game.code,
             'action_buttons_class': '' if can_play and not board.ended else 'hidden',
-            'game_paused': board.is_paused,
+            'game_paused': board.is_paused.value,
             'pause_count': board.pause_count,
+            'start_count': board.resume_count,
             'resume_timer': time2str(board.pause_time_left),
+            'hide_pause': game.game_configuration.ranked or (game.tournament is not None),
         }
     )
 
