@@ -543,3 +543,21 @@ class Board:
             dict[Tile, float]: Points.
         '''
         return self._rule.count_points()
+
+
+    def place_handicap(self, handicap: int) -> None:
+        '''Place les pierres de handicap.
+
+        Args:
+            handicap (int): Nombre de pierres de handicap.
+        '''
+        if not handicap: return
+
+        for k in GoConstants.HandicapStones.keys():
+            if k == self.size.x:
+                for coords in GoConstants.HandicapStones[k][:handicap]:
+                    self.set(coords, Tile.Black)
+
+                return
+            
+        raise InvalidMoveException('Le nombre de pierres de handicap n\'est pas supporté pour cette taille de plateau.')

@@ -68,6 +68,7 @@ def create_move_list(game: Game) -> Board:
         TimerFactory().get(game.game_configuration.clock_type),
         None,
     )
+    b.place_handicap(game.game_configuration.handicap)
     GameStorage.save_game(file, b)
 
     game.move_list = file

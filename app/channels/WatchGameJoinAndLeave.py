@@ -138,7 +138,7 @@ class WatchGameJoinAndLeave(WebsocketConsumer):
         Args:
             code (int): Code de l'erreur.
         '''
-        async_to_sync(self.channel_layer.group_discard)(f'game_{self._game_id}', self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(f'gamesave_{self._game_id}', self.channel_name)
         self.close()
 
 
