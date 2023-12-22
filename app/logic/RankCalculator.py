@@ -31,7 +31,6 @@ class RankCalculator:
             experience += 100
             if (experience/1000).is_integer():
                 step += STEP_INCREMENT
-            print(str(nb_games_count)+" games with "+str(win_rate)+" left and "+str(experience)+" gained")
         experience += nb_games_count
         # Ajout du bonus tournois
         experience += nb_tournament_wins * TOURNAMENT_WIN_WEIGHT
