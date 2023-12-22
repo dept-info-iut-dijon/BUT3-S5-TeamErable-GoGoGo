@@ -4,7 +4,6 @@ from ...models import Statistic, Tournament, GameConfiguration
 from datetime import date
 
 class RankViewTest(TestCase):
-    '''Classe permettant de tester la vue security'''
     def setUp(self):
         self.client = Client()
         self.statistic = Statistic.objects.create(
