@@ -53,6 +53,14 @@ def construct_participate(id_player1: int, id_player2: int = None) -> GamePartic
 
 
 def create_move_list(game: Game) -> Board:
+    '''Fonction permettant de construire le fichir de jeu
+
+    Args:
+        game (Game): La nouvelle partie
+
+    Returns:
+        Board: Le plateau
+    '''
     file = f'dynamic/games/{game.id_game:X}.json'
 
     if not os.path.exists('dynamic/games'):
@@ -110,9 +118,12 @@ def construct_game_tournament(name: str, desc: str, game_configuration: GameConf
     '''Fonction permettant de construire une nouvelle partie dans la BDD
     
     Args:
+        name (str): Le nom de la partie
+        desc (str): La description de la partie
         game_struct (GameStruct): La nouvelle partie
         participate (GameParticipate): Les joueurs et les scores de la partie
-        id_tournament (int): L'id du tournoi ou None
+        tournament (Tournament): Le tournoi
+
         
     Returns:
         Game: La nouvelle partie

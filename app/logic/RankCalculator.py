@@ -9,6 +9,8 @@ class RankCalculator:
             Args:
                 nb_games (int): le nombre de parties du joueur
                 win_rate (int): le taux de victoire du joueur
+                elo (int): l'elo du joueur
+                nb_tournament_wins (int): le nombre de tournois gagnés
 
             Returns:
                 (str): le rang                
@@ -29,7 +31,6 @@ class RankCalculator:
             experience += 100
             if (experience/1000).is_integer():
                 step += STEP_INCREMENT
-            print(str(nb_games_count)+" games with "+str(win_rate)+" left and "+str(experience)+" gained")
         experience += nb_games_count
         # Ajout du bonus tournois
         experience += nb_tournament_wins * TOURNAMENT_WIN_WEIGHT

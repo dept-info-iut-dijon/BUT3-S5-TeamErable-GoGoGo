@@ -31,14 +31,17 @@ class Tournament:
 
     @property
     def players(self) -> list[Player]:
+        '''Renvoie la liste des joueurs du tournoi'''
         return self._players
 
     @property
     def bracket(self) -> IMatch:
+        '''Renvoie le bracket du tournoi'''
         return self._bracket
 
     @property
     def winner(self) -> Player:
+        '''Renvoie le vainqueur du tournoi'''
         return self._bracket.winner
 
 

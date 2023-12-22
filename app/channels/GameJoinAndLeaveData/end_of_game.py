@@ -7,6 +7,12 @@ from math import ceil
 
 
 def _update_tournament_data(game: Game, board: Board) -> None:
+    '''Met a jour les données liées à la fin de la partie d'un tournoi.
+    
+    Args:
+        game (Game): Partie
+        board (Board): Plateau
+    '''
     if game.tournament is not None:
         tournament_logic = TournamentStorage.load_tournament(game.tournament.tournament_status.path)
         points = board.get_points()
@@ -17,12 +23,23 @@ def _update_tournament_data(game: Game, board: Board) -> None:
 
 
 def _delete_game(game: Game) -> None:
+    '''Supprime une partie
+
+    Args:
+        game (Game): Partie
+    '''
     path = game.move_list.path
     GameStorage.delete_game(path)
     game.delete()
 
 
 def _convert_game_to_game_save(game: Game, board: Board) -> None:
+    '''Convertit une partie en partie sauvegardée
+
+    Args:
+        game (Game): Partie
+        board (Board): Plateau
+    '''
     try:
         players = (game.game_participate.player1, game.game_participate.player2)
         points = board.get_points()
@@ -58,5 +75,11 @@ def _convert_game_to_game_save(game: Game, board: Board) -> None:
 
 
 def end_of_game_callback(game: Game, board: Board) -> None:
+    '''Met a jour les données liées à la fin de la partie.
+
+    Args:
+        game (Game): Partie
+        board (Board): Plateau
+    '''
     _update_tournament_data(game, board)
     _convert_game_to_game_save(game, board)

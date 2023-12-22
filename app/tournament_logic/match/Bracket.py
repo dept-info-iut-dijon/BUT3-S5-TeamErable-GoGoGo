@@ -25,35 +25,50 @@ class Bracket(implements(IMatch)):
 
     @property
     def id(self) -> int:
+        '''Renvoie l'id du match'''
         return self._id
 
     @id.setter
     def id(self, value: int) -> None:
+        '''Modifie l'id du match
+        
+        Args:
+            value (int): Nouvel id
+
+        Raises:
+            Exception: L'id est déjà utilisé / déja utilisé par un match
+        '''
         if self._id is not None: raise Exception('Match id is already set')
         self._id = value
 
     @property
     def bracket1(self) -> IMatch:
+        '''Renvoie le bracket 1'''
         return self._bracket1
 
     @property
     def bracket2(self) -> IMatch:
+        '''Renvoie le bracket 2'''
         return self._bracket2
 
     @property
     def player1(self) -> Player | None:
+        '''Renvoie le gagnant du bracket 1'''
         return self._bracket1.winner if self._bracket1.winner is not None else None
 
     @property
     def player2(self) -> Player | None:
+        '''Renvoie le gagnant du bracket 2'''
         return self._bracket2.winner if self._bracket2.winner is not None else None
 
     @property
     def winner(self) -> Player | None:
+        '''Renvoie le gagnant du bracket'''
         return self._winner
 
 
     def __str__(self) -> str:
+        '''Surchage de la méthode str'''
         if self._winner is not None: ret = f'{self._winner}'
         else:
             addon = ' -> Match' if self._bracket1.winner is not None and self._bracket2.winner is not None else ''
@@ -64,10 +79,16 @@ class Bracket(implements(IMatch)):
         return ret
 
     def __repr__(self) -> str:
+        '''Surchage de la méthode repr'''
         return str(self)
 
 
     def do_win(self, player: Player) -> None:
+        '''Fait gagner un joueur
+
+        Args:
+            player (Player): Joueur gagnant
+        '''
         ret = False
         if (self._bracket1.winner is None):
             self._bracket1.do_win(player)
@@ -83,6 +104,11 @@ class Bracket(implements(IMatch)):
 
 
     def get_current_matches(self) -> list[IMatch]:
+        '''Renvoie les matchs en cours
+
+        Returns:
+            list[IMatch]: Liste des matchs en cours
+        '''
         ret = []
 
         if (self._bracket1.winner is None): ret += self._bracket1.get_current_matches()
@@ -94,6 +120,11 @@ class Bracket(implements(IMatch)):
 
 
     def export(self) -> dict:
+        '''Exporte le bracket vers un dictionnaire
+
+        Returns:
+            dict: Le dictionnaire contenant le bracket
+        '''
         return {
             'type': 'Bracket',
             'id': self._id,
