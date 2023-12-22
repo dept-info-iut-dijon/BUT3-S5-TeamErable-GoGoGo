@@ -11,7 +11,6 @@ class CodeManager:
 
         Returns:
             str: Un code unique
-
         '''
         code = None
         while (code is None or Game.objects.filter(code=code, done=False).exists()):
@@ -23,7 +22,6 @@ class CodeManager:
 
         Returns:
             str: Un code unique
-
         '''
         code = None
         while (code is None or Tournament.objects.filter(code=code, end_date__gt = datetime.now()).exists()):

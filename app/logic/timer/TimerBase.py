@@ -99,6 +99,11 @@ class TimerBase(ABC):
 
     @property
     def timed_out(self) -> Tile | None:
+        '''Renvoie le joueur qui n'a plus de temps.
+
+        Returns:
+            Tile | None: Le joueur qui n'a plus de temps.
+        '''
         for t in Tile:
             if self._player_time[t] - self.last_action_time_diff <= timedelta(seconds = 0):
                 return t
@@ -221,7 +226,7 @@ class TimerBase(ABC):
 
         Args:
             tile (Tile): Couleur du joueur.
-            time (timedelta): Temps a ajouter.
+            time (timedelta | float | int): Temps a ajouter.
         '''
         if isinstance(time, timedelta):
             self._player_time[tile] += time

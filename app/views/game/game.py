@@ -92,6 +92,7 @@ def game_view_players(request: HttpRequest, game: Game, board: Board, players: l
         request (HttpRequest): Requête HTTP
         game (Game): La partie
         board (Board): Le plateau
+        players (list[CustomUser]): La liste des joueurs
 
     Returns:
         tuple[str, str]: Le HTML des joueurs
@@ -141,8 +142,6 @@ def game_view(request: HttpRequest, game: Game) -> HttpResponse:
     Returns:
         HttpResponse: La réponse HTTP à la requête de la partie
     '''
-
-
     board = GameStorage.load_game(game.move_list.path)
     tile = Tile.White if request.user == game.game_participate.player1 else Tile.Black
     can_play = board.is_player_turn(tile)

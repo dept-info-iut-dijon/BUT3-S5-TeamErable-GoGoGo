@@ -1,6 +1,7 @@
 from enum import Enum, auto
 
 class GoRank(Enum):
+    '''Classe des rangs de Go.'''
     _30_Kyu = auto()
     _29_Kyu = auto()
     _28_Kyu = auto()
@@ -43,7 +44,16 @@ class GoRank(Enum):
     _9_Dan = auto()
 
     @classmethod
-    def from_string(cls, rank_str):
+    def from_string(cls, rank_str : str) -> 'GoRank':
+        '''Renvoie un rang depuis une chaîne de caractères.
+
+        Args:
+            cls (GoRank): Classe.
+            rank_str (str): Nom du rang.
+
+        Returns:
+            GoRank: Rang.
+        '''
         if('ème ' in rank_str):
             rank_number, rank_type = rank_str.split('ème ')
         else:
@@ -53,6 +63,7 @@ class GoRank(Enum):
         return cls[f'_{rank_number}_{rank_type}']
 
     def __str__(self):
+        '''Surcharge de l'opérateur str.'''
         rank_number = self.name.split('_')[1]
         suffix = "ème"
         if rank_number == str(1):
@@ -63,4 +74,5 @@ class GoRank(Enum):
             return f"{rank_number}{suffix} Dan"
 
     def __int__(self):
+        '''Constructeur.'''
         return self.value

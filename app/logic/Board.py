@@ -40,6 +40,11 @@ class Board:
             size (int): Taille du plateau.
             komi (float): Komi.
             rule_cls (type[RuleBase]): Classe de la règle.
+            byo_yomi (int): Byo-yomi.
+            time (timedelta): Temps de jeu.
+            player_time (dict[Tile, timedelta] | None): Temps de jeu par joueur.
+            timer_cls (type[TimerBase]): Classe du timer.
+            last_action_time (datetime | None): Dernière action.
         '''
         self._grid = Grid(size)
         self._rule: RuleBase = rule_cls(self, komi)
@@ -60,46 +65,57 @@ class Board:
 
     @property
     def size(self) -> Vector2:
+        '''Renvoi la Taille du plateau.'''
         return self._grid.size
 
     @property
     def width(self) -> int:
+        '''Renvoi la Largeur du plateau.'''
         return self._grid.width
 
     @property
     def height(self) -> int:
+        '''Renvoi la Hauteur du plateau.'''
         return self._grid.height
 
     @property
     def grid(self) -> Grid:
+        '''Renvoi la Grille du plateau de jeu.'''
         return self._grid
 
     @property
     def raw(self) -> list[list[Tile]]:
+        '''Renvoi la Grille du plateau sous forme de liste.'''
         return self._grid.raw
 
     @property
     def current_player(self) -> Tile:
+        '''Renvoi le Joueur courant.'''
         return self._current_player
 
     @property
     def ended(self) -> bool:
+        '''Renvoi True si la partie est terminée. '''
         return self._ended
 
     @property
     def komi(self) -> float:
+        '''Renvoi le Komi. '''
         return self._rule.komi
 
     @property
     def byo_yomi(self) -> int:
+        '''Renvoi le byo-yomi. '''
         return self._timer._byo_yomi
 
     @property
     def time(self) -> timedelta:
+        '''Renvoi le temps. '''
         return self._timer.initial_time
 
     @property
     def player_time(self) -> dict[Tile, timedelta]:
+        '''Renvoi un dictionnaire des temps par joueur. '''
         return (
             {t: v - self._timer.last_action_time_diff for t, v in self._timer.player_time.items() if self.is_player_turn(t)} |
             {t: v for t, v in self._timer.player_time.items() if not self.is_player_turn(t)}
@@ -107,42 +123,52 @@ class Board:
 
     @property
     def history(self) -> list[Move]:
+        '''Renvoi l'historique des actions. '''
         return self._history.copy()
 
     @property
     def skip_list(self) -> list[Tile]:
+        '''Renvoi la liste des joueurs qui ont passé leur tour. '''
         return self._skip_list.copy()
 
     @property
     def illegal_moves(self) -> list[Vector2]:
+        '''Renvoi la liste des coups illegaux. '''
         return self._illegal_moves.copy()
 
     @property
     def timer(self) -> TimerBase:
+        '''Renvoi le timer. '''
         return self._timer
 
     @property
     def initial_time(self) -> timedelta:
+        '''Renvoi le temps initial. '''
         return self._timer.initial_time
 
     @property
     def is_paused(self) -> PauseEnum:
+        '''Renvoi True si le timer est en pause. '''
         return self._timer.is_paused
 
     @property
     def pause_count(self) -> int:
+        '''Renvoi le nombre de demande de pause. '''
         return self._timer.pause_count
 
     @property
     def resume_count(self) -> int:
+        '''Renvoi le nombre de demande de reprise de jeu. '''
         return self._timer.resume_count
 
     @property
     def can_resume(self) -> bool:
+        '''Renvoi True si le timer peut reprendre. '''
         return self._timer.can_resume
 
     @property
     def pause_time_left(self) -> timedelta:
+        '''Renvoi le temps restant avant la reprise'''
         return self._timer.pause_time_left
 
 
@@ -192,9 +218,15 @@ class Board:
             coords (Vector2): Coordonnées du coup.
             tile (Tile): Tuile du joueur.
 
+        Returns:
+            dict[Tile, tuple[Vector2]]: Dictionnaire des coups joués.
+
         Raises:
             InvalidMoveException: Si la partie est terminée.
-            InvalidMoveException: Si le joueur n'est pas le joueur courant.
+            InvalidMoveException: Si le temps est en pause.
+            InvalidMoveException: Si se n\'est pas le tour du joueur.
+            InvalidMoveException: Si le coup est invalide.
+            InvalidMoveException: Si les coordonnées sont en dehors du plateau.
             InvalidMoveException: Si la case est déjà occupée.
             InvalidMoveException: Si l'île serait entourée (Si le joueur n'est pas autorisé à jouer dans les zones mortes).
         '''
@@ -270,6 +302,7 @@ class Board:
         Raises:
             InvalidMoveException: Si la partie est terminée.
             InvalidMoveException: Si le joueur n'est pas le joueur courant.
+            InvalidMoveException: Si le temps est en pause.
         '''
         if self._ended: raise InvalidMoveException('La partie est terminée.')
         if self._timer.is_paused: raise InvalidMoveException('La partie est en pause.')
@@ -339,6 +372,7 @@ class Board:
         
         Raises:
             InvalidMoveException: Si la partie est terminée.
+            InvalidMoveException: Si le temps est en pause.
         '''
         if self._ended: raise InvalidMoveException('La partie est déjà terminée.')
         if self._timer.is_paused: raise InvalidMoveException('La partie est en pause.')
@@ -454,7 +488,6 @@ class Board:
         Returns:
             dict: Données du plateau.
         '''
-
         return {
             'board': [
                 [
@@ -484,7 +517,6 @@ class Board:
         Returns:
             Board: Copie du plateau de jeu.
         '''
-
         b = Board(
             self.size.x,
             self.komi,
@@ -550,6 +582,9 @@ class Board:
 
         Args:
             handicap (int): Nombre de pierres de handicap.
+
+        Raises:
+            InvalidMoveException: Le nombre de pierres de handicap n'est pas supporté pour cette taille de plateau.
         '''
         if not handicap: return
 

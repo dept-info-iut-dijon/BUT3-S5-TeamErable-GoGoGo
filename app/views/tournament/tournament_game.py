@@ -1,18 +1,19 @@
-from ..game.create_game import construct_game, construct_participate, construct_game_tournament
+from ..game.create_game import construct_participate, construct_game_tournament
 from ...models import CustomUser
-from ..game.game_struct import GameStruct
-from .tournament_struct import TournamentStruct
 from random import shuffle
-from ...models.game_participate import GameParticipate
 from ...models.tournament import Tournament
-from ...models.tournament import ParticipateTournament
 from ...tournament_logic import Tournament as TournamentLogic, Player as TournamentPlayer
 from ...models.game import Game
 from ...storage import TournamentStorage
-from datetime import datetime
 
 
 def start_tournament(tournament: Tournament, participants: list[CustomUser]) -> None:
+    '''Fonction permettant de lancer un tournoi
+
+    Args:
+        tournament (TournamentStruct): Le tournoi
+        participants (list[CustomUser]): Les participants
+    '''
     players = participants.copy()
     shuffle(players)
 

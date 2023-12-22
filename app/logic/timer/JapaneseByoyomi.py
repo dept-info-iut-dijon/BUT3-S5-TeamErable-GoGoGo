@@ -20,10 +20,25 @@ class JapaneseByoyomi(TimerBase):
         timer_offset: timedelta = timedelta(seconds = 0),
         date_pause: datetime | None = None,
     ) -> None:
+		'''Initialise une timer japonaise.
+
+		Args:
+			board (Board): Plateau de jeu.
+			byo_yomi (int): Byo-yomi.
+			initial_time (timedelta): Duree d'initialisation.
+			player_time (dict[Tile, timedelta]): Duree par joueur.
+			last_action_time (datetime): Derniere action.
+			is_paused (PauseEnum, optional): Pause. Defaults to PauseEnum.Not.
+			ask_pause (list[Tile], optional): Demande de pause. Defaults to [].
+			ask_resume (list[Tile], optional): Demande de resume. Defaults to [].
+			timer_offset (timedelta, optional): Offset. Defaults to timedelta(seconds = 0).
+			date_pause (datetime, optional): Date de pause. Defaults to None.
+			'''
 		super().__init__(board, byo_yomi, initial_time, player_time, last_action_time, is_paused, ask_pause, ask_resume, timer_offset, date_pause)
 
 
 	def copy(self) -> TimerBase:
+		''' Copie de l'objet. '''
 		return JapaneseByoyomi(
 			self._board,
 			self._byo_yomi,
@@ -39,6 +54,14 @@ class JapaneseByoyomi(TimerBase):
 
 
 	def play(self, tile: Tile) -> timedelta:
+		'''Joue une action.
+
+		Args:
+			tile (Tile): Case jouée.
+			
+		Returns:
+			timedelta: Duree restante.
+		'''
 		delta = datetime.now() - self._last_action_time
 		self._player_time[tile] -= delta
 

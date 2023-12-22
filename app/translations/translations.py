@@ -4,6 +4,7 @@ class Translations:
     _translations: dict = {}
 
     def __new__(cls) -> None:
+        '''Empêche l'instanciation de la classe'''
         return None
 
     @staticmethod
