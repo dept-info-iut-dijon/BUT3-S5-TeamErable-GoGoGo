@@ -1,5 +1,8 @@
 htmx.config.useTemplateFragments = true;
 
+/**
+ * Fonction pour importer un jeu
+ */
 function importGame() {
     var fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -14,6 +17,10 @@ function importGame() {
     fileInput.click();
 }
 
+/**
+ * Fonction pour importer un jeu
+ * @param {File} file Fichier importé
+ */
 function uploadFile(file) {
     var formData = new FormData();
     let csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;

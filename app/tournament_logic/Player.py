@@ -12,6 +12,7 @@ class Player:
 
     @property
     def id(self) -> int:
+        '''Renvoie l'id du joueur'''
         return self._id
 
 

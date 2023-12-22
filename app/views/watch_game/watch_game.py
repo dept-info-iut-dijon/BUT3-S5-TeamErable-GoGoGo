@@ -3,9 +3,6 @@ from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpRes
 from app.models import GameSave
 from ...logic import Board, Tile, RuleFactory, TimerFactory
 from ..decorators import login_required, request_type, RequestType
-from ...http import HttpResponseNotifError
-from ...storage import GameStorage
-from ...models import CustomUser
 from ...utils import time2str
 from datetime import timedelta, datetime
 

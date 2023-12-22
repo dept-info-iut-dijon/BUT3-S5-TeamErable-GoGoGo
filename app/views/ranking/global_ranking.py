@@ -1,9 +1,6 @@
-from django.db.models import Count, F, Q, ExpressionWrapper, fields, Case, When, FloatField,OuterRef, Subquery
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
-from django.db.models.functions import Coalesce
-from django.db import models
-from ...models import CustomUser, Game,GameParticipate, Statistic
+from ...models import CustomUser, Statistic
 from ...logic import GoRank
 from ..decorators import login_required, request_type, RequestType
 from .ranking_struct import RankingStruct
@@ -34,8 +31,7 @@ def global_ranking(request: HttpRequest) -> HttpResponse:
         'top_ranked': global_ranking, 'same_ranked': same_ranked})
 
 def get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]:
-    '''
-        Permet d'obtenir un classement selon une certaine liste d'utilisateurs
+    '''Permet d'obtenir un classement selon une certaine liste d'utilisateurs
 
         Args:
             user_range (list[CustomUser]): Liste des utilisateurs concernes
@@ -62,8 +58,7 @@ def get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]
     return ranking
 
 def _get_as_ranking(history: dict)-> list[RankingStruct]:
-    '''
-        Obtient la liste des structure de ranking pour chaque joueur
+    '''Obtient la liste des structure de ranking pour chaque joueur
 
         Args:
             history (dict): dictionaire des statistiques de chaque joueurs
@@ -90,8 +85,7 @@ def _get_as_ranking(history: dict)-> list[RankingStruct]:
     return ranking
 
 def _sorting_key(ranking_data:RankingStruct)->tuple:
-    '''
-        Fonction servant de cle pour la comparaison de tri d'une liste de RankingStruct
+    '''Fonction servant de cle pour la comparaison de tri d'une liste de RankingStruct
 
         Args:
             ranking_data (RankingStruct): donnes a trier

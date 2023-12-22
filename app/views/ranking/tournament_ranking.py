@@ -11,6 +11,7 @@ def tournament_ranking(request: HttpRequest, id_tournament:int) -> HttpResponse:
 
     Args:
         request (HttpRequest): Requete HTTP
+        id_tournament (int): L'id du tournois
 
     Returns:
         HttpResponse: Reponse HTTP de la page de classement du tournois

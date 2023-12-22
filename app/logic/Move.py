@@ -30,10 +30,12 @@ class Move:
 
     @property
     def pos(self) -> Vector2 | None:
+        '''Renvoi la position du mouvement.'''
         return self._pos
 
     @property
     def time(self) -> timedelta:
+        '''Renvoi le temps du mouvement. '''
         return self._timestamp
 
 

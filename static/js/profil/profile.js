@@ -1,3 +1,7 @@
+/**
+ * Lire l'URL de l'image
+ * @param {*} input 
+ */
 function readURL(input) {
     if (input.files && input.files[0]) {
         var csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
