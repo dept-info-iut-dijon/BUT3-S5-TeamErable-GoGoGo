@@ -1,8 +1,8 @@
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 import json
-from ..models import GameSave, CustomUser
-from ..logic import Board, Tile, Vector2, RankCalculator, RuleFactory, TimerFactory
+from ..models import GameSave
+from ..logic import Board, Tile, Vector2, RuleFactory, TimerFactory
 from ..exceptions import InvalidMoveException
 from .WatchGameJoinAndLeaveData.WatchMove import WatchMove
 from datetime import timedelta, datetime
@@ -112,6 +112,11 @@ class WatchGameJoinAndLeave(WebsocketConsumer):
 
         Args:
             text_data (str, optional): Décision du joueur. Défaut à None.
+            bytes_data (bytes, optional): Décision du joueur. Défaut à None.
+
+        Raises:
+            InvalidMoveException: Exception lorsqu'une partie est invalide.
+            ValueError: Une commande non valide a été envoyée.
         '''
         try:
             data = json.loads(text_data)
@@ -272,6 +277,9 @@ class WatchGameJoinAndLeave(WebsocketConsumer):
 
         Args:
             data (dict): Données.
+
+        Raises:
+            ValueError: Les données ne sont pas valides.
         '''
         if 'from' not in data.keys() or 'to' not in data.keys():
             raise ValueError('Les données envoyées ne sont pas valides.')

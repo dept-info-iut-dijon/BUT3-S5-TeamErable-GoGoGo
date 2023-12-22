@@ -34,6 +34,11 @@ class GameJoinAndLeave(WebsocketConsumer):
 
         Args:
             text_data (str, optional): Décision du joueur. Défaut à None.
+            bytes_data (bytes, optional): Décision du joueur. Défaut à None.
+
+        Raises:
+            InvalidMoveException: Une commande non valide a été envoyée.
+            InvalidMoveException | ValueError: .
         '''
         try:
             data = json.loads(text_data)
@@ -243,6 +248,9 @@ class GameJoinAndLeave(WebsocketConsumer):
 
         Args:
             event (dict): Coup du joueur.
+
+        Raises:
+            InvalidMoveException: Le joueur ne peut pas jouer seul.
         '''
         data: str = event['data']
 
@@ -328,7 +336,14 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def receive_skip(self, event: dict) -> None:
-        '''Recoit quand le joueur passe le tour.'''
+        '''Recoit quand le joueur passe le tour.
+        
+        Args:
+            event (dict): Quand le joueur passe le tour.
+            
+        Raises:
+            InvalidMoveException: Le joueur ne peut pas jouer seul.
+        '''
         game, board, tile = self._get_game_board()
         if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
 
@@ -343,7 +358,13 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def receive_give_up(self, event: dict) -> None:
-        '''Recoit l'abandon du joueur.'''
+        '''Recoit l'abandon du joueur.
+        
+        Args:
+            event (dict): L'abandon du joueur.
+            
+        Raises:
+            InvalidMoveException: Le joueur ne peut pas jouer seul.'''
         game, board, tile = self._get_game_board()
         if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
 
@@ -358,7 +379,11 @@ class GameJoinAndLeave(WebsocketConsumer):
 
 
     def receive_check_state(self, event: dict) -> None:
-        '''Recoit la demande de l'état de la partie.'''
+        '''Recoit la demande de l'état de la partie.
+        
+        Args:
+            event (dict): La demande de l'état de la partie.
+        '''
         game, board, tile = self._get_game_board()
 
         looser = board.update_game_state()
@@ -402,6 +427,12 @@ class GameJoinAndLeave(WebsocketConsumer):
 
         Args:
             event (dict): Demande de pause du joueur.
+
+        Raises:
+            InvalidMoveException: Le joueur ne peut pas jouer seul.
+            InvalidMoveException: Une partie de tournoi ne peut pas être mise en pause.
+            InvalidMoveException: Une partie classée ne peut pas être mise en pause.
+            InvalidMoveException: Le minuteur est déjà en pause.
         '''
         game, board, tile = self._get_game_board()
         if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
@@ -439,6 +470,10 @@ class GameJoinAndLeave(WebsocketConsumer):
 
         Args:
             event (dict): Demande de reprise du joueur.
+
+        Raises:
+            InvalidMoveException: Le joueur ne peut pas jouer seul.
+            InvalidMoveException: Le minuteur n'est pas en pause.
         '''
         game, board, tile = self._get_game_board()
         if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')
@@ -490,6 +525,10 @@ class GameJoinAndLeave(WebsocketConsumer):
 
         Args:
             event (dict): Demande de début de partie du joueur.
+
+        Raises:
+            InvalidMoveException: Le joueur ne peut pas jouer seul.
+            InvalidMoveException: Le minuteur n'est pas en pause.
         '''
         game, board, tile = self._get_game_board()
         if game.game_participate.player2 is None: raise InvalidMoveException('Vous ne pouvez pas jouer seul.')

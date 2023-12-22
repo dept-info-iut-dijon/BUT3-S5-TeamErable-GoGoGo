@@ -9,6 +9,8 @@ class RankCalculator:
             Args:
                 nb_games (int): le nombre de parties du joueur
                 win_rate (int): le taux de victoire du joueur
+                elo (int): l'elo du joueur
+                nb_tournament_wins (int): le nombre de tournois gagnés
 
             Returns:
                 (str): le rang                

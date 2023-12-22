@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 @dataclass
 class StatsStruct:
+    '''Structure contenant les statistiques d'un joueur'''
     total_tournaments : int
     total_wins_tournaments : int
     total_loses_tournaments : int

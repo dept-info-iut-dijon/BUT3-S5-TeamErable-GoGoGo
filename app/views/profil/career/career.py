@@ -195,7 +195,6 @@ def search_games_historic(request: HttpRequest, id_user : int = None) -> HttpRes
     Returns:
         HttpResponse: La réponse HTTP à la requête de recherche de parties
     '''
-    
     if id_user is None:
         id_user = request.user.id
 
@@ -301,7 +300,7 @@ def create_game_save(user, json_data) -> None:
         game_save.save()
         _delete_old_games(user)
     except Exception:
-        raise HttpResponseNotifError('Erreur lors de la sauvegarde de la partie. Veuillez reessayer.')
+        raise ValueError('Erreur lors de la sauvegarde de la partie. Veuillez reessayer.')
 
 @request_type(RequestType.POST, RequestType.GET)
 @login_required

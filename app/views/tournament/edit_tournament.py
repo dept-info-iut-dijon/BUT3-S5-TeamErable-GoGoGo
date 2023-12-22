@@ -83,7 +83,6 @@ def edit_tournament_post(request: HttpRequest, tournament: Tournament) -> HttpRe
     except:
         return HttpResponseNotifError('Erreur lors de la modification du tournois.')
 
-    
     return ret
 
 def can_edit_tournament(id_tournament: int) -> Tournament:
