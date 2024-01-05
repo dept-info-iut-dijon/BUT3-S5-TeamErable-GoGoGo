@@ -198,7 +198,7 @@ def search_games_historic(request: HttpRequest, id_user : int = None) -> HttpRes
     if id_user is None:
         id_user = request.user.id
 
-    games = GameSave.objects.filter(user = CustomUser.objects.get(id = id_user)).order_by('-id_game_save')[:5]
+    games = GameSave.objects.filter(user = CustomUser.objects.get(id = id_user)).order_by('-id_game_save')[:50]
 
     return render(
         request,
@@ -264,7 +264,7 @@ def _delete_old_games(user : CustomUser) -> None:
     Args:
         user (CustomUser): Le joueur
     '''
-    old_game_saves = GameSave.objects.filter(user = user).order_by('-id_game_save')[5:]
+    old_game_saves = GameSave.objects.filter(user = user).order_by('-id_game_save')[50:]
     for old_game_save in old_game_saves:
         old_game_save.delete()
 
