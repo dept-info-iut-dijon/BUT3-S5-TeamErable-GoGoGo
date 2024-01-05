@@ -21,10 +21,15 @@ class Tournament(models.Model):
     tournament_status = models.FileField(upload_to='dynamic/tournaments', null=True)
 
     def get_filename(self) -> str:
+        '''Permet d'obtenir le nom du fichier
+
+            Returns: 
+                (str): le nom du fichier
+        '''
         return f'dynamic/tournaments/{self.id}.json'
 
-    #Permet de verifier si le tournois est en cours
     def ongoing(self):
+        '''Permet de verifier si le tournois est en cours'''
         ret = False
 
         if (self.start_date <= datetime.now().date() <= self.end_date and ParticipateTournament.objects.filter(tournament=self).count() >= self.player_min):
@@ -33,9 +38,19 @@ class Tournament(models.Model):
         return ret
 
     def has_started_in_theory(self) -> bool:
+        '''Permet de verifier si un tournois est sense etre commence
+
+            Returns:
+                (bool): True si le tournois doit etre commence
+        '''
         return self.start_date <= datetime.now().date()
 
-    def terminated(self):
+    def terminated(self) -> bool:
+        '''Renvoie si le tournois est fini
+
+            Returns:
+                (bool): True si le tournois est fini
+        '''
         ret = False
 
         if(self.end_date <= datetime.now().date()):
@@ -52,6 +67,7 @@ class Tournament(models.Model):
         return ret
 
     def __str__(self):
+        '''Surcharge de la methode str'''
         return self.name
 
 class ParticipateTournament(models.Model):

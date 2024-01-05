@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from .PauseEnum import PauseEnum
 
 class JapaneseByoyomi(TimerBase):
+	'''Classe de Timer implementant le byo-yomi japonais'''
 	key: str = 'japanese'
 
 	def __init__(

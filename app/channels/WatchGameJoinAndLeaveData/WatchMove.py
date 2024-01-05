@@ -2,6 +2,7 @@ from datetime import timedelta
 from ...logic import Tile, Vector2
 
 class WatchMove:
+    '''Classe permettant de regarder les changements sur une parties sauvegardee'''
     def __init__(self, from_: timedelta, to_: timedelta, player: Tile, player_time: timedelta, eaten_tiles: dict[Tile, int], changes: dict[Tile, tuple[Vector2]]) -> None:
         '''Initialise une nouvelle instance de WatchMove.
         

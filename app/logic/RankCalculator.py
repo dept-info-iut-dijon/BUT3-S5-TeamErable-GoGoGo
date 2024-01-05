@@ -1,7 +1,8 @@
 from .GoRank import GoRank
 
 class RankCalculator:
-    
+    '''Classe permettant de calculer le rank d'un joueur'''
+
     @staticmethod
     def calculate_rank(nb_games:int, win_rate:float, elo: int, nb_tournament_wins: int)->str:
         '''Calcule le rang en fonction du nombre de parties et du taux de victoires
