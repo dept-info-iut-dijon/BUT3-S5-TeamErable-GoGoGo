@@ -18,10 +18,12 @@ class Island:
 
     @property
     def tile(self) -> Tile:
+        '''Renvoie la tuile de l'île.'''
         return self._tile
     
     @property
     def coords(self) -> tuple[Vector2]:
+        '''Renvoie les coordonnées des tuiles.'''
         return self._coords
 
 
@@ -49,9 +51,11 @@ class Island:
 
 
     def __str__(self) -> str:
+        '''Surcharge de str.'''
         return f'Island({self._tile}, {self._coords})'
 
     def __repr__(self) -> str:
+        '''Surcharge de repr.'''
         return str(self)
 
 

@@ -1,8 +1,6 @@
-from django.db.models import Q
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
-from django.contrib.auth import get_user_model
 from app.models import CustomUser, Game, Tournament, ParticipateTournament
 from ..decorators import login_required
 from ...http import HttpResponseNotifError
@@ -170,8 +168,7 @@ def _generate_tournament(request: HttpRequest, tournament: TournamentLogic) -> s
 
 @login_required
 def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
-    '''
-        Affiche la page de gestion du tournois
+    '''Affiche la page de gestion du tournois
         
         Args:
             request (HttpRequest): Requete http
@@ -201,15 +198,20 @@ def tournament_manager(request: HttpRequest, id: int) -> HttpResponse:
         'tree': tournament_res,
         'in_tournament': request.user in participants,
         'ongoing': tournament.ongoing(),
-        'is_creator': request.user == tournament.creator,
+        'show_buttons': (
+            request.user == tournament.creator and
+            (not tournament.ongoing()) and
+            (not tournament.terminated()) and
+            (not tournament.has_started_in_theory())
+        ),
+        'has_started_in_theory': tournament.has_started_in_theory(),
     }
 
     return render(request, 'tournament/tournament_manager.html', context)
 
 
 def _get_tournament_participants(tournament:Tournament)->list[CustomUser]:
-    '''
-        Permet d'obtenir la liste des participants du tournois
+    '''Permet d'obtenir la liste des participants du tournois
         Args:
             tournament (Tournament): le tournois
 
@@ -223,8 +225,7 @@ def _get_tournament_participants(tournament:Tournament)->list[CustomUser]:
 
 @login_required
 def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
-    '''
-        Permet de rejoindre un tournois
+    '''Permet de rejoindre un tournois
 
         Args:
             request (HttpRequest): Requete Http
@@ -236,8 +237,8 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
     ret = None
     tournament = get_object_or_404(Tournament, id=id_tournament)
 
-    if tournament.ongoing() == True:
-        ret = HttpResponseNotifError('Les inscription pour ce tournois sont terminees')
+    if tournament.has_started_in_theory() == True:
+        ret = HttpResponseNotifError('Les inscriptions pour ce tournoi sont terminées')
 
     if len(ParticipateTournament.objects.filter(person=request.user, tournament=tournament).all()) < 1:
         ParticipateTournament.objects.create(
@@ -257,8 +258,7 @@ def tournament_join(request: HttpRequest, id_tournament:int) -> HttpResponse:
 
 @login_required
 def tournament_player_list(request: HttpRequest) -> HttpResponse:
-    '''
-        Permet de lister les joueurs du tournois
+    '''Permet de lister les joueurs du tournois
 
         Args:
             request (HttpRequest): Requete Http

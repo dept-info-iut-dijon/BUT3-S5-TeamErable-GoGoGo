@@ -3,6 +3,7 @@ from ...models.custom_user import CustomUser
 
 @dataclass
 class RankingStruct:
+    '''Structure contenant les statistiques d'un joueur'''
     user : CustomUser
     rank : str
     elo : int

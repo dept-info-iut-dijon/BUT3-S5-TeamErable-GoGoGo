@@ -225,3 +225,7 @@ p#pause-count {
     margin: auto;
     margin-left: 0.5rem;
 }
+
+p#start-count {
+    margin-left: 0.5rem;
+}

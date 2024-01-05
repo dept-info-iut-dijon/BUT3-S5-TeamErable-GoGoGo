@@ -7,6 +7,12 @@ class JapaneseRule(RuleBase):
     key: str = 'japanese'
 
     def __init__(self, board: Board, komi: float) -> None:
+        '''Initialise une régle japonaise.
+
+        Args:
+            board (Board): Plateau de jeu.
+            komi (float): Komi.
+        '''
         super().__init__(board, komi)
 
     def count_points(self) -> dict[Tile, float]:
