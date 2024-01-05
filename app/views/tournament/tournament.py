@@ -86,6 +86,4 @@ def tournament_code(request: HttpRequest) -> HttpResponse:
 
     except:
         ret = HttpResponseNotifError('Code invalide')
-
-
     return ret

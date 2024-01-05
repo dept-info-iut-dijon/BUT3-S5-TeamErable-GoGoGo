@@ -1,63 +1,78 @@
 from enum import Enum, auto
 
 class GoRank(Enum):
-    TRENTE_KYU = auto()
-    VINGT_NEUF_KYU = auto()
-    VINGT_HUIT_KYU = auto()
-    VINGT_SEPT_KYU = auto()
-    VINGT_SIX_KYU = auto()
-    VINGT_CINQ_KYU = auto()
-    VINGT_QUATRE_KYU = auto()
-    VINGT_TROIS_KYU = auto()
-    VINGT_DEUX_KYU = auto()
-    VINGT_ET_UN_KYU = auto()
-    VINGT_KYU = auto()
-    DIX_NEUF_KYU = auto()
-    DIX_HUIT_KYU = auto()
-    DIX_SEPT_KYU = auto()
-    SEIZE_KYU = auto()
-    QUINZE_KYU = auto()
-    QUATORZE_KYU = auto()
-    TREIZE_KYU = auto()
-    DOUZE_KYU = auto()
-    ONZE_KYU = auto()
-    DIX_KYU = auto()
-    NEUF_KYU = auto()
-    HUIT_KYU = auto()
-    SEPT_KYU = auto()
-    SIX_KYU = auto()
-    CINQ_KYU = auto()
-    QUATRE_KYU = auto()
-    TROIS_KYU = auto()
-    DEUX_KYU = auto()
-    UN_KYU = auto()
+    '''Classe des rangs de Go.'''
+    _30_Kyu = auto()
+    _29_Kyu = auto()
+    _28_Kyu = auto()
+    _27_Kyu = auto()
+    _26_Kyu = auto()
+    _25_Kyu = auto()
+    _24_Kyu = auto()
+    _23_Kyu = auto()
+    _22_Kyu = auto()
+    _21_Kyu = auto()
+    _20_Kyu = auto()
+    _19_Kyu = auto()
+    _18_Kyu = auto()
+    _17_Kyu = auto()
+    _16_Kyu = auto()
+    _15_Kyu = auto()
+    _14_Kyu = auto()
+    _13_Kyu = auto()
+    _12_Kyu = auto()
+    _11_Kyu = auto()
+    _10_Kyu = auto()
+    _9_Kyu = auto()
+    _8_Kyu = auto()
+    _7_Kyu = auto()
+    _6_Kyu = auto()
+    _5_Kyu = auto()
+    _4_Kyu = auto()
+    _3_Kyu = auto()
+    _2_Kyu = auto()
+    _1_Kyu = auto()
 
-    PREMIER_DAN = auto()
-    DEUXIEME_DAN = auto()
-    TROISIEME_DAN = auto()
-    QUATRIEME_DAN = auto()
-    CINQUIEME_DAN = auto()
-    SIXIEME_DAN = auto()
-    SEPTIEME_DAN = auto()
-    HUITIEME_DAN = auto()
-    NEUVIEME_DAN = auto()
+    _1_Dan = auto()
+    _2_Dan = auto()
+    _3_Dan = auto()
+    _4_Dan = auto()
+    _5_Dan = auto()
+    _6_Dan = auto()
+    _7_Dan = auto()
+    _8_Dan = auto()
+    _9_Dan = auto()
 
-    """@classmethod
-    def from_string(cls, rank_str):
-        rank_number, rank_type = rank_str.split('ème ')
+    @classmethod
+    def from_string(cls, rank_str : str) -> 'GoRank':
+        '''Renvoie un rang depuis une chaîne de caractères.
+
+        Args:
+            cls (GoRank): Classe.
+            rank_str (str): Nom du rang.
+
+        Returns:
+            GoRank: Rang.
+        '''
+        if('ème ' in rank_str):
+            rank_number, rank_type = rank_str.split('ème ')
+        else:
+            rank_number, rank_type = rank_str.split('er ')
         rank_number = int(rank_number)
 
-        if rank_type == 'Kyu':
-            return cls[f'NEUVIEME_DAN']
-        elif rank_type == 'Dan':
-            return cls[f'NEUVIEME_DAN']
-        else:
-            raise ValueError("Invalid rank type")
-        return cls[f'NEUVIEME_DAN']"""
+        return cls[f'_{rank_number}_{rank_type}']
 
     def __str__(self):
-        rank_number = self.name.split('_')[0]
-        if 'KYU' in self.name:
-            return f"{rank_number}ème Kyu"
-        elif 'DAN' in self.name:
-            return f"{rank_number}er Dan"
+        '''Surcharge de l'opérateur str.'''
+        rank_number = self.name.split('_')[1]
+        suffix = "ème"
+        if rank_number == str(1):
+            suffix = "er"
+        if 'Kyu' in self.name:
+            return f"{rank_number}{suffix} Kyu"
+        elif 'Dan' in self.name:
+            return f"{rank_number}{suffix} Dan"
+
+    def __int__(self):
+        '''Constructeur.'''
+        return self.value

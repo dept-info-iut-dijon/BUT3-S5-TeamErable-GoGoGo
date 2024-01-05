@@ -1,9 +1,7 @@
-from django.db.models import Count, F, Q, ExpressionWrapper, fields, Case, When, FloatField,OuterRef, Subquery
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
-from django.db.models.functions import Coalesce
-from django.db import models
-from ...models import CustomUser, Game,GameParticipate, Statistic
+from ...models import CustomUser, Statistic
+from ...logic import GoRank
 from ..decorators import login_required, request_type, RequestType
 from .ranking_struct import RankingStruct
 from ..profil.career.career import *
@@ -20,18 +18,20 @@ def global_ranking(request: HttpRequest) -> HttpResponse:
         HttpResponse: Reponse HTTP de la page de classement global
     '''
     users = list(CustomUser.objects.all())
-    global_ranking = _get_top_rank(users, 1)
+    global_ranking = get_top_rank(users, 1)
 
     friends = list(request.user.friends.all())
     friends.append(request.user)
-    friends_ranking = _get_top_rank(friends, 1)
+    friends_ranking = get_top_rank(friends, 1)
+
+    same_ranked_users = list(CustomUser.objects.filter(stat__rank=request.user.stat.rank))
+    same_ranked = get_top_rank(same_ranked_users, 1)
 
     return render(request, 'ranking/global.html', {'user': request.user, 'friends_ranked': friends_ranking, 
-        'top_ranked': global_ranking})
+        'top_ranked': global_ranking, 'same_ranked': same_ranked})
 
-def _get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]:
-    '''
-        Permet d'obtenir un classement selon une certaine liste d'utilisateurs
+def get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct]:
+    '''Permet d'obtenir un classement selon une certaine liste d'utilisateurs
 
         Args:
             user_range (list[CustomUser]): Liste des utilisateurs concernes
@@ -46,20 +46,19 @@ def _get_top_rank(user_range: list[CustomUser], limit:int) -> list[RankingStruct
 
     history = {}
     for user in user_range:
-        nb_wins = get_total_game_ranked_win(user)
-        nb_losses = get_total_game_ranked_loose(user)
+        nb_wins = get_total_game_ranked_win(user.id)
+        nb_losses = get_total_game_ranked_loose(user.id)
         statistic = Statistic.objects.filter(id=user.stat_id).first()
         history[user] = (nb_wins,nb_wins+nb_losses, statistic)
 
     ranking = _get_as_ranking(history)
-
+    
     ranking = sorted(ranking, key=_sorting_key, reverse=True)[limit*LIMIT_RANGE-LIMIT_RANGE:limit*LIMIT_RANGE]
 
     return ranking
 
 def _get_as_ranking(history: dict)-> list[RankingStruct]:
-    '''
-        Obtient la liste des structure de ranking pour chaque joueur
+    '''Obtient la liste des structure de ranking pour chaque joueur
 
         Args:
             history (dict): dictionaire des statistiques de chaque joueurs
@@ -67,11 +66,12 @@ def _get_as_ranking(history: dict)-> list[RankingStruct]:
         Returns:
             list[RankingStruct]: liste des lignes du classement
     '''
+
     ranking = []
     for player,player_data in history.items():
         rate = 0
         if(player_data[1]) != 0:
-           rate = player_data[0]*100/player_data[1] 
+           rate = round(player_data[0]*100/player_data[1], 2)
         ranking.append(RankingStruct(
             player,
             player_data[2].rank,
@@ -85,8 +85,7 @@ def _get_as_ranking(history: dict)-> list[RankingStruct]:
     return ranking
 
 def _sorting_key(ranking_data:RankingStruct)->tuple:
-    '''
-        Fonction servant de cle pour la comparaison de tri d'une liste de RankingStruct
+    '''Fonction servant de cle pour la comparaison de tri d'une liste de RankingStruct
 
         Args:
             ranking_data (RankingStruct): donnes a trier
@@ -94,4 +93,5 @@ def _sorting_key(ranking_data:RankingStruct)->tuple:
         Returns:
             tuple: cle de tri
     '''
-    return (ranking_data.taux_victory, ranking_data.nb_games)
+    rank = GoRank.from_string(ranking_data.rank)
+    return (int(rank), ranking_data.taux_victory)

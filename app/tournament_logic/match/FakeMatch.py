@@ -20,25 +20,31 @@ class FakeMatch(implements(IMatch)):
 
     @property
     def player(self) -> Player:
+        '''Renvoie le joueur'''
         return self._player
 
     @property
     def winner(self) -> Player | None:
+        '''Renvoie le gagnant, hérite de IMatch'''
         return self._player
 
     @property
     def player1(self) -> Player | None:
+        '''Renvoie le joueur, hérite de IMatch'''
         return self._player
 
     @property
     def player2(self) -> Player | None:
+        '''Renvoie le joueur, hérite de IMatch'''
         return None
 
 
     def __str__(self) -> str:
+        '''Surcharge de la méthode str'''
         return 'FakeMatch -> ' + str(self._player)
 
     def __repr__(self) -> str:
+        '''Surcharge de la méthode repr'''
         return str(self)
 
 
@@ -51,6 +57,11 @@ class FakeMatch(implements(IMatch)):
 
 
     def export(self) -> dict:
+        '''Exporte le match
+        
+        Returns:
+            dict: Le match
+        '''
         return {
             'type': 'FakeMatch',
             'player': self._player.id,
